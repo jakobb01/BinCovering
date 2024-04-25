@@ -1,20 +1,25 @@
 #include <iostream>
 #include <vector>
 
+// todo: implement simple algorithms first, make them generic, as they will be used in algo w/ advice
+
 int advice(int m, double x_m, int k, double seq[7]) {
     //all input in parameters
 
     //prepare bins
 
     // critical bins
-    // todo: critical bins need virtual AND real load (two values)
+    // todo: critical bins will be struct
     std::vector<double> critical_bins(m, x_m);
     // t-bins -> 2D vector
+    // todo: t-bins & small bins - we will just count how many we will close, one variable needed
     std::vector<double> t(1, 0.0);
     std::vector<std::vector<double> > t_bins(k, t);
     // small bins
     std::vector<double> small_bins(1, 0);
 
+
+    // todo: iterator for feeding 'items' one-by-one
     for (int i = 0; i < ( 7 ); ++i) {
 
         double v = seq[i];
