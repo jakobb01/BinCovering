@@ -1,7 +1,47 @@
 #include <iostream>
 #include <vector>
 
+// size of items will be int 1 to 1000 to not get weird float rounding
+const int BIN_COVER_LOAD = 1000;
+const int SEQ_LENGTH = 100;
 // todo: implement simple algorithms first, make them generic, as they will be used in algo w/ advice
+
+// generator for random array for specific range def in const
+int[] generator() {
+    
+}
+
+// DNF - Dual Next Fit -> 0 = error; 1 = 1 bin full; x = bin load
+int DNF(int item, int bin) {
+    if (bin < 1) {
+        return 0;
+    }
+    if (bin < BIN_COVER_LOAD) {
+        bin += item;
+        return bin;
+    } else {
+        return 1;
+    }
+}
+
+int pureDNF(int seq[SEQ_LENGTH]) {
+    int bin = 0;
+    int full_bins = -1;
+    int val = 1;
+
+    for (int i = 0; i < SEQ_LENGTH; ++i) {
+        if (val == 0) {
+            return 0;
+        } else if (val == 1) {
+            full_bins++;
+            bin = seq[i];
+        } else {
+            bin = val;
+        }
+        val = DNF(seq[i], bin);
+    }
+    return full_bins;
+}
 
 int advice(int m, double x_m, int k, double seq[7]) {
     //all input in parameters
