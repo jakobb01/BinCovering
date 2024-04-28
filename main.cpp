@@ -1,19 +1,29 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <time.h>
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000;
-const int SEQ_LENGTH = 100;
+const int SEQ_LENGTH = 10000;
+
+using namespace std;
+
 // todo: implement simple algorithms first, make them generic, as they will be used in algo w/ advice
 
 // generator for random array for specific range def in const
-int[] generator() {
-    
+int* generator() {
+    static int p[SEQ_LENGTH];
+    srand(time(0));
+    for (int i = 0; i < SEQ_LENGTH; ++i) {
+        p[i] =  (rand() % 1000);
+    }
+    return p;
 }
 
 // DNF - Dual Next Fit -> 0 = error; 1 = 1 bin full; x = bin load
 int DNF(int item, int bin) {
-    if (bin < 1) {
+    if (bin < 0) {
         return 0;
     }
     if (bin < BIN_COVER_LOAD) {
@@ -26,23 +36,44 @@ int DNF(int item, int bin) {
 
 int pureDNF(int seq[SEQ_LENGTH]) {
     int bin = 0;
-    int full_bins = -1;
-    int val = 1;
+    int full_bins = 0;
+    int val;
 
     for (int i = 0; i < SEQ_LENGTH; ++i) {
+        val = DNF(seq[i], bin);
         if (val == 0) {
             return 0;
         } else if (val == 1) {
             full_bins++;
-            bin = seq[i];
+            bin = 0;
         } else {
             bin = val;
         }
-        val = DNF(seq[i], bin);
+        cout<<"BINS FILLED:"<<full_bins<<endl;
+    }
+    if (DNF(0, bin) == 1) {
+        full_bins++;
     }
     return full_bins;
 }
 
+int main() {
+
+    int* ptr_p;
+    ptr_p = generator();
+
+    for(int i=0 ; i<SEQ_LENGTH; i++)
+        cout<<ptr_p[i]<<endl;
+
+    int count_bins = pureDNF(ptr_p);
+
+    cout<<"BINS FILLED:"<<endl;
+    cout<<count_bins<<endl;
+
+    return 0;
+}
+
+/*
 int advice(int m, double x_m, int k, double seq[7]) {
     //all input in parameters
 
@@ -123,14 +154,4 @@ int advice(int m, double x_m, int k, double seq[7]) {
 
     return 0;
 }
-
-
-int main() {
-
-    double seq[] = {0.1, 0.23, 0.4, 0.5, 0.6, 0.01, 0.34};
-
-    advice(2, 0.5, 4, seq);
-
-    return 0;
-}
-
+ */
