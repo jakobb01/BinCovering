@@ -3,15 +3,18 @@
 #include <ctime>
 #include <time.h>
 
+using namespace std;
+
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000;
 const int SEQ_LENGTH = 1000;
 
-using namespace std;
-
-// todo: implement simple algorithms first, make them generic, as they will be used in algo w/ advice
+// M and X_M value that will be used as an advice and calculated in generator
+const int M = 10;
+int X_M;
 
 // generator for random array for specific range def in const
+// todo: calculate M and X_M in generator
 int* generator() {
     static int p[SEQ_LENGTH];
     srand(time(0));
@@ -49,7 +52,7 @@ int pureDNF(int seq[SEQ_LENGTH]) {
         } else {
             bin = val;
         }
-        cout<<"BINS FILLED:"<<full_bins<<endl;
+        cout<<"BINS COVERED:"<<full_bins<<endl;
     }
     if (DNF(0, bin) == 1) {
         full_bins++;
@@ -123,6 +126,134 @@ int harmonic(int seq[SEQ_LENGTH]) {
 
 }
 
+
+// algorithm with advice
+int advice(int seq[SEQ_LENGTH]) {
+
+    // critical bins
+    int pointer_i = 0;
+    struct Bin{
+        int load;
+        bool present;
+    };
+    Bin critical_bins[M] = {X_M, false};
+
+    // counter + harmonic bins
+    int item;
+    int full_bins=0;
+    // k = 5
+    int bin2=0, bin3=0, bin4=0, bin5=0, small_bin=0;
+
+    //flag for small items if we fill critical bins or small bins
+    bool fill_critical = true;
+
+    // flag when all critical bins will be filled to switch the flag "fill_critical" AND count how many critical bins were filled to be added to counter "full_bins"
+    int filled_critical = 0;
+
+    // flag when to stop filling critical bins
+    bool critical_items_STOP = false;
+
+
+    for (int i = 0; i < SEQ_LENGTH; ++i) {
+        cout<<full_bins<<endl;
+
+        item = seq[i];
+
+
+        // critical items
+        if (item >= X_M && !critical_items_STOP) {
+            // flag if critical bin was found
+            bool found_bin = false;
+            while (!found_bin) {
+                if (!critical_bins[pointer_i].present) {
+                    critical_bins[pointer_i].load = critical_bins[pointer_i].load - X_M + item;
+                    critical_bins[pointer_i].present = true;
+                    pointer_i++;
+                    found_bin = true;
+                } else {
+                    if (pointer_i == SEQ_LENGTH) {
+                        break;
+                    }
+                    pointer_i++;
+                }
+            }
+            if (!found_bin) {
+                // error?
+                // put it into harmonic?
+                critical_items_STOP = true;
+                cout<<"ERROR on critical bins!"<<endl;
+            }
+        }
+            // harmonic items
+        else if (X_M > item > (0.5 * BIN_COVER_LOAD)) {
+            int rtrn = DNF(item, bin2);
+            if (rtrn == 1) {
+                full_bins++;
+                bin2 = 0;
+            } else {
+                bin2 = rtrn;
+            }
+        }
+        else if ((0.5 * BIN_COVER_LOAD) > item > (1 / 3 * BIN_COVER_LOAD)) {
+            int rtrn = DNF(item, bin3);
+            if (rtrn == 1) {
+                full_bins++;
+                bin3 = 0;
+            } else {
+                bin3 = rtrn;
+            }
+        } else if ((1 / 3 * BIN_COVER_LOAD) > item > (1 / 4 * BIN_COVER_LOAD)) {
+            int rtrn = DNF(item, bin4);
+            if (rtrn == 1) {
+                full_bins++;
+                bin4 = 0;
+            } else {
+                bin4 = rtrn;
+            }
+        } else if (item > (1 / 5 * BIN_COVER_LOAD)) {
+            int rtrn = DNF(item, bin5);
+            if (rtrn == 1) {
+                full_bins++;
+                bin5 = 0;
+            } else {
+                bin5 = rtrn;
+            }
+        }
+            // small items
+        else {
+            if (fill_critical) {
+                filled_critical = 0;
+
+                for (int j = 0; j < M; ++j) {
+                    if (critical_bins[j].load < BIN_COVER_LOAD) {
+                        critical_bins[j].load += item;
+                        break;
+                    } else {
+                        filled_critical++;
+                        cout<<"J:"<<j<<endl;
+                    }
+                }
+                if (filled_critical==M) {
+                    fill_critical=false;
+                }
+            } else {
+                int rtrn = DNF(item, small_bin);
+                if (rtrn == 1) {
+                    full_bins++;
+                    small_bin = 0;
+                } else {
+                    small_bin = rtrn;
+                }
+            }
+        }
+    }
+
+    // add count of all covered critical bins
+    full_bins += filled_critical;
+
+    return full_bins;
+}
+
 int main() {
 
     int* ptr_p;
@@ -133,97 +264,20 @@ int main() {
 
     int count_bins = pureDNF(ptr_p);
 
-    cout<<"BINS FILLED - DNF:"<<endl;
+    cout<<"BINS COVERED - DNF:"<<endl;
     cout<<count_bins<<endl;
 
     count_bins = harmonic(ptr_p);
 
-    cout<<"BINS FILLED - HARMONIC:"<<endl;
+    cout<<"BINS COVERED - HARMONIC:"<<endl;
+    cout<<count_bins<<endl;
+
+    count_bins = advice(ptr_p);
+
+    cout<<"BINS COVERED - ADVICE:"<<endl;
     cout<<count_bins<<endl;
 
 
     return 0;
 }
 
-/*
-int advice(int m, double x_m, int k, double seq[7]) {
-    //all input in parameters
-
-    //prepare bins
-
-    // critical bins
-    // todo: critical bins will be struct
-    std::vector<double> critical_bins(m, x_m);
-    // t-bins -> 2D vector
-    // todo: t-bins & small bins - we will just count how many we will close, one variable needed
-    std::vector<double> t(1, 0.0);
-    std::vector<std::vector<double> > t_bins(k, t);
-    // small bins
-    std::vector<double> small_bins(1, 0);
-
-
-    // todo: iterator for feeding 'items' one-by-one
-    for (int i = 0; i < ( 7 ); ++i) {
-
-        double v = seq[i];
-        std::cout<<v<<" ";
-
-        if (v >= x_m) {
-            for (int j = 0; j < critical_bins.size(); ++j) {
-                // todo: when item is put in critical bin, mark that this bin cannot be used anymore and correctly update load
-                if (critical_bins[j] == x_m) {
-                    critical_bins[j] = critical_bins[j]-x_m;
-                    critical_bins[j] = v;
-                    break;
-                }
-            }
-            continue;
-        }
-
-        // t-bins
-        if (x_m > v >= 1/k) {
-            // todo -> place v in correct container (1/2 - 1/3; 1/3 - 1/4; 1/4 - 1/k   etc...)
-
-            // find t-bin for 1/2, fill it
-            for (int j = 0; j < t_bins[0].size(); ++j) {
-                if (t_bins[0][j] < 1) {
-                    t_bins[0][j] += v;
-                }
-            }
-        }
-
-        // small
-        if (v < (1/k)) {
-            int check = 0;
-            for (int j = 0; j < critical_bins.size(); ++j) {
-                if (critical_bins[j] < 1) {
-                    critical_bins[j] += v;
-                    check = 1;
-                }
-            }
-            // if critical bins are all covered
-            if (check == 0) {
-                // todo: implement DNF for small bins
-                small_bins[0] = v;
-            }
-        }
-    }
-
-    std::cout<< "CRITICAL BINS"<<std::endl;
-    for (int i = 0; i < critical_bins.size(); ++i) {
-        std::cout<<critical_bins[i]<<" "<<std::endl;
-    }
-    std::cout<< "T BINS"<<std::endl;
-    for(int i=0;i<t_bins.size();i++){
-        for(int j=0;j<t_bins[i].size();j++)
-            std::cout<<t_bins[i][j]<<" ";
-        std::cout<<std::endl;
-    }
-    std::cout<< "SMALL BINS"<<std::endl;
-    for (int i = 0; i < small_bins.size(); ++i) {
-        std::cout<<small_bins[i]<<" "<<std::endl;
-    }
-
-    return 0;
-}
- */
