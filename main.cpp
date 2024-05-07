@@ -71,43 +71,48 @@ int harmonic(int seq[SEQ_LENGTH]) {
 
         // big items
         if (item > (0.5*BIN_COVER_LOAD)) {
-            if (big_bin > BIN_COVER_LOAD) {
+            int rtrn = DNF(item, big_bin);
+            if (rtrn == 1) {
                 full_bins++;
                 big_bin = 0;
             } else {
-                big_bin += item;
+                big_bin = rtrn;
             }
         }
         // harmonic bins
         else if ((0.5*BIN_COVER_LOAD) > item > (1/3 * BIN_COVER_LOAD)) {
-            if (bin3 > BIN_COVER_LOAD) {
+            int rtrn = DNF(item, bin3);
+            if (rtrn == 1) {
                 full_bins++;
                 bin3 = 0;
             } else {
-                bin3 += item;
+                bin3 = rtrn;
             }
         } else if ((1/3 * BIN_COVER_LOAD) > item > (1/4 * BIN_COVER_LOAD)) {
-            if (bin4 > BIN_COVER_LOAD) {
+            int rtrn = DNF(item, bin4);
+            if (rtrn == 1) {
                 full_bins++;
                 bin4 = 0;
             } else {
-                bin4 += item;
+                bin4 = rtrn;
             }
         } else if (item > (1/5 * BIN_COVER_LOAD)) {
-            if (bin5 > BIN_COVER_LOAD) {
+            int rtrn = DNF(item, bin5);
+            if (rtrn == 1) {
                 full_bins++;
                 bin5 = 0;
             } else {
-                bin5 += item;
+                bin5 = rtrn;
             }
         }
         // small bins
         else {
-            if (small_bin > BIN_COVER_LOAD) {
+            int rtrn = DNF(item, small_bin);
+            if (rtrn == 1) {
                 full_bins++;
                 small_bin = 0;
             } else {
-                small_bin += item;
+                small_bin = rtrn;
             }
         }
 
