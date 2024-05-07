@@ -1,25 +1,25 @@
 #include <iostream>
-#include <vector>
-#include <ctime>
-#include <time.h>
+#include <random>
 
 using namespace std;
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000;
-const int SEQ_LENGTH = 1000;
+const int SEQ_LENGTH = 10000;
 
 // M and X_M value that will be used as an advice and calculated in generator
-const int M = 10;
-int X_M;
+const int M = 1000;
+int X_M = 0.7*(BIN_COVER_LOAD);
 
 // generator for random array for specific range def in const
 // todo: calculate M and X_M in generator
 int* generator() {
     static int p[SEQ_LENGTH];
-    srand(time(0));
+    random_device rd; // obtain a random number from hardware
+    mt19937 gen(rd()); // seed the generator
+    uniform_int_distribution<> distr(1, 1000); // define the range
     for (int i = 0; i < SEQ_LENGTH; ++i) {
-        p[i] =  (rand() % 1000);
+        p[i] =  distr(gen);
     }
     return p;
 }
@@ -61,6 +61,7 @@ int pureDNF(int seq[SEQ_LENGTH]) {
 }
 
 // harmonic - returns number of packets
+// todo: check if items actualy follow harmonic distribution!
 int harmonic(int seq[SEQ_LENGTH]) {
 
     int item;
@@ -136,7 +137,13 @@ int advice(int seq[SEQ_LENGTH]) {
         int load;
         bool present;
     };
-    Bin critical_bins[M] = {X_M, false};
+    // initialize array for critical bins with all the same values
+    Bin critical_bins[M] = { };
+    for (auto & critical_bin : critical_bins) {
+        critical_bin = { X_M, false};
+    }
+
+
 
     // counter + harmonic bins
     int item;
@@ -155,7 +162,7 @@ int advice(int seq[SEQ_LENGTH]) {
 
 
     for (int i = 0; i < SEQ_LENGTH; ++i) {
-        cout<<full_bins<<endl;
+        //::printf("Full bins: %d \n", full_bins);
 
         item = seq[i];
 
@@ -166,26 +173,25 @@ int advice(int seq[SEQ_LENGTH]) {
             bool found_bin = false;
             while (!found_bin) {
                 if (!critical_bins[pointer_i].present) {
+                    //::printf("Bin is loaded: %d \n", critical_bins[pointer_i].present);
                     critical_bins[pointer_i].load = critical_bins[pointer_i].load - X_M + item;
                     critical_bins[pointer_i].present = true;
+                    //::printf("At index: %d inputing a critical item: %d into critical bin: %d that is loaded: %d \n", pointer_i, item, critical_bins[pointer_i].load, critical_bins[pointer_i].present);
                     pointer_i++;
                     found_bin = true;
-                } else {
-                    if (pointer_i == SEQ_LENGTH) {
+                    if (pointer_i >= M) {
+                        critical_items_STOP = true;
+                        ::printf("Critical bins FULL! \n");
                         break;
                     }
-                    pointer_i++;
+                } else {
+                    //error occurred!
+                    ::printf("ERROR! -> pointer in CRITICAL BINS: %d \n", pointer_i);
                 }
-            }
-            if (!found_bin) {
-                // error?
-                // put it into harmonic?
-                critical_items_STOP = true;
-                cout<<"ERROR on critical bins!"<<endl;
             }
         }
             // harmonic items
-        else if (X_M > item > (0.5 * BIN_COVER_LOAD)) {
+        else if (item >= (0.5 * BIN_COVER_LOAD)) {
             int rtrn = DNF(item, bin2);
             if (rtrn == 1) {
                 full_bins++;
@@ -194,7 +200,7 @@ int advice(int seq[SEQ_LENGTH]) {
                 bin2 = rtrn;
             }
         }
-        else if ((0.5 * BIN_COVER_LOAD) > item > (1 / 3 * BIN_COVER_LOAD)) {
+        else if ((0.5 * BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3)) {
             int rtrn = DNF(item, bin3);
             if (rtrn == 1) {
                 full_bins++;
@@ -202,7 +208,7 @@ int advice(int seq[SEQ_LENGTH]) {
             } else {
                 bin3 = rtrn;
             }
-        } else if ((1 / 3 * BIN_COVER_LOAD) > item > (1 / 4 * BIN_COVER_LOAD)) {
+        } else if ((BIN_COVER_LOAD / 3) > item && item >= (BIN_COVER_LOAD / 4)) {
             int rtrn = DNF(item, bin4);
             if (rtrn == 1) {
                 full_bins++;
@@ -210,7 +216,7 @@ int advice(int seq[SEQ_LENGTH]) {
             } else {
                 bin4 = rtrn;
             }
-        } else if (item > (1 / 5 * BIN_COVER_LOAD)) {
+        } else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
             int rtrn = DNF(item, bin5);
             if (rtrn == 1) {
                 full_bins++;
@@ -230,7 +236,7 @@ int advice(int seq[SEQ_LENGTH]) {
                         break;
                     } else {
                         filled_critical++;
-                        cout<<"J:"<<j<<endl;
+                        //printf("FILLED CRITICAL: %d with load: %d \n", j, critical_bins[j].load);
                     }
                 }
                 if (filled_critical==M) {
@@ -247,6 +253,9 @@ int advice(int seq[SEQ_LENGTH]) {
             }
         }
     }
+
+    ::printf("Full critical bins: %d \n", filled_critical);
+
 
     // add count of all covered critical bins
     full_bins += filled_critical;
