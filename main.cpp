@@ -5,10 +5,10 @@ using namespace std;
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000;
-const int SEQ_LENGTH = 10000;
+const int SEQ_LENGTH = 1000;
 
 // M and X_M value that will be used as an advice and calculated in generator
-const int M = 1000;
+const int M = 100;
 int X_M = 0.7*(BIN_COVER_LOAD);
 
 // generator for random array for specific range def in const
@@ -52,7 +52,7 @@ int pureDNF(int seq[SEQ_LENGTH]) {
         } else {
             bin = val;
         }
-        cout<<"BINS COVERED:"<<full_bins<<endl;
+        //::printf("BINS COVERED: %d \n", full_bins);
     }
     if (DNF(0, bin) == 1) {
         full_bins++;
@@ -61,7 +61,6 @@ int pureDNF(int seq[SEQ_LENGTH]) {
 }
 
 // harmonic - returns number of packets
-// todo: check if items actualy follow harmonic distribution!
 int harmonic(int seq[SEQ_LENGTH]) {
 
     int item;
@@ -84,7 +83,7 @@ int harmonic(int seq[SEQ_LENGTH]) {
             }
         }
         // harmonic bins
-        else if ((0.5*BIN_COVER_LOAD) > item > (1/3 * BIN_COVER_LOAD)) {
+        else if ((0.5*BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3)) {
             int rtrn = DNF(item, bin3);
             if (rtrn == 1) {
                 full_bins++;
@@ -92,7 +91,7 @@ int harmonic(int seq[SEQ_LENGTH]) {
             } else {
                 bin3 = rtrn;
             }
-        } else if ((1/3 * BIN_COVER_LOAD) > item > (1/4 * BIN_COVER_LOAD)) {
+        } else if ((BIN_COVER_LOAD / 3) > item && item >= (BIN_COVER_LOAD / 4)) {
             int rtrn = DNF(item, bin4);
             if (rtrn == 1) {
                 full_bins++;
@@ -100,7 +99,7 @@ int harmonic(int seq[SEQ_LENGTH]) {
             } else {
                 bin4 = rtrn;
             }
-        } else if (item > (1/5 * BIN_COVER_LOAD)) {
+        } else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
             int rtrn = DNF(item, bin5);
             if (rtrn == 1) {
                 full_bins++;
@@ -121,10 +120,7 @@ int harmonic(int seq[SEQ_LENGTH]) {
         }
 
     }
-
-
     return full_bins;
-
 }
 
 
@@ -281,11 +277,13 @@ int main() {
     cout<<"BINS COVERED - HARMONIC:"<<endl;
     cout<<count_bins<<endl;
 
+    /*
     count_bins = advice(ptr_p);
 
     cout<<"BINS COVERED - ADVICE:"<<endl;
     cout<<count_bins<<endl;
 
+     */
 
     return 0;
 }
