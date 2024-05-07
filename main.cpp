@@ -4,12 +4,12 @@
 using namespace std;
 
 // size of items will be int 1 to 1000 to not get weird float rounding
-const int BIN_COVER_LOAD = 1000;
-const int SEQ_LENGTH = 1000;
+const int BIN_COVER_LOAD = 1000000;
+const int SEQ_LENGTH = 100000;
 
 // M and X_M value that will be used as an advice and calculated in generator
-const int M = 100;
-int X_M = 0.7*(BIN_COVER_LOAD);
+const int M = 10000;
+int X_M = 0.8*(BIN_COVER_LOAD);
 
 // generator for random array for specific range def in const
 // todo: calculate M and X_M in generator
@@ -17,7 +17,7 @@ int* generator() {
     static int p[SEQ_LENGTH];
     random_device rd; // obtain a random number from hardware
     mt19937 gen(rd()); // seed the generator
-    uniform_int_distribution<> distr(1, 1000); // define the range
+    uniform_int_distribution<> distr(1, BIN_COVER_LOAD); // define the range
     for (int i = 0; i < SEQ_LENGTH; ++i) {
         p[i] =  distr(gen);
     }
@@ -264,8 +264,10 @@ int main() {
     int* ptr_p;
     ptr_p = generator();
 
+    /*
     for(int i=0 ; i<SEQ_LENGTH; i++)
         cout<<ptr_p[i]<<endl;
+    */
 
     int count_bins = pureDNF(ptr_p);
 
@@ -277,13 +279,10 @@ int main() {
     cout<<"BINS COVERED - HARMONIC:"<<endl;
     cout<<count_bins<<endl;
 
-    /*
     count_bins = advice(ptr_p);
 
     cout<<"BINS COVERED - ADVICE:"<<endl;
     cout<<count_bins<<endl;
-
-     */
 
     return 0;
 }
