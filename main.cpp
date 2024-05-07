@@ -5,7 +5,7 @@
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000;
-const int SEQ_LENGTH = 10000;
+const int SEQ_LENGTH = 1000;
 
 using namespace std;
 
@@ -57,6 +57,67 @@ int pureDNF(int seq[SEQ_LENGTH]) {
     return full_bins;
 }
 
+// harmonic - returns number of packets
+int harmonic(int seq[SEQ_LENGTH]) {
+
+    int item;
+    int full_bins=0;
+    // k = 5
+    int big_bin=0, bin3=0, bin4=0, bin5=0, small_bin=0;
+
+    // iterate through each item in input sequence
+    for (int i = 0; i < SEQ_LENGTH; ++i) {
+        item = seq[i];
+
+        // big items
+        if (item > (0.5*BIN_COVER_LOAD)) {
+            if (big_bin > BIN_COVER_LOAD) {
+                full_bins++;
+                big_bin = 0;
+            } else {
+                big_bin += item;
+            }
+        }
+        // harmonic bins
+        else if ((0.5*BIN_COVER_LOAD) > item > (1/3 * BIN_COVER_LOAD)) {
+            if (bin3 > BIN_COVER_LOAD) {
+                full_bins++;
+                bin3 = 0;
+            } else {
+                bin3 += item;
+            }
+        } else if ((1/3 * BIN_COVER_LOAD) > item > (1/4 * BIN_COVER_LOAD)) {
+            if (bin4 > BIN_COVER_LOAD) {
+                full_bins++;
+                bin4 = 0;
+            } else {
+                bin4 += item;
+            }
+        } else if (item > (1/5 * BIN_COVER_LOAD)) {
+            if (bin5 > BIN_COVER_LOAD) {
+                full_bins++;
+                bin5 = 0;
+            } else {
+                bin5 += item;
+            }
+        }
+        // small bins
+        else {
+            if (small_bin > BIN_COVER_LOAD) {
+                full_bins++;
+                small_bin = 0;
+            } else {
+                small_bin += item;
+            }
+        }
+
+    }
+
+
+    return full_bins;
+
+}
+
 int main() {
 
     int* ptr_p;
@@ -67,8 +128,14 @@ int main() {
 
     int count_bins = pureDNF(ptr_p);
 
-    cout<<"BINS FILLED:"<<endl;
+    cout<<"BINS FILLED - DNF:"<<endl;
     cout<<count_bins<<endl;
+
+    count_bins = harmonic(ptr_p);
+
+    cout<<"BINS FILLED - HARMONIC:"<<endl;
+    cout<<count_bins<<endl;
+
 
     return 0;
 }
