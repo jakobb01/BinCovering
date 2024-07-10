@@ -69,7 +69,7 @@ int main() {
     int n;
     string filename;
 
-    n = 1000;
+    n = 100000;
     filename = "output.txt";
     string filename_up = "output_upwards.txt";
 
