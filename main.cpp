@@ -9,18 +9,18 @@ const string FILENAME = "C:\\Users\\jakob\\CLionProjects\\BinPacking\\output.txt
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000000;
-const int SEQ_LENGTH = 1000;
 
 // M and X_M value that will be used as an advice and calculated in generator
-const int M = 100;
+// M is 6k in a 100k element list -> 6%
+const int M = 6000;
 int X_M = 0.8*(BIN_COVER_LOAD);
-
 // todo: calculate M and X_M
+
 
 // general iterator to feed elements into algorithms one-by-one
 class ElementIterator {
 public:
-    ElementIterator(const string& filename) : inFile(filename) {
+    explicit ElementIterator(const string& filename) : inFile(filename) {
         if (!inFile) {
             cerr << "Failed to open file for reading.\n";
             throw runtime_error("File open error");
@@ -76,17 +76,20 @@ int pureDNF() {
     return full_bins;
 }
 
-// harmonic - returns number of packets
-int harmonic(int seq[SEQ_LENGTH]) {
+// harmonic -> k is a number in how many "classes" we divide elements
+int harmonic() {
 
+    ElementIterator iterator(FILENAME);
     int item;
     int full_bins=0;
+    // todo: develop a solution that automaticly works with any k
     // k = 5
     int big_bin=0, bin3=0, bin4=0, bin5=0, small_bin=0;
+    int element;
 
     // iterate through each item in input sequence
-    for (int i = 0; i < SEQ_LENGTH; ++i) {
-        item = seq[i];
+    while (iterator.getNextElement(element)) {
+        item = element;
 
         // big items
         if (item > (0.5*BIN_COVER_LOAD)) {
@@ -141,8 +144,9 @@ int harmonic(int seq[SEQ_LENGTH]) {
 
 
 // algorithm with advice
-int advice(int seq[SEQ_LENGTH]) {
+int advice() {
 
+    ElementIterator iterator(FILENAME);
     // critical bins
     int pointer_i = 0;
     struct Bin{
@@ -172,11 +176,12 @@ int advice(int seq[SEQ_LENGTH]) {
     // flag when to stop filling critical bins
     bool critical_items_STOP = false;
 
+    int element;
 
-    for (int i = 0; i < SEQ_LENGTH; ++i) {
+    while (iterator.getNextElement(element)) {
         //::printf("Full bins: %d \n", full_bins);
 
-        item = seq[i];
+        item = element;
 
 
         // critical items
@@ -277,21 +282,22 @@ int advice(int seq[SEQ_LENGTH]) {
 
 int main() {
 
-    int count_bins = pureDNF();
+    int count_bins;
 
+    //Dual Next Fit (DNF) only
+    count_bins = pureDNF();
     cout<<"BINS COVERED - DNF:"<<endl;
     cout<<count_bins<<endl;
-/*
-    count_bins = harmonic(ptr_p);
 
+    //harmonic only
+    count_bins = harmonic();
     cout<<"BINS COVERED - HARMONIC:"<<endl;
     cout<<count_bins<<endl;
 
-    count_bins = advice(ptr_p);
-
+    //with advice
+    count_bins = advice();
     cout<<"BINS COVERED - ADVICE:"<<endl;
     cout<<count_bins<<endl;
-    */
 
     return 0;
 }
