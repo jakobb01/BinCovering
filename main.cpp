@@ -1,28 +1,42 @@
 #include <iostream>
-#include <random>
+#include <fstream>
 
 using namespace std;
 
+//filename where algorithms will read pre-generated elements
+// put the absolute path in
+const string FILENAME = "C:\\Users\\jakob\\CLionProjects\\BinPacking\\output.txt";
+
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000000;
-const int SEQ_LENGTH = 100000;
+const int SEQ_LENGTH = 1000;
 
 // M and X_M value that will be used as an advice and calculated in generator
-const int M = 10000;
+const int M = 100;
 int X_M = 0.8*(BIN_COVER_LOAD);
 
-// generator for random array for specific range def in const
-// todo: calculate M and X_M in generator
-int* generator() {
-    static int p[SEQ_LENGTH];
-    random_device rd; // obtain a random number from hardware
-    mt19937 gen(rd()); // seed the generator
-    uniform_int_distribution<> distr(1, BIN_COVER_LOAD); // define the range
-    for (int i = 0; i < SEQ_LENGTH; ++i) {
-        p[i] =  distr(gen);
+// todo: calculate M and X_M
+
+// general iterator to feed elements into algorithms one-by-one
+class ElementIterator {
+public:
+    ElementIterator(const string& filename) : inFile(filename) {
+        if (!inFile) {
+            cerr << "Failed to open file for reading.\n";
+            throw runtime_error("File open error");
+        }
     }
-    return p;
-}
+
+    bool getNextElement(int& element) {
+        if (inFile >> element) {
+            return true;
+        }
+        return false;
+    }
+
+private:
+    ifstream inFile;
+};
 
 // DNF - Dual Next Fit -> 0 = error; 1 = 1 bin full; x = bin load
 int DNF(int item, int bin) {
@@ -37,13 +51,19 @@ int DNF(int item, int bin) {
     }
 }
 
-int pureDNF(int seq[SEQ_LENGTH]) {
+int pureDNF() {
+
+    //call universal iterator to get elements from file
+    ElementIterator iterator(FILENAME);
+
     int bin = 0;
     int full_bins = 0;
     int val;
+    int element;
 
-    for (int i = 0; i < SEQ_LENGTH; ++i) {
-        val = DNF(seq[i], bin);
+    while (iterator.getNextElement(element)) {
+        //cout<<element<<'\n';
+        val = DNF(element, bin);
         if (val == 0) {
             return 0;
         } else if (val == 1) {
@@ -52,10 +72,6 @@ int pureDNF(int seq[SEQ_LENGTH]) {
         } else {
             bin = val;
         }
-        //::printf("BINS COVERED: %d \n", full_bins);
-    }
-    if (DNF(0, bin) == 1) {
-        full_bins++;
     }
     return full_bins;
 }
@@ -261,19 +277,11 @@ int advice(int seq[SEQ_LENGTH]) {
 
 int main() {
 
-    int* ptr_p;
-    ptr_p = generator();
-
-    /*
-    for(int i=0 ; i<SEQ_LENGTH; i++)
-        cout<<ptr_p[i]<<endl;
-    */
-
-    int count_bins = pureDNF(ptr_p);
+    int count_bins = pureDNF();
 
     cout<<"BINS COVERED - DNF:"<<endl;
     cout<<count_bins<<endl;
-
+/*
     count_bins = harmonic(ptr_p);
 
     cout<<"BINS COVERED - HARMONIC:"<<endl;
@@ -283,6 +291,7 @@ int main() {
 
     cout<<"BINS COVERED - ADVICE:"<<endl;
     cout<<count_bins<<endl;
+    */
 
     return 0;
 }
