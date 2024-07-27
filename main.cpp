@@ -5,14 +5,14 @@ using namespace std;
 
 //filename where algorithms will read pre-generated elements
 // put the absolute path in
-const string FILENAME = "C:\\Users\\jakob\\CLionProjects\\BinPacking\\output.txt";
+const string FILENAME = "C:\\Users\\jakob\\CLionProjects\\BinPacking\\revSort_opt_output.txt";
 
 // size of items will be int 1 to 1000 to not get weird float rounding
 const int BIN_COVER_LOAD = 1000000;
 
 // M and X_M value that will be used as an advice and calculated in generator
 // M is 6k in a 100k element list -> 6%
-const int M = 6000;
+const int M = 105;
 int X_M = 0.8*(BIN_COVER_LOAD);
 // todo: calculate M and X_M
 
@@ -43,8 +43,9 @@ int DNF(int item, int bin) {
     if (bin < 0) {
         return 0;
     }
+    // crucial to first put the item in and then check bin coverage
+    bin += item;
     if (bin < BIN_COVER_LOAD) {
-        bin += item;
         return bin;
     } else {
         return 1;
@@ -92,7 +93,7 @@ int harmonic() {
         item = element;
 
         // big items
-        if (item > (0.5*BIN_COVER_LOAD)) {
+        if (item >= (0.5*BIN_COVER_LOAD)) {
             int rtrn = DNF(item, big_bin);
             if (rtrn == 1) {
                 full_bins++;
@@ -233,7 +234,9 @@ int advice() {
             } else {
                 bin4 = rtrn;
             }
-        } else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
+        }
+
+        else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
             int rtrn = DNF(item, bin5);
             if (rtrn == 1) {
                 full_bins++;
@@ -242,6 +245,7 @@ int advice() {
                 bin5 = rtrn;
             }
         }
+
             // small items
         else {
             if (fill_critical) {
