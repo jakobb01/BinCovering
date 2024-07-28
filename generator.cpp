@@ -80,6 +80,58 @@ void generateNumbersFromOptimum(const std::string& filename, int bins_covered, i
     cout << "Random numbers generated and written to " << filename << "\n";
 }
 
+void generateCustomRangeFromOptimum(const std::string& filename, int bins_covered, int max_val) {
+    ofstream outFile(filename);
+    if (!outFile) {
+        cerr << "Failed to open file for writing.\n";
+        return;
+    }
+
+    int random_number;
+    int i = 0;
+    int bin_load = max_val;
+    double random_bin_load_index;
+
+    while (i!=(bins_covered)) {
+
+        int random_index = getIntFromCustomRange(0, 11);
+
+        if (random_index <= 5) {
+            random_number = getIntFromCustomRange(1, (int)(0.30*(max_val-1)));
+        }
+        else if (random_index == 6) {
+            random_number = getIntFromCustomRange((int)(0.3*(max_val-1)), (int)(0.7*(max_val-1)));
+        }
+        else {
+            random_number = getIntFromCustomRange((int)(0.7*(max_val-1)), (max_val-1));
+        }
+
+
+        //cout << "random number: " << random_number << "\n";
+        bin_load = bin_load - random_number;
+        //cout << "bin load: " << bin_load << "\n";
+
+        random_bin_load_index = 0.2;//(getDoubleFromCustomRange(0.35, 0.6));
+        //cout << "i: " << i << "\n";
+
+        if (bin_load < (random_bin_load_index * max_val)) {
+            if (bin_load < 0) {
+                bin_load = bin_load + random_number;
+                outFile << bin_load << "\n";
+            } else {
+                outFile << random_number << "\n";
+                outFile << bin_load << "\n";
+            }
+            bin_load = max_val;
+            i++;
+        } else {
+            outFile << random_number << "\n";
+        }
+    }
+    outFile.close();
+    cout << "Random numbers generated and written to " << filename << "\n";
+}
+
 void generateTrendingRandomNumbers(const std::string& filename, int n, bool upward) {
     ofstream outFile(filename);
     if (!outFile) {
@@ -131,7 +183,9 @@ int main() {
 
     //generateTrendingRandomNumbers(filename_up, n, true);
 
-    generateNumbersFromOptimum("opt_output.txt", 300, max_load);
+    //generateNumbersFromOptimum("opt_output.txt", 300, max_load);
+
+    generateCustomRangeFromOptimum("optRan_output.txt", 300, max_load);
 
     return 0;
 }
