@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <cstdlib>
 
 using namespace std;
 
@@ -169,14 +170,26 @@ void generateTrendingRandomNumbers(const std::string& filename, int n, bool upwa
 }
 
 
-int main() {
+int main(int argc, char** argv) {
+    // Debug: Print the arguments received
+    std::cout << "Arguments received to generator:\n";
+    for (int i = 0; i < argc; ++i) {
+        std::cout << "arg[" << i << "]: " << (argv[i] ? argv[i] : "null") << std::endl;
+    }
+    // params input - INP
+    // 1st param: filename
+    // 2nd param: bins_opt
+    if (argc != 2) {
+        exit;
+    }
+    string filename_INP = argv[1]; // = "test123.txt";
+    int bins_covered_INP = atoi(argv[2]); // =  300;
+
     // length of array of numbers
     int n;
-    string filename;
     int max_load = 1000000;
 
     n = 100000;
-    filename = "output.txt";
     string filename_up = "output_upwards.txt";
 
     //generateRandomNumbers(filename, n, max_load);
@@ -185,7 +198,7 @@ int main() {
 
     //generateNumbersFromOptimum("opt_output.txt", 300, max_load);
 
-    generateCustomRangeFromOptimum("optRan_output.txt", 300, max_load);
+    generateCustomRangeFromOptimum(filename_INP, bins_covered_INP, max_load);
 
     return 0;
 }
