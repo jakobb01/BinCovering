@@ -16,7 +16,7 @@ unix_timestamp = calendar.timegm(time.gmtime())
 # paths for excesing scripts
 path_generator='/mnt/c/Users/jakob/CLionProjects/BinPacking/executables/generator.exe'
 path_mixer='/mnt/c/Users/jakob/CLionProjects/BinPacking/python_graphs/graphs.py'
-path_algo=''
+path_algo='/mnt/c/Users/jakob/CLionProjects/BinPacking/executables/dnf.exe'
 
 # convention for all filenames
 filename_core = 'binCovering'
@@ -34,7 +34,7 @@ optimal_bins_covered = str(int(sys.argv[1]))
 
 # mixer
 # percent_of_mix
-percent_of_mix = int(sys.argv[2])
+percent_of_mix = (sys.argv[2])
 
 
 
@@ -53,7 +53,7 @@ subprocess.run(command)
 #       filename_generated      # where to get the data (from previous command - run generator)
 #       filename_mixer          # items mixed according to percent_of_mix
 #       percent_of_mix
-command = ['python3', path_mixer, filename_generated, filename_mixer, '80']
+command = ['python3', path_mixer, filename_generated, filename_mixer, percent_of_mix]
 subprocess.run(command)
 
 # run DNF and collect return integer
@@ -61,7 +61,8 @@ subprocess.run(command)
 #       filename_mixer
 # output:
 #       return_int
-
+command = [path_algo, filename_mixer]
+subprocess.run(command)
 
 
 
