@@ -20,9 +20,9 @@ def plot_numbers(numbers, algo_result, opt_result, output_filename):
 
 
 # Main script
-filename_numbers = sys.argv[1]
-algo_result = sys.argv[2]
-opt_result = sys.argv[3]
-output_filename = sys.argv[4]
+filename_numbers = sys.argv[1]      # file name of the items that need to be ploted
+algo_result = sys.argv[2]           # result of algorithm (number of bins covered)
+opt_result = sys.argv[3]            # optimal result (number of bins that can be theoreticaly covered)
+output_filename = sys.argv[4]       # name for the file that this script will generate/output
 
 plot_numbers(read_numbers_from_file(filename_numbers), algo_result, opt_result, output_filename)

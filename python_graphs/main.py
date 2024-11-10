@@ -7,6 +7,8 @@ import subprocess;
 # this main.py file is created to:
 #           - have order in naming schemes, as a lot of data will be created
 #           - can be run on WSL terminal, so change the paths
+#           - create easy to read reports on tests done
+
 
 # NAMING SECTION
 # core names
@@ -27,7 +29,6 @@ filename_sorted = filename_core+'_numbers_sorted_'+str(unix_timestamp)+'.txt'
 filename_output = algo+'_run_on_'+str(unix_timestamp)+'.png'
 
 
-
 # INPUT SECTION get input params for this script
 
 # generator
@@ -37,8 +38,6 @@ optimal_bins_covered = str(int(sys.argv[1]))
 # mixer
 # percent_of_mix
 percent_of_mix = (sys.argv[2])
-
-
 
 
 # RUNNING SECTION
@@ -66,12 +65,11 @@ subprocess.run(command, capture_output=True, text=True)
 #       return_int
 command = [path_algo, filename_mixer]
 result = subprocess.run(command, capture_output=True, text=True)
-return_int = int(result.stdout.strip())  # Convert stdout to int after stripping whitespace
-
+return_int = int(result.stdout.strip())  # convert stdout to int
 
 
 # DOCUMENTATION SECTION
-# generate some file with input graph and performance
+# generate filename_output with sorted items graph and performance of algorithm
 # params:
 #       filename_sorted
 #       return_int
@@ -82,6 +80,5 @@ subprocess.run(command)
 
 
 # TESTING SECTION
+# tell user where he can find output of the test
 print('Results can be found here: '+filename_output)
-#print(str(optimal_bins_covered) + ' ' + str(percent_of_mix))
-#print(filename_output)
