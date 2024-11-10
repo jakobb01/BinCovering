@@ -419,24 +419,24 @@ int main(int argc, char** argv) {
 
     // TEMP REWORK FOR AUTOMATED WORKING
     // Debug: Print the arguments received
-    std::cout << "Arguments received to dnf:\n";
-    for (int i = 0; i < argc; ++i) {
-        std::cout << "arg[" << i << "]: " << (argv[i] ? argv[i] : "null") << std::endl;
-    }
+//    std::cout << "Arguments received to dnf:\n";
+//    for (int i = 0; i < argc; ++i) {
+//        std::cout << "arg[" << i << "]: " << (argv[i] ? argv[i] : "null") << std::endl;
+//    }
+
     // params input - INP
     // 1st param: filename
     if (argc != 1) {
         exit;
     }
-    string var1 = argv[1]; // = "test123.txt";
-    string var1_concentrated = "/mnt/c/Users/jakob/CLionProjects/BinPacking/python_graphs/"+var1; // WSL path
-    cout<<var1_concentrated<<endl;
+    string var1 = argv[1]; // path to txt file
+    string var1_concentrated = "/mnt/c/Users/jakob/CLionProjects/BinPacking/python_graphs/"+var1; // full WSL path
 
     int count_bins;
 
     //Dual Next Fit (DNF) only
     count_bins = pureDNF(var1_concentrated);
-    cout<<"BINS COVERED - DNF:"<<endl;
+//    cout<<"BINS COVERED - DNF:"<<endl;
     cout<<count_bins<<endl;
 
     /*

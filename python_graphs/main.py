@@ -13,7 +13,7 @@ import subprocess;
 algo = 'DNF'
 unix_timestamp = calendar.timegm(time.gmtime())
 
-# paths for excesing scripts
+# paths for accessing scripts
 path_generator='/mnt/c/Users/jakob/CLionProjects/BinPacking/executables/generator.exe'
 path_mixer='/mnt/c/Users/jakob/CLionProjects/BinPacking/python_graphs/graphs.py'
 path_algo='/mnt/c/Users/jakob/CLionProjects/BinPacking/executables/dnf.exe'
@@ -46,7 +46,7 @@ percent_of_mix = (sys.argv[2])
 #       optimal_bins_covered
 #       filename_generated
 command = [path_generator, filename_generated, optimal_bins_covered]
-subprocess.run(command)
+subprocess.run(command, capture_output=True, text=True)
 
 # run mixer with gen file and collect new file and graph
 # params:
@@ -54,7 +54,7 @@ subprocess.run(command)
 #       filename_mixer          # items mixed according to percent_of_mix
 #       percent_of_mix
 command = ['python3', path_mixer, filename_generated, filename_mixer, percent_of_mix]
-subprocess.run(command)
+subprocess.run(command, capture_output=True, text=True)
 
 # run DNF and collect return integer
 # params:
@@ -62,8 +62,8 @@ subprocess.run(command)
 # output:
 #       return_int
 command = [path_algo, filename_mixer]
-subprocess.run(command)
-
+result = subprocess.run(command, capture_output=True, text=True)
+return_int = int(result.stdout.strip())  # Convert stdout to int after stripping whitespace
 
 
 
@@ -76,4 +76,3 @@ subprocess.run(command)
 
 #print(str(optimal_bins_covered) + ' ' + str(percent_of_mix))
 #print(filename_output)
-#print(result.stdout)
