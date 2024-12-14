@@ -9,7 +9,7 @@ from openpyxl import Workbook
 wb = Workbook()
 ws = wb.active
 
-headers = ["num_OPT", "num_gen", "num_perm", "DNF_result"]
+headers = ["num_OPT", "num_of_elements", "num_of_permutations", "avg_DNF_result", "avg_percent"]
 ws.append(headers)
 
 # this main.py file is created to:
@@ -90,9 +90,15 @@ def create_png():
     command = ['python3', path_graph, filename_sorted, str(return_int), optimal_bins_covered, filename_output]
     subprocess.run(command)
 
+# Function to read munber of elements from a file
+def read_number_of_elements_from_file(filename):
+    with open(filename, 'r') as file:
+        numbers = [int(line.strip()) for line in file]
+    return len(numbers)
+
 def create_long_test():
-    opt_array = [300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200]
-    num_generator = 10
+    opt_array = [300]
+    num_generator = 1
     num_permutation = 100
 
     for opt in opt_array:
@@ -100,6 +106,8 @@ def create_long_test():
             file=str(opt)+str(generation)+'.txt'
             # run generator, change file name as we loop
             run_generator(str(opt), file)
+            sum_return_int = 0
+            num_of_elements = read_number_of_elements_from_file(file)
             for permutation in range(num_permutation):
                 file2 = str(opt) + str(generation) + str(permutation) + '.txt'
                 # run mixer for every permutation
@@ -107,8 +115,19 @@ def create_long_test():
                 # run dnf and get return int
                 return_int=run_dnf(file2)
                 # add return int to output excell file
-                row = [opt, generation, permutation, return_int]
-                ws.append(row)
+                sum_return_int += return_int
+                # calculate partial avg
+                # avg_partial_return_int = sum_return_int / (permutation+1)
+                # avg_partial_percent = avg_partial_return_int / opt
+                # with open('100k_perm'+'data_partial.txt', 'a') as f:
+                #     f.write(f"{avg_partial_percent}\n")
+                os.remove(file2)
+            avg_return_int = sum_return_int / num_permutation
+            avg_percent = avg_return_int / opt
+            row = [opt, num_of_elements, num_permutation, avg_return_int, avg_percent]
+            ws.append(row)
+            os.remove(file)
+
 
 
 
