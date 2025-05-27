@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bin Covering Interactive</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="header">
+    <strong>Bin Covering Interactive</strong> – Type <code>run</code> to run editor code,
+     or <code>help</code> for instructions.
+  </div>
+  
+  <div id="main-content">
+    <div id="sidebar">
+      <h3>Generate Bins</h3>
+      <ul id="script-list-generate-bins"></ul>
+      <h3>Strategies</h3>
+      <ul id="script-list-strategies"></ul>
+      <h3>Custom Code</h3>
+      <ul id="script-list-custom-code"></ul>
+      <h3>Data</h3>
+      <ul id="data-list"></ul>
+    </div>
+    <div id="editor-col">
+      <div id="editor">print("Hello from Ace!")</div>
+      <div id="save-bar">
+        <select id="save-script-section">
+          <option value="generate_bins">Generate Bins</option>
+          <option value="strategies">Strategies</option>
+          <option value="custom_code" selected>Custom Code</option>
+        </select>
+        <input id="save-script-name" type="text" placeholder="Script name"/>
+        <button id="save-script-btn">Save</button>
+      </div>
+    </div>
+    <div id="terminal"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

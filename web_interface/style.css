@@ -1,0 +1,130 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+body { 
+  display: flex; 
+  flex-direction: column;
+  height: 100vh; 
+  background: #181818;
+}
+#header {
+  background-color: #222;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  border-bottom: 2px solid #444;
+  width: 100%;
+  box-sizing: border-box;
+}
+#main-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+#sidebar {
+  width: 180px;
+  background: #292929;
+  color: #fff;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+  border-right: 2px solid #444;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+#sidebar h3 {
+  margin-top: 0;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+#script-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+#script-list li {
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  transition: background 0.2s;
+}
+#script-list li:hover {
+  background: #444;
+}
+#editor-col {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #222;
+}
+#editor {
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+  min-width: 0;
+  border: none;
+}
+#save-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+  background: #222;
+  border-top: 1px solid #444;
+}
+#save-script-name {
+  background: #181818;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-right: 8px;
+  font-size: 14px;
+  width: 140px;
+  outline: none;
+  transition: border 0.2s;
+}
+#save-script-name:focus {
+  border: 1.5px solid #888;
+}
+#save-script-btn {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#save-script-btn:hover {
+  background: #666;
+}
+#terminal {
+  flex: 1 1 0;
+  width: 50%;
+  background: black;
+  color: white;
+  min-width: 0;
+  min-height: 0;
+  border-left: 2px solid #444;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+#script-list-generate-bins li,
+#script-list-strategies li,
+#script-list-custom-code li {
+  cursor: pointer;
+}
