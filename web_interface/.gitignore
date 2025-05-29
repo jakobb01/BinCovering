@@ -1,0 +1,49 @@
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# VS Code settings
+.vscode/
+
+# Environment files
+.env
+.venv/
+venv/
+env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and output
+*.log
+*.out
+
+# Data and generated files
+src/data/*.txt
+output.txt
+
+# Docker artifacts
+*.container
+*.pid
+
+# Flask instance folder
+instance/
+
+# Ignore compiled C/C++/CLion artifacts (if any)
+cmake-build-*/
+*.exe
+*.obj
+*.dll
+*.so
+*.a
+
+# Ignore test results
+*.coverage
+htmlcov/
+.coverage.*
+
+# Ignore node_modules if any JS tooling is added
+node_modules/
