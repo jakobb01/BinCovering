@@ -1,92 +1,70 @@
 import sys
 import os
-
-# Add the parent folder of element_iterator.py to the system path
-sys.path.append(os.path.abspath("./src/custom_code/"))
-
-from element_iterator import ElementIterator
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+from strategy import Strategy
 
 BIN_COVER_LOAD = 1_000_000  # max bin capacity
 
+class HarmonicStrategy(Strategy):
+    def __init__(self, filename=None, path=""):
+        super().__init__(filename, path)
+        self.gen = None
+        self.full_bins = 0
+        self.bins = {
+            "big": 0,
+            "class3": 0,
+            "class4": 0,
+            "class5": 0,
+            "small": 0,
+        }
 
-def DNF(item, bin_load):
-    """Simulate Dual Next Fit bin logic."""
-    if bin_load < 0:
-        return 0
-    bin_load += item
-    if bin_load < BIN_COVER_LOAD:
-        return bin_load
-    else:
-        return 1
+    def start(self, generator):
+        self.gen = generator
+        self.full_bins = 0
+        for key in self.bins:
+            self.bins[key] = 0
+        if self.file:
+            self.file.write("Starting Harmonic Strategy\n")
+        return "Harmonic strategy started"
 
+    def next(self):
+        try:
+            item = self.gen.next()
+        except StopIteration:
+            return None
 
-def harmonic(filename_inp):
-    """Harmonic bin packing with 5 size-based categories (k=5)."""
-    iterator = ElementIterator(filename_inp)
-    full_bins = 0
+        if self.file:
+            self.file.write(f"Processing item: {item}\n")
 
-    # Initialize separate bins for size classes
-    big_bin = 0
-    bin3 = 0
-    bin4 = 0
-    bin5 = 0
-    small_bin = 0
-
-    while True:
-        element = iterator.get_next_element()
-        if element is None:
-            break
-        item = element
-
-        # Classify and handle each item based on harmonic intervals
+        # Categorize item
         if item >= 0.5 * BIN_COVER_LOAD:
-            result = DNF(item, big_bin)
-            if result == 1:
-                full_bins += 1
-                big_bin = 0
-            else:
-                big_bin = result
-
+            bin_name = "big"
         elif item >= BIN_COVER_LOAD / 3:
-            result = DNF(item, bin3)
-            if result == 1:
-                full_bins += 1
-                bin3 = 0
-            else:
-                bin3 = result
-
+            bin_name = "class3"
         elif item >= BIN_COVER_LOAD / 4:
-            result = DNF(item, bin4)
-            if result == 1:
-                full_bins += 1
-                bin4 = 0
-            else:
-                bin4 = result
-
+            bin_name = "class4"
         elif item >= BIN_COVER_LOAD / 5:
-            result = DNF(item, bin5)
-            if result == 1:
-                full_bins += 1
-                bin5 = 0
-            else:
-                bin5 = result
-
+            bin_name = "class5"
         else:
-            result = DNF(item, small_bin)
-            if result == 1:
-                full_bins += 1
-                small_bin = 0
-            else:
-                small_bin = result
+            bin_name = "small"
 
-    return full_bins
+        self.bins[bin_name] += item
 
+        # Check if current bin is full
+        if self.bins[bin_name] >= BIN_COVER_LOAD:
+            self.full_bins += 1
+            self.bins[bin_name] = 0
+            msg = f"{bin_name} bin full. Total full bins: {self.full_bins}"
+        else:
+            msg = f"Added {item} to {bin_name} bin. Current load: {self.bins[bin_name]}"
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: harmonic <filename>")
-        sys.exit(1)
+        if self.file:
+            self.file.write(msg + "\n")
 
-    filename = sys.argv[1]
-    bin_count = harmonic(filename)
-    print(bin_count)
+        return msg
+
+    def stop(self):
+        if self.file:
+            self.file.write(f"Total bins filled: {self.full_bins}\n")
+            self.file.close()
+        return f"Harmonic strategy stopped. Total bins filled: {self.full_bins}"

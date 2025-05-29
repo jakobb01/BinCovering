@@ -47,6 +47,7 @@ class BinGenerator(Generate):
         self._bins_requested = bins_requested
         self._numbers = self._generate_numbers(bins_requested)
         self._index = 0
+        return f"Generator will generate items up to total bins filled: {bins_requested}"
 
     def next(self):
         #"""Return the next number in sequence."""

@@ -47,4 +47,4 @@ class DNFStrategy(Strategy):
         if self.file:
             self.file.write(f"Total bins filled: {self.full_bins}\n")
             self.file.close()
-        return f"Strategy stopped. Total bins filled: {self.full_bins}"
+        return f"DNF strategy stopped. Total bins filled: {self.full_bins}"

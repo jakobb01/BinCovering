@@ -25,6 +25,9 @@ Thumbs.db
 src/data/*.txt
 output.txt
 
+# old_code_files
+src/oldCode
+
 # Docker artifacts
 *.container
 *.pid
