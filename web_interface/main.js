@@ -1,23 +1,35 @@
+// Default code for resetting the editor
+const defaultEditorCode = `# if you will be writting a strategy, you need to use ElementIterator to get the elements from file.
+import sys
+import os
+
+# Add the parent folder of element_iterator.py to the system path
+sys.path.append(os.path.abspath("./src/custom_code/"))
+
+from element_iterator import ElementIterator
+
+
+def function(filename, custom_input_int):
+    print("Do something fun here!")
+
+
+if __name__ == "__main__":
+    # Check for valid arguments
+    if len(sys.argv) != 3:
+        print("Usage: script_name <filename> <custom_input>")
+        sys.exit(1)
+
+    custom_input_file = sys.argv[1]
+    filename = "./src/data/" + custom_input_file
+    custom_input_int = int(sys.argv[2])
+
+    function(filename, custom_input_int)
+`;
+
 const editor = ace.edit("editor");
 editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/python");
-editor.setValue(
-  `def function(filename, custom_input_int):
-      print("Do something fun here!")
-  
-  
-  if __name__ == "__main__":
-      # Check for valid arguments
-      if len(sys.argv) != 3:
-          print("Usage: python script.py <filename> <bins_covered>")
-          sys.exit(1)
-  
-      custom_input_file = sys.argv[1]
-      filename = "./src/data/" + custom_input_file
-      custom_input_int = int(sys.argv[2])
-  
-      function(filename, custom_input_int)
-  `, -1);
+editor.setValue(defaultEditorCode, -1);
 
 const term = new Terminal();
 term.open(document.getElementById('terminal'));
@@ -44,7 +56,7 @@ function runCommand(command) {
     term.writeln("");
     term.writeln("\nCommands:");
     term.writeln("  run             → Run the code in the editor");
-    term.writeln("  <script_name> [args...] → Run a predefined script with optional arguments");
+    term.writeln("  <script_name> [args...] → Run a pre-saved script with optional arguments");
     term.writeln("  help            → Show this help message");
 
     fetch('/scripts')
@@ -113,6 +125,7 @@ function loadSidebar() {
         (data[section] || []).forEach(script => {
           const li = document.createElement('li');
           li.textContent = script;
+          li.title = script; // Add tooltip for full name
           li.style.cursor = 'pointer';
 
           li.onclick = () => {
@@ -186,3 +199,48 @@ document.getElementById('save-script-btn').onclick = function() {
     loadSidebar();
   });
 }
+
+// Reset editor to default code when header is clicked
+const header = document.getElementById('header');
+header.style.cursor = 'pointer';
+header.onclick = function() {
+  editor.setValue(defaultEditorCode, -1);
+  editor.setReadOnly(false);
+};
+
+// --- Theme toggle logic ---
+const themeToggle = document.getElementById('theme-toggle');
+let isLight = false;
+
+function setTheme(light) {
+  isLight = light;
+  document.body.classList.toggle('light', isLight);
+  // Ace editor theme
+  editor.setTheme(isLight ? "ace/theme/github" : "ace/theme/monokai");
+  // Terminal colors (xterm.js >=5.0.0)
+  if (isLight) {
+    term.options.theme = {
+      background: '#f4f4f4',
+      foreground: '#222'
+    };
+  } else {
+    term.options.theme = {
+      background: '#000',
+      foreground: '#fff'
+    };
+  }
+  // Button icon/text
+  themeToggle.textContent = isLight ? "☀️ Light" : "🌙 Dark";
+}
+
+// Only one onload handler
+window.onload = function() {
+  loadSidebar();
+  if (localStorage.getItem('theme') === 'light') setTheme(true);
+};
+
+// Only one onclick handler
+themeToggle.onclick = function() {
+  setTheme(!isLight);
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};

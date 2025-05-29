@@ -110,4 +110,4 @@ def get_data_file(filename):
         return f.read()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

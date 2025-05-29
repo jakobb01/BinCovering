@@ -44,10 +44,12 @@ def generate_custom_range_from_optimum(filename, bins_covered, max_val):
 if __name__ == "__main__":
     # Check for valid arguments
     if len(sys.argv) != 3:
-        print("Usage: python script.py <filename> <bins_covered>")
+        print("Usage: generate_random <filename> <bins_covered>")
         sys.exit(1)
 
     filename_INP = sys.argv[1]
+    # add /src/data/ so the generated items are stored in the correct folder and 
+    # displayed under data/
     filename = "./src/data/" + filename_INP
     bins_covered_INP = int(sys.argv[2])
     max_load = 1_000_000

@@ -11,18 +11,27 @@
   <div id="header">
     <strong>Bin Covering Interactive</strong> – Type <code>run</code> to run editor code,
      or <code>help</code> for instructions.
+    <button id="theme-toggle" style="float:right; margin-right:16px; padding:6px 14px; border-radius:6px; border:none; background:#444; color:#fff; cursor:pointer;">🌙 Dark</button>
   </div>
   
   <div id="main-content">
     <div id="sidebar">
-      <h3>Generate Bins</h3>
-      <ul id="script-list-generate-bins"></ul>
-      <h3>Strategies</h3>
-      <ul id="script-list-strategies"></ul>
-      <h3>Custom Code</h3>
-      <ul id="script-list-custom-code"></ul>
-      <h3>Data</h3>
-      <ul id="data-list"></ul>
+      <div class="sidebar-section">
+        <h3>📦 Generate Bins</h3>
+        <ul id="script-list-generate-bins"></ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>🧠 Strategies</h3>
+        <ul id="script-list-strategies"></ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>🔧 Custom Code</h3>
+        <ul id="script-list-custom-code"></ul>
+      </div>
+      <div class="sidebar-section">
+        <h3>💾 Data</h3>
+        <ul id="data-list"></ul>
+      </div>
     </div>
     <div id="editor-col">
       <div id="editor">print("Hello from Ace!")</div>

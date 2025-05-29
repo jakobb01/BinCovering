@@ -48,7 +48,7 @@ def pure_dnf(filename_inp):
 if __name__ == "__main__":
     # Check arguments
     if len(sys.argv) != 2:
-        print("Usage: python pure_dnf.py <filename>")
+        print("Usage: pure_dnf <filename>")
         sys.exit(1)
 
     filename = sys.argv[1]
