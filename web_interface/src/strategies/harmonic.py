@@ -6,7 +6,7 @@ from strategy import Strategy
 BIN_COVER_LOAD = 1_000_000  # max bin capacity
 
 class HarmonicStrategy(Strategy):
-    def __init__(self, filename=None, path=""):
+    def __init__(self, filename=None, path="./src/data/"):
         super().__init__(filename, path)
         self.gen = None
         self.full_bins = 0

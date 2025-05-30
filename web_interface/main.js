@@ -25,9 +25,33 @@ editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/python");
 editor.setValue(defaultEditorCode, -1);
 
-const term = new Terminal();
+const term = new Terminal({
+  convertEol: true, // Convert \n to \r\n, helps with line endings
+  cursorBlink: true,
+});
+const fitAddon = new FitAddon.FitAddon(); // Create FitAddon instance
+const clipboardAddon = new ClipboardAddon.ClipboardAddon();
+term.loadAddon(fitAddon); // Load the addon
+term.loadAddon(clipboardAddon); // Load the clipboard addon
+
 term.open(document.getElementById('terminal'));
-term.writeln("Welcome to Python Runner!");
+try {
+  fitAddon.fit(); // Perform an initial fit
+} catch (e) {
+  console.error("Error fitting terminal on load:", e);
+}
+
+term.writeln("Type <help> for instructions");
+term.write('$ '); // Initial prompt
+
+// Resize terminal when window resizes
+window.addEventListener('resize', () => {
+  try {
+    fitAddon.fit();
+  } catch (e) {
+    console.error("Error fitting terminal on resize:", e);
+  }
+});
 
 let currentLine = "";
 
