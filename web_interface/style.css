@@ -29,6 +29,39 @@ body {
   min-width: 0;
   overflow: hidden;
 }
+
+/* Make editor and right column each take 50% */
+#editor-col {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #222;
+}
+
+#right-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 50%;
+  min-width: 0;
+  max-width: none;
+  width: auto;
+  background: #232323;
+  border-left: 2px solid #444;
+  min-height: 0;
+}
+
+#terminal {
+  flex: 1 1 50%;
+  min-height: 0;
+  min-width: 0;
+  background: black;
+  color: white;
+  border-left: none;
+  border-bottom: 2px solid #444;
+  box-sizing: border-box;
+  overflow: hidden;
+}
 #sidebar {
   width: 240px; /* wider */
   background: #292929;
@@ -43,7 +76,21 @@ body {
   overflow-y: auto;
   max-height: 100vh;
 }
-#sidebar h3 {
+.sidebar-section {
+  background: #232323;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px 0 rgba(255, 216, 107, 0.08);
+  padding: 16px 12px 12px 12px;
+  margin-bottom: 18px;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.sidebar-section:hover {
+  box-shadow: 0 4px 24px 0 rgba(255, 216, 107, 0.18);
+  background: #282828;
+}
+
+.sidebar-section h3 {
   margin-top: 0;
   margin-bottom: 8px;
   font-size: 16px;
@@ -51,31 +98,40 @@ body {
   color: #ffd86b;
   letter-spacing: 0.5px;
 }
-#script-list {
-  list-style: none;
-  padding: 0;
+
+.sidebar-section ul {
+  padding-left: 0;
   margin: 0;
-  flex: 1 1 auto;
-  overflow-y: auto;
+  text-align: left;
 }
+
+.sidebar-section li,
 #script-list li {
-  cursor: pointer;
+  background: none;
+  color: #fff;
+  border-radius: 8px;
   padding: 6px 8px;
-  border-radius: 4px;
   margin-bottom: 4px;
-  transition: background 0.2s;
-}
-#script-list li:hover {
-  background: #444;
-  color: #ffd86b;
-}
-#editor-col {
-  flex: 1 1 0;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: #222;
+  align-items: center;
+  justify-content: left;
 }
+
+.sidebar-section li:hover,
+#script-list li:hover {
+  background: #333;
+  color: #ffd86b;
+  box-shadow: 0 0 8px 0 #ffd86b44;
+}
+
 #editor {
   flex: 1 1 0;
   width: 100%;
@@ -119,79 +175,83 @@ body {
 #save-script-btn:hover {
   background: #666;
 }
-#terminal {
-  flex: 1 1 0;
-  width: 50%;
-  background: black;
-  color: white;
-  min-width: 0;
+
+#script-visual {
+  flex: 1 1 50%;
   min-height: 0;
-  border-left: 2px solid #444;
+  min-width: 0;
+  width: 100%;
+  
+  /* --- Corrected Dots Background --- */
+  background-color: #232323; /* Base background color for dark theme */
+  background-image: radial-gradient(#7d7d7d 0.5px, transparent 0.5px); /* 1px diameter dot, color #555 */
+  background-size: 20px 20px; /* Spacing of the dot grid (20px by 20px) */
+  /* --- End Corrected Dots Background --- */
+  
+  border-top: 2px solid #444;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
   box-sizing: border-box;
-  overflow: hidden;
-}
-#script-list-generate-bins li,
-#script-list-strategies li,
-#script-list-custom-code li {
-  cursor: pointer;
-}
-#save-script-section {
-  background: #181818;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 4px;
-  padding: 6px 10px;
-  margin-right: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.2s;
+  padding: 24px 0;
+  z-index: 1;
 }
 
-#save-script-section:focus {
-  border: 1.5px solid #888;
+/* Dots background for light theme */
+body.light #script-visual {
+  background: #fff; /* Reset background properties and set base color */
+  background-image: radial-gradient(#444 0.5px, transparent 0.5px); /* Slightly darker dot for better contrast on white */
+  background-size: 20px 20px; /* Consistent spacing */
+  border-top: 2px solid #e0e0e0; /* Keep other properties like border */
+  /* Ensure other inherited properties from #script-visual like padding, display, etc., are still applied */
 }
-
-/* Section group box */
-.sidebar-section {
-  background: #232323;
-  border-radius: 14px;
-  padding: 12px 10px 10px 10px;
-  margin-bottom: 0;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
-}
-
-.sidebar-section h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
+.script-node {
+  background: #ffd86b;
+  color: #222;
+  border-radius: 12px;
+  padding: 14px 22px;
+  margin: 0 18px;
+  box-shadow: 0 2px 10px 0 rgba(0,0,0,0.10);
+  font-family: 'Segoe UI', Arial, sans-serif;
   font-size: 16px;
   font-weight: bold;
-  color: #ffd86b;
-  letter-spacing: 0.5px;
-}
-
-.sidebar-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-section li {
-  cursor: pointer;
-  padding: 7px 10px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-  transition: background 0.18s, color 0.18s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   position: relative;
+  min-width: 120px;
+  text-align: center;
+  transition: transform 0.18s;
 }
-
-.sidebar-section li:hover {
-  background: #444;
-  color: #ffd86b;
+.script-node.main {
+  background: #6be6ff;
+  color: #222;
+  border: 2.5px solid #00bcd4;
 }
-
+.script-node.import {
+  background: #ffd86b;
+  color: #222;
+  border: 2px solid #e6b800;
+}
+.script-node.method {
+  background: #fff;
+  color: #222;
+  border: 1.5px solid #bbb;
+  font-size: 13px;
+  font-weight: normal;
+  margin: 7px 0 0 0;
+  padding: 7px 14px;
+}
+.script-link {
+  position: absolute;
+  height: 2px;
+  background: #ffd86b;
+  z-index: 2;
+}
+#script-visual .script-node:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 18px 0 rgba(0,0,0,0.18);
+}
 /* Tooltip for full script name */
 .sidebar-section li[title] {
   position: relative;
@@ -249,6 +309,60 @@ body.light #sidebar {
   scrollbar-color: #ccc #f1f1f1;
 }
 
+/* --- Custom scrollbar for script-visual --- */
+#script-visual::-webkit-scrollbar {
+  width: 10px;
+  background: #232323;
+}
+#script-visual::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 8px;
+  border: 2px solid #232323;
+}
+#script-visual::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+/* Firefox scrollbar styling */
+#script-visual {
+  scrollbar-width: thin;
+  scrollbar-color: #444 #232323;
+}
+/* Light theme: script-visual scrollbar */
+body.light #script-visual::-webkit-scrollbar {
+  background: #f1f1f1;
+}
+body.light #script-visual::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border: 2px solid #f1f1f1;
+}
+body.light #script-visual {
+  scrollbar-color: #ccc #f1f1f1;
+}
+
+/* --- Style dropdown for save-script-section --- */
+#save-script-section {
+  background: #181818;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-right: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+#save-script-section:focus {
+  border: 1.5px solid #888;
+}
+body.light #save-script-section {
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
+body.light #save-script-section:focus {
+  border: 1.5px solid #888;
+}
+
 /* Light theme styles */
 body.light {
   background: #f6f6f6;
@@ -267,6 +381,10 @@ body.light .sidebar-section {
   background: #fff;
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.03);
 }
+body.light .sidebar-section:hover {
+  background: #f9f9f9;
+  box-shadow: 0 4px 24px 0 rgba(255, 216, 107, 0.10);
+}
 body.light .sidebar-section h3 {
   color: #e6b800;
 }
@@ -279,6 +397,7 @@ body.light .sidebar-section li:hover,
 body.light #script-list li:hover {
   background: #e0e0e0;
   color: #e6b800;
+  box-shadow: 0 0 8px 0 #ffd86b33;
 }
 body.light #editor-col {
   background: #fff;
