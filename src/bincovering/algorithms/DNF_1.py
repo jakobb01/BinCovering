@@ -1,8 +1,7 @@
-import sys
-import os
 from bincovering.algorithms.base import Strategy
 
 BIN_COVER_LOAD = 1.0  # max bin capacity
+
 
 class DNFStrategy(Strategy):
     def __init__(self, filename=None, path="./data/"):
@@ -24,7 +23,7 @@ class DNFStrategy(Strategy):
         return "Strategy started"
 
     def next(self):
-        #"""Process the next item using DNF bin-packing logic."""
+        # """Process the next item using DNF bin-packing logic."""
         try:
             item = self.gen.next()
         except StopIteration:
@@ -42,9 +41,8 @@ class DNFStrategy(Strategy):
             return f"Bin full after adding {item}. Bins filled: {self.full_bins}"
 
     def stop(self):
-        #"""Close log and report result."""
+        # """Close log and report result."""
         if self.file:
             self.file.write(f"Total bins filled: {self.full_bins}\n")
             self.file.close()
         return f"DNF strategy stopped. Total bins filled: {self.full_bins}"
-

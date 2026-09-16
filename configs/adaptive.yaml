@@ -1,0 +1,14 @@
+defaults:
+  - config
+  - _self_
+name: adaptive-comparison
+generator:
+  id: complementary_pairs
+ordering: descending
+algorithms:
+  - id: dual_next_fit
+  - id: adaptive_items
+  - id: adaptive_covered
+    params:
+      multiplier: 2.0
+      initial_bins: 1

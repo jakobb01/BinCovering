@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bin covering experiments</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head>
+<body><main><header><p>RESEARCH WORKSPACE</p><h1>Bin covering experiments</h1>
+<p>Configure a study, follow its progress, and compare saved results.</p></header>
+<section><h2>New experiment</h2><form id="experiment">
+<div class="grid">
+<label>Name<input name="name" value="baseline" required></label>
+<label>Items<input name="n" type="number" min="0" value="1000" required></label>
+<label>Trials<input name="trials" type="number" min="1" value="3" required></label>
+<label>Seed<input name="seed" type="number" min="0" value="42" required></label>
+<label>Workers<input name="workers" type="number" min="1" value="1" required></label>
+<label>Input distribution<select name="generator"><option value="uniform">Uniform (0.0001–1)</option><option value="complementary_pairs">Complementary pairs (known optimum)</option><option value="big_items">Big items (0.51–0.99)</option></select></label>
+<label>Item order<select name="ordering"><option>shuffle</option><option>descending</option><option>ascending</option><option>original</option></select></label></div>
+<fieldset><legend>Algorithms</legend>{% for id in algorithms %}<label class="check"><input type="checkbox" name="algorithm" value="{{ id }}" {% if id in ['dual_next_fit','dual_harmonic'] %}checked{% endif %}>{{ id.replace('_', ' ') }}</label>{% endfor %}</fieldset>
+<details><summary>Algorithm settings</summary><div class="grid"><label>Harmonic classes (k)<input name="k" type="number" min="2" max="1000" value="5"></label><label>ThrowBin bin ratio<input name="bin_ratio" type="number" min="0.001" max="1" step="any" value="0.5"></label><label>Adaptive covered multiplier<input name="multiplier" type="number" min="0.01" step="any" value="2"></label><label>Initial adaptive covered bins<input name="initial_bins" type="number" min="1" value="1"></label></div></details>
+<button type="submit">Run experiment</button><span id="message" role="status"></span></form></section>
+<section><div class="heading"><h2>Saved experiments</h2><button id="compare">Compare selected</button></div><div class="scroll"><table><thead><tr><th>Select</th><th>Name / execution</th><th>Status</th><th>Trials</th><th>Actions</th></tr></thead><tbody id="runs"></tbody></table></div></section>
+<section id="results" hidden><h2>Results</h2><p id="comparison-note"></p><div id="summary"></div><details><summary>Settings and provenance</summary><pre id="details"></pre></details><img id="figure" alt="Covered bins comparison" hidden></section>
+</main><script src="{{ url_for('static', filename='app.js') }}"></script></body></html>

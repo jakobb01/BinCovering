@@ -1,0 +1,37 @@
+defaults:
+  - _self_
+
+name: baseline
+seed: 42
+trials: 3
+workers: 1
+n: 1000
+domain: float64
+threshold: 1.0
+generator:
+  id: uniform
+  min: 0.0001
+  max: 1.0
+  path: null
+ordering: shuffle
+dataset_mode: fresh
+swaps: 0
+algorithms:
+  - id: dual_next_fit
+  - id: dual_harmonic
+    params:
+      k: 5
+save_inputs: false
+trace_limit: 0
+plot: false
+output_root: outputs
+native_executable: build/bincovering-native
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${output_root}/${now:%Y%m%d-%H%M%S-%f}
+  sweep:
+    dir: ${output_root}/sweep-${now:%Y%m%d-%H%M%S-%f}
+    subdir: ${hydra.job.num}

@@ -10,12 +10,10 @@ import os
 import csv
 import math
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-from UniformGenerator import UniformGenerator
-from FilePermutationGenerator import FilePermutationGenerator
+from bincovering.generators.UniformGenerator import UniformGenerator
+from bincovering.generators.FilePermutationGenerator import FilePermutationGenerator
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
-from DNF_1 import DNFStrategy
+from bincovering.algorithms.DNF_1 import DNFStrategy
 
 # Try to import matplotlib for plotting
 try:

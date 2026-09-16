@@ -40,14 +40,12 @@ import random
 import math
 import argparse
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-from UniformGenerator import UniformGenerator
-from OneOverN import OneOverNGenerator
-from OptimalUniformGenerator import OptimalUniformGenerator
-from BigItemsGenerator import BigItemsGenerator
+from bincovering.generators.UniformGenerator import UniformGenerator
+from bincovering.generators.OneOverN import OneOverNGenerator
+from bincovering.generators.OptimalUniformGenerator import OptimalUniformGenerator
+from bincovering.generators.BigItemsGenerator import BigItemsGenerator
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
-from AdaptiveBin import AdaptiveBinStrategy
+from bincovering.algorithms.AdaptiveBin import AdaptiveBinStrategy
 
 # Try to import matplotlib for plotting
 try:

@@ -2,12 +2,10 @@
 import sys
 import datetime
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-from OneOverN import OneOverNGenerator
-from FileShuffleGenerator import FileShuffleGenerator
+from bincovering.generators.OneOverN import OneOverNGenerator
+from bincovering.generators.FileShuffleGenerator import FileShuffleGenerator
 # import DualNextFit.py
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
-from DNF_1 import DNFStrategy
+from bincovering.algorithms.DNF_1 import DNFStrategy
 
 def run_dnf_randomization_test():
     # Loop through item counts: 10k, 20k, ... 100k

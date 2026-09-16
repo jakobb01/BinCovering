@@ -1,6 +1,6 @@
-import random
 import os
-import sys
+import random
+
 from bincovering.generators.base import Generate
 
 
@@ -9,6 +9,7 @@ class FilePermutationGenerator(Generate):
     Generator that loads items from a file and applies a random permutation.
     Unlike swaps (which swap pairs), this fully shuffles the sequence randomly.
     """
+
     def __init__(self, filename, path="./data/", seed=None):
         """
         filename: name of the input file
@@ -29,9 +30,7 @@ class FilePermutationGenerator(Generate):
         """Read all numeric values from the input file into memory."""
         with open(self._file_path, "r") as f:
             # Parse floats from lines, ignoring blanks
-            self._numbers = [
-                float(line.strip()) for line in f if line.strip()
-            ]
+            self._numbers = [float(line.strip()) for line in f if line.strip()]
 
     def _apply_permutation(self):
         """Apply a random permutation to the list (full shuffle)."""
@@ -69,7 +68,7 @@ if __name__ == "__main__":
     gen = FilePermutationGenerator(filename, path="./data/", seed=42)
     print(gen.start())
 
-    for i in range(10):
+    for _i in range(10):
         print(gen.next())
 
     print(gen.stop())

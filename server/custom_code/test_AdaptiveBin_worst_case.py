@@ -5,14 +5,12 @@ Tests worst-case scenarios and compares against known OPT.
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
 
-from UniformGenerator import UniformGenerator
-from OneOverN import OneOverNGenerator
-from OptimalUniformGenerator import OptimalUniformGenerator
-from BigItemsGenerator import BigItemsGenerator
-from AdaptiveBin import AdaptiveBinStrategy
+from bincovering.generators.UniformGenerator import UniformGenerator
+from bincovering.generators.OneOverN import OneOverNGenerator
+from bincovering.generators.OptimalUniformGenerator import OptimalUniformGenerator
+from bincovering.generators.BigItemsGenerator import BigItemsGenerator
+from bincovering.algorithms.AdaptiveBin import AdaptiveBinStrategy
 
 
 class InMemoryGenerator:

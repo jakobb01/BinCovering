@@ -26,3 +26,7 @@ __pycache__/
 .ruff_cache/
 .coverage
 htmlcov/
+# Local agent context and internal planning notes.
+AGENTS.md
+PROJECT_MEMORY.md
+/docs/REORGANIZATION.md

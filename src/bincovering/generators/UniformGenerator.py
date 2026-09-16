@@ -1,7 +1,7 @@
-import random
 import datetime
-import sys
 import os
+import random
+
 from bincovering.generators.base import Generate
 
 
@@ -11,6 +11,7 @@ class UniformGenerator(Generate):
     No bin-filling constraints - purely random uniform items.
     OPT is NOT known in advance.
     """
+
     def __init__(self, max_size=1.0, path="./data/", min_size=0.0001):
         """
         max_size: maximum item size (default 1.0)
@@ -43,14 +44,14 @@ class UniformGenerator(Generate):
     def _generate_uniform_items(self, num_items):
         """
         Generate num_items items with true uniform distribution.
-        
+
         Returns: list of generated items
         """
         items = []
         for _ in range(num_items):
             random_item = random.uniform(self._min_size, self._max_size)
             items.append(random_item)
-        
+
         return items
 
     def get_items(self):
@@ -60,19 +61,19 @@ class UniformGenerator(Generate):
     def start(self, num_items):
         """
         Initialize the generator to produce num_items uniformly distributed items.
-        
+
         Args:
             num_items: number of items to generate
         """
         self._open_log_file()
         self._num_items = num_items
         self._numbers = self._generate_uniform_items(num_items)
-        
+
         # Sort in descending order for the strategy
         self._numbers.sort(reverse=True)
-        
+
         self._index = 0
-        
+
         # Write items to log file
         if self._file:
             for val in self._numbers:
@@ -104,7 +105,7 @@ if __name__ == "__main__":
     print(f"Total items: {len(gen.get_items())}")
 
     # Show first 10 items
-    for i in range(min(10, len(gen.get_items()))):
+    for _i in range(min(10, len(gen.get_items()))):
         print(gen.next())
 
     print(gen.stop())

@@ -1,7 +1,7 @@
-import random
 import datetime
-import sys
 import os
+import random
+
 from bincovering.generators.base import Generate
 
 
@@ -21,13 +21,13 @@ class OneOverNGenerator(Generate):
         self._filename = f"OneOverN_{timestamp}.txt"
         os.makedirs(self._path, exist_ok=True)
         self._file = open(os.path.join(self._path, self._filename), "w")
-        #self._file.write("Starting OneOverN Generator\n")
-        #self._file.write(f"Max load: {self._max_load}\n\n")
+        # self._file.write("Starting OneOverN Generator\n")
+        # self._file.write(f"Max load: {self._max_load}\n\n")
 
     def _close_log_file(self):
         """Safely close the log file."""
         if self._file:
-            #self._file.write("\nGenerator finished.\n")
+            # self._file.write("\nGenerator finished.\n")
             self._file.close()
             self._file = None
 
@@ -65,7 +65,7 @@ class OneOverNGenerator(Generate):
         self._index = 0
 
         msg = f"Generator will generate {m} total items (half small, half big)."
-        #if self._file:
+        # if self._file:
         #    self._file.write(f"\n{msg}\n\n")
         return msg
 
@@ -97,4 +97,3 @@ if __name__ == "__main__":
         pass
 
     print(gen.stop())
-

@@ -4,13 +4,11 @@ import os
 import random
 
 # Add paths
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
 
-from BigItemsGenerator import BigItemsGenerator
-from UniformGenerator import UniformGenerator
-from OneOverN import OneOverNGenerator
-from AdaptiveBinCovered import AdaptiveBinCoveredStrategy
+from bincovering.generators.BigItemsGenerator import BigItemsGenerator
+from bincovering.generators.UniformGenerator import UniformGenerator
+from bincovering.generators.OneOverN import OneOverNGenerator
+from bincovering.algorithms.AdaptiveBinCovered import AdaptiveBinCoveredStrategy
 
 class InMemorySequenceGenerator:
     def __init__(self, items):

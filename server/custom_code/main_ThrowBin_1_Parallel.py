@@ -27,11 +27,9 @@ import random
 from multiprocessing import Pool, cpu_count
 from functools import partial
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-from UniformGenerator import UniformGenerator
+from bincovering.generators.UniformGenerator import UniformGenerator
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
-from ThrowBin_1 import ThrowBin_1_Strategy
+from bincovering.algorithms.ThrowBin_1 import ThrowBin_1_Strategy
 
 # Try to import matplotlib
 try:

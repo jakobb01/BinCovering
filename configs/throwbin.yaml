@@ -1,0 +1,15 @@
+defaults:
+  - config
+  - _self_
+name: throwbin-comparison
+dataset_mode: fixed
+ordering: descending
+algorithms:
+  - id: dual_next_fit
+  - id: throwbin_retire
+    params:
+      bin_ratio: 0.5
+  - id: throwbin_replace
+    params:
+      bin_ratio: 0.5
+  - id: throwbin_fixed_active

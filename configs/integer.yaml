@@ -1,0 +1,21 @@
+defaults:
+  - config
+  - _self_
+name: integer-native-comparison
+domain: integer
+threshold: 1000000
+generator:
+  id: uniform
+  min: 1
+  max: 1000000
+algorithms:
+  - id: dual_next_fit
+  - id: dual_next_fit
+    backend: cpp
+  - id: dual_harmonic
+    params:
+      k: 5
+  - id: dual_harmonic
+    backend: cpp
+    params:
+      k: 5

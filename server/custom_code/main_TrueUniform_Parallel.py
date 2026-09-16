@@ -34,8 +34,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import argparse
 
 # Add path for imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
 
 from main_TrueUniform_DNF import run_true_uniform_dnf_experiment
 from main_TrueUniform_Permutation_DNF import run_true_uniform_permutation_experiment

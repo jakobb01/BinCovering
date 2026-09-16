@@ -1,10 +1,8 @@
 """Debug script to trace what happens with OneOverN sequence."""
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../strategies/')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../generate_bins/')))
-from AdaptiveBin import AdaptiveBinStrategy
-from OneOverN import OneOverNGenerator
+from bincovering.algorithms.AdaptiveBin import AdaptiveBinStrategy
+from bincovering.generators.OneOverN import OneOverNGenerator
 
 
 def trace_strategy(n_items, max_trace=30):
