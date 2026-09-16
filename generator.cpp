@@ -179,11 +179,13 @@ int main(int argc, char** argv) {
     // params input - INP
     // 1st param: filename
     // 2nd param: bins_opt
-    if (argc != 2) {
-        exit;
+    if (argc != 3) {
+        cerr << "Usage: generator <output-file> <positive-bin-count>\n";
+        return 2;
     }
     string filename_INP = argv[1]; // = "test123.txt";
-    int bins_covered_INP = atoi(argv[2]); // =  300;
+    int bins_covered_INP = atoi(argv[2]);
+    if (bins_covered_INP <= 0) { cerr << "Bin count must be positive\n"; return 2; } // =  300;
 
     // length of array of numbers
     int n;

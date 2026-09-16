@@ -69,7 +69,7 @@ class ThrowBinDNFStrategy(Strategy):
             self.file.write(f"Processing item: {item}\n")
         
         # Randomly select one of the 10 active bins
-        selected_idx = random.randint(0, NUM_ACTIVE_BINS - 1)
+        selected_idx = self.rng.randint(0, NUM_ACTIVE_BINS - 1)
         
         # Add item to the selected bin
         self.bins[selected_idx] += item

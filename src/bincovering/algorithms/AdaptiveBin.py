@@ -28,7 +28,7 @@ E = math.e  # Euler's number ≈ 2.71828
 class AdaptiveBinStrategy(Strategy):
     """
     AdaptiveBin Strategy:
-    - Opens bins dynamically based on formula: ceil((num_items_received/2) * (2/e)) = ceil(N/e)
+    - Opens bins dynamically based on formula: ceil(num_items_received/2) = ceil(N/2)
     - Randomly selects among open (active) bins when multiple are available
     - Uses DNF logic to place items
     - Counts bins that reach or exceed BIN_COVER_LOAD as "covered"
@@ -96,7 +96,7 @@ class AdaptiveBinStrategy(Strategy):
         
         if self.file:
             self.file.write("Starting AdaptiveBin Strategy\n")
-            self.file.write(f"Formula: ceil(items_received/e), where 1/e ≈ {1.0/E:.6f}\n")
+            self.file.write(f"Formula: ceil(items_received/2)\n")
         
         return "Strategy started"
     
@@ -128,7 +128,7 @@ class AdaptiveBinStrategy(Strategy):
                 self.file.write(f"Emergency bin opened: {new_bin_idx}. Total bins: {len(self.bins)}\n")
         
         # Randomly select among open (active) bins
-        selected_idx = random.choice(self.active_bin_indices)
+        selected_idx = self.rng.choice(self.active_bin_indices)
         
         # Add item to the selected bin
         self.bins[selected_idx] += item

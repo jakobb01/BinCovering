@@ -38,7 +38,7 @@ private:
     ifstream inFile;
 };
 
-// DNF - Dual Next Fit -> 0 = error; 1 = 1 bin full; x = bin load
+// DNF - Dual Next Fit -> 0 = error; -1 = 1 bin full; x = bin load
 int DNF(int item, int bin) {
     if (bin < 0) {
         return 0;
@@ -48,7 +48,7 @@ int DNF(int item, int bin) {
     if (bin < BIN_COVER_LOAD) {
         return bin;
     } else {
-        return 1;
+        return -1;
     }
 }
 
@@ -67,7 +67,7 @@ int pureDNF(string filename_inp) {
         val = DNF(element, bin);
         if (val == 0) {
             return 0;
-        } else if (val == 1) {
+        } else if (val == -1) {
             full_bins++;
             bin = 0;
         } else {
@@ -95,7 +95,7 @@ int harmonic() {
         // big items
         if (item >= (0.5*BIN_COVER_LOAD)) {
             int rtrn = DNF(item, big_bin);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 big_bin = 0;
             } else {
@@ -103,17 +103,17 @@ int harmonic() {
             }
         }
         // harmonic bins
-        else if ((0.5*BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3)) {
+        else if ((0.5*BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3.0)) {
             int rtrn = DNF(item, bin3);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin3 = 0;
             } else {
                 bin3 = rtrn;
             }
-        } else if ((BIN_COVER_LOAD / 3) > item && item >= (BIN_COVER_LOAD / 4)) {
+        } else if ((BIN_COVER_LOAD / 3.0) > item && item >= (BIN_COVER_LOAD / 4)) {
             int rtrn = DNF(item, bin4);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin4 = 0;
             } else {
@@ -121,7 +121,7 @@ int harmonic() {
             }
         } else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
             int rtrn = DNF(item, bin5);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin5 = 0;
             } else {
@@ -131,7 +131,7 @@ int harmonic() {
         // small bins
         else {
             int rtrn = DNF(item, small_bin);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 small_bin = 0;
             } else {
@@ -211,24 +211,24 @@ int advice() {
             // harmonic items
         else if (item >= (0.5 * BIN_COVER_LOAD)) {
             int rtrn = DNF(item, bin2);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin2 = 0;
             } else {
                 bin2 = rtrn;
             }
         }
-        else if ((0.5 * BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3)) {
+        else if ((0.5 * BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3.0)) {
             int rtrn = DNF(item, bin3);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin3 = 0;
             } else {
                 bin3 = rtrn;
             }
-        } else if ((BIN_COVER_LOAD / 3) > item && item >= (BIN_COVER_LOAD / 4)) {
+        } else if ((BIN_COVER_LOAD / 3.0) > item && item >= (BIN_COVER_LOAD / 4)) {
             int rtrn = DNF(item, bin4);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin4 = 0;
             } else {
@@ -238,7 +238,7 @@ int advice() {
 
         else if ((BIN_COVER_LOAD / 4) > item && item >= (BIN_COVER_LOAD / 5)) {
             int rtrn = DNF(item, bin5);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin5 = 0;
             } else {
@@ -265,7 +265,7 @@ int advice() {
                 }
             } else {
                 int rtrn = DNF(item, small_bin);
-                if (rtrn == 1) {
+                if (rtrn == -1) {
                     full_bins++;
                     small_bin = 0;
                 } else {
@@ -351,25 +351,25 @@ int advice_k() {
             // harmonic items
         else if (item >= (0.5 * BIN_COVER_LOAD)) {
             int rtrn = DNF(item, bin2);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin2 = 0;
             } else {
                 bin2 = rtrn;
             }
         }
-        else if ((0.5 * BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3)) {
+        else if ((0.5 * BIN_COVER_LOAD) > item && item >= (BIN_COVER_LOAD / 3.0)) {
             int rtrn = DNF(item, bin3);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin3 = 0;
             } else {
                 bin3 = rtrn;
             }
 
-        } else if ((BIN_COVER_LOAD / 3) > item && item >= (BIN_COVER_LOAD / 4)) {
+        } else if ((BIN_COVER_LOAD / 3.0) > item && item >= (BIN_COVER_LOAD / 4)) {
             int rtrn = DNF(item, bin4);
-            if (rtrn == 1) {
+            if (rtrn == -1) {
                 full_bins++;
                 bin4 = 0;
             } else {
@@ -396,7 +396,7 @@ int advice_k() {
                 }
             } else {
                 int rtrn = DNF(item, small_bin);
-                if (rtrn == 1) {
+                if (rtrn == -1) {
                     full_bins++;
                     small_bin = 0;
                 } else {
@@ -426,11 +426,12 @@ int main(int argc, char** argv) {
 
     // params input - INP
     // 1st param: filename
-    if (argc != 1) {
-        exit;
+    if (argc != 2) {
+        cerr << "Usage: dnf <input-file>\n";
+        return 2;
     }
     string var1 = argv[1]; // path to txt file
-    string var1_concentrated = "/mnt/c/Users/jakob/CLionProjects/BinPacking/python_graphs/"+var1; // full WSL path
+    string var1_concentrated = var1; // caller-provided input path
 
     int count_bins;
 

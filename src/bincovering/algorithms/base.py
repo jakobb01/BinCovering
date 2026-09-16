@@ -1,8 +1,11 @@
 # strategy.py
 import os
+import random
 
 class Strategy:
     def __init__(self, filename=None, path="./data/"):
+        # Preserve legacy random.seed behavior; the experiment adapter injects a private RNG.
+        self.rng = random
         self.file = None
         self.log_path = path  # Store path for later use
         if filename:

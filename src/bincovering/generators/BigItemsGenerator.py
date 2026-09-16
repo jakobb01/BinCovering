@@ -65,7 +65,7 @@ class BigItemsGenerator(Generate):
     def get_optimal_bins(self):
         """
         Return the optimal number of bins that can be covered.
-        OPT = floor(sum_of_items / 1.0)
+        OPT = floor(number_of_items / 2)
         """
         return self._optimal_bins
     
@@ -84,13 +84,15 @@ class BigItemsGenerator(Generate):
         Args:
             num_items: number of big items to generate
         """
+        if not 0.5 < self._min_size <= self._max_size < 1.0:
+            raise ValueError("Big items require 0.5 < min_size <= max_size < 1")
         self._open_log_file()
         self._num_items = num_items
         self._numbers = self._generate_big_items(num_items)
         
         # Calculate OPT based on sum
         self._total_sum = sum(self._numbers)
-        self._optimal_bins = int(self._total_sum)  # floor of sum
+        self._optimal_bins = num_items // 2  # each item < 1; any pair covers
         
         # Sort in descending order (worst case for spreading strategies)
         self._numbers.sort(reverse=True)

@@ -104,7 +104,7 @@ class AdaptiveBinCoveredStrategy(Strategy):
                 self.file.write("Emergency bin opened (0 active).\\n")
         
         # Random logic
-        selected_idx = random.choice(self.active_bin_indices)
+        selected_idx = self.rng.choice(self.active_bin_indices)
         
         self.bins[selected_idx] += item
         

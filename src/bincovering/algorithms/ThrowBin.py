@@ -80,7 +80,7 @@ class ThrowBinStrategy(Strategy):
             return f"No bins available for item {item}"
         
         # Randomly select one of the active (non-covered) bins
-        selected_idx = random.choice(self.active_bins)
+        selected_idx = self.rng.choice(self.active_bins)
         
         # Add item to the selected bin
         self.bins[selected_idx] += item
