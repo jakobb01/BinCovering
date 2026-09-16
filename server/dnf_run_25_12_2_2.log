@@ -1,0 +1,31 @@
+nohup: ignoring input
+
+======================================================================
+PARALLEL TRUE UNIFORM DNF EXPERIMENTS (SWAPS)
+======================================================================
+CPU cores available: 32
+Workers to use: 32
+Experiments to run: 10
+N values: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
+Mode: SWAPS
+Swap step: 1, Max swaps: 16*N
+======================================================================
+
+
+======================================================================
+SUMMARY (SWAPS)
+======================================================================
+  n= 10000: SUCCESS -> ./data/true_uniform_dnf_results_10000items_20251202_201328.csv
+  n= 20000: SUCCESS -> ./data/true_uniform_dnf_results_20000items_20251202_201328.csv
+  n= 30000: SUCCESS -> ./data/true_uniform_dnf_results_30000items_20251202_201328.csv
+  n= 40000: SUCCESS -> ./data/true_uniform_dnf_results_40000items_20251202_201328.csv
+  n= 50000: SUCCESS -> ./data/true_uniform_dnf_results_50000items_20251202_201328.csv
+  n= 60000: SUCCESS -> ./data/true_uniform_dnf_results_60000items_20251202_201328.csv
+  n= 70000: SUCCESS -> ./data/true_uniform_dnf_results_70000items_20251202_201328.csv
+  n= 80000: SUCCESS -> ./data/true_uniform_dnf_results_80000items_20251202_201328.csv
+  n= 90000: SUCCESS -> ./data/true_uniform_dnf_results_90000items_20251202_201328.csv
+  n=100000: FAILED  -> A process in the process pool was terminated abruptly while the future was running or pending.
+
+Total: 9 successful, 1 failed
+======================================================================
+

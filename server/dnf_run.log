@@ -1,0 +1,61 @@
+nohup: ignoring input
+
+=== Running DNF randomization test for 10000 items ===
+Generating base data file...
+Generator will generate 10000 total items (half small, half big).
+Base file generated: OneOverN_20251102_230209.txt
+Summary results saved to: dnf_summary_10000_20251102_230209.txt
+
+=== Running DNF randomization test for 20000 items ===
+Generating base data file...
+Generator will generate 20000 total items (half small, half big).
+Base file generated: OneOverN_20251102_231028.txt
+Summary results saved to: dnf_summary_20000_20251102_231028.txt
+
+=== Running DNF randomization test for 30000 items ===
+Generating base data file...
+Generator will generate 30000 total items (half small, half big).
+Base file generated: OneOverN_20251102_233800.txt
+Summary results saved to: dnf_summary_30000_20251102_233800.txt
+
+=== Running DNF randomization test for 40000 items ===
+Generating base data file...
+Generator will generate 40000 total items (half small, half big).
+Base file generated: OneOverN_20251103_010021.txt
+Summary results saved to: dnf_summary_40000_20251103_010021.txt
+
+=== Running DNF randomization test for 50000 items ===
+Generating base data file...
+Generator will generate 50000 total items (half small, half big).
+Base file generated: OneOverN_20251103_033318.txt
+Summary results saved to: dnf_summary_50000_20251103_033318.txt
+
+=== Running DNF randomization test for 60000 items ===
+Generating base data file...
+Generator will generate 60000 total items (half small, half big).
+Base file generated: OneOverN_20251103_065431.txt
+Summary results saved to: dnf_summary_60000_20251103_065431.txt
+
+=== Running DNF randomization test for 70000 items ===
+Generating base data file...
+Generator will generate 70000 total items (half small, half big).
+Base file generated: OneOverN_20251103_114502.txt
+Summary results saved to: dnf_summary_70000_20251103_114502.txt
+
+=== Running DNF randomization test for 80000 items ===
+Generating base data file...
+Generator will generate 80000 total items (half small, half big).
+Base file generated: OneOverN_20251103_182938.txt
+Summary results saved to: dnf_summary_80000_20251103_182938.txt
+
+=== Running DNF randomization test for 90000 items ===
+Generating base data file...
+Generator will generate 90000 total items (half small, half big).
+Base file generated: OneOverN_20251104_031425.txt
+Summary results saved to: dnf_summary_90000_20251104_031425.txt
+
+=== Running DNF randomization test for 100000 items ===
+Generating base data file...
+Generator will generate 100000 total items (half small, half big).
+Base file generated: OneOverN_20251104_141912.txt
+Summary results saved to: dnf_summary_100000_20251104_141912.txt

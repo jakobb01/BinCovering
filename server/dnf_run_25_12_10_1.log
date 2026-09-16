@@ -1,0 +1,430 @@
+nohup: ignoring input
+
+======================================================================
+ThrowBin Parallel Experiment Runner
+======================================================================
+N values: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
+Bin ratios: ['30%', '35%', '40%', '45%', '50%']
+Total experiment combinations: 50
+Workers: 31
+Data path: ./data/
+======================================================================
+
+[START] N=40000, Ratio=45%, Runs=40000
+  [N=40000, 45pct] Progress: 0%
+  [N=40000, 45pct] Progress: 25%
+  [N=40000, 45pct] Progress: 50%
+  [N=40000, 45pct] Progress: 75%
+[DONE] N=40000, Ratio=45% -> Avg: 12470.1/18000 (69.28%)
+[START] N=40000, Ratio=50%, Runs=40000
+  [N=40000, 50pct] Progress: 0%
+  [N=40000, 50pct] Progress: 25%
+  [N=40000, 50pct] Progress: 50%
+  [N=40000, 50pct] Progress: 75%
+[DONE] N=40000, Ratio=50% -> Avg: 11569.2/20000 (57.85%)
+[START] N=50000, Ratio=35%, Runs=50000
+  [N=50000, 35pct] Progress: 0%
+  [N=50000, 35pct] Progress: 25%
+  [N=50000, 35pct] Progress: 50%
+  [N=50000, 35pct] Progress: 75%
+[DONE] N=50000, Ratio=35% -> Avg: 17500.0/17500 (100.00%)
+[START] N=60000, Ratio=30%, Runs=60000
+  [N=60000, 30pct] Progress: 0%
+  [N=60000, 30pct] Progress: 25%
+  [N=60000, 30pct] Progress: 50%
+  [N=60000, 30pct] Progress: 75%
+[DONE] N=60000, Ratio=30% -> Avg: 18000.0/18000 (100.00%)
+[START] N=50000, Ratio=40%, Runs=50000
+  [N=50000, 40pct] Progress: 0%
+  [N=50000, 40pct] Progress: 25%
+  [N=50000, 40pct] Progress: 50%
+  [N=50000, 40pct] Progress: 75%
+[DONE] N=50000, Ratio=40% -> Avg: 17028.8/20000 (85.14%)
+[START] N=50000, Ratio=45%, Runs=50000
+  [N=50000, 45pct] Progress: 0%
+  [N=50000, 45pct] Progress: 25%
+  [N=50000, 45pct] Progress: 50%
+  [N=50000, 45pct] Progress: 75%
+[DONE] N=50000, Ratio=45% -> Avg: 15531.6/22500 (69.03%)
+[START] N=50000, Ratio=50%, Runs=50000
+  [N=50000, 50pct] Progress: 0%
+  [N=50000, 50pct] Progress: 25%
+  [N=50000, 50pct] Progress: 50%
+  [N=50000, 50pct] Progress: 75%
+[DONE] N=50000, Ratio=50% -> Avg: 14404.4/25000 (57.62%)
+[START] N=60000, Ratio=35%, Runs=60000
+  [N=60000, 35pct] Progress: 0%
+  [N=60000, 35pct] Progress: 25%
+  [N=60000, 35pct] Progress: 50%
+  [N=60000, 35pct] Progress: 75%
+[DONE] N=60000, Ratio=35% -> Avg: 21000.0/21000 (100.00%)
+[START] N=70000, Ratio=30%, Runs=70000
+  [N=70000, 30pct] Progress: 0%
+  [N=70000, 30pct] Progress: 25%
+  [N=70000, 30pct] Progress: 50%
+  [N=70000, 30pct] Progress: 75%
+[DONE] N=70000, Ratio=30% -> Avg: 21000.0/21000 (100.00%)
+[START] N=60000, Ratio=40%, Runs=60000
+  [N=60000, 40pct] Progress: 0%
+  [N=60000, 40pct] Progress: 25%
+  [N=60000, 40pct] Progress: 50%
+  [N=60000, 40pct] Progress: 75%
+[DONE] N=60000, Ratio=40% -> Avg: 20490.4/24000 (85.38%)
+[START] N=60000, Ratio=45%, Runs=60000
+  [N=60000, 45pct] Progress: 0%
+  [N=60000, 45pct] Progress: 25%
+  [N=60000, 45pct] Progress: 50%
+  [N=60000, 45pct] Progress: 75%
+[DONE] N=60000, Ratio=45% -> Avg: 18676.2/27000 (69.17%)
+[START] N=10000, Ratio=30%, Runs=10000
+  [N=10000, 30pct] Progress: 0%
+  [N=10000, 30pct] Progress: 25%
+  [N=10000, 30pct] Progress: 50%
+  [N=10000, 30pct] Progress: 75%
+[DONE] N=10000, Ratio=30% -> Avg: 3000.0/3000 (100.00%)
+[START] N=70000, Ratio=35%, Runs=70000
+  [N=70000, 35pct] Progress: 0%
+  [N=70000, 35pct] Progress: 25%
+  [N=70000, 35pct] Progress: 50%
+  [N=70000, 35pct] Progress: 75%
+[DONE] N=70000, Ratio=35% -> Avg: 24500.0/24500 (100.00%)
+[START] N=60000, Ratio=50%, Runs=60000
+  [N=60000, 50pct] Progress: 0%
+  [N=60000, 50pct] Progress: 25%
+  [N=60000, 50pct] Progress: 50%
+  [N=60000, 50pct] Progress: 75%
+[DONE] N=60000, Ratio=50% -> Avg: 17345.9/30000 (57.82%)
+[START] N=10000, Ratio=50%, Runs=10000
+  [N=10000, 50pct] Progress: 0%
+  [N=10000, 50pct] Progress: 25%
+  [N=10000, 50pct] Progress: 50%
+  [N=10000, 50pct] Progress: 75%
+[DONE] N=10000, Ratio=50% -> Avg: 2870.2/5000 (57.40%)
+[START] N=80000, Ratio=30%, Runs=80000
+  [N=80000, 30pct] Progress: 0%
+  [N=80000, 30pct] Progress: 25%
+  [N=80000, 30pct] Progress: 50%
+  [N=80000, 30pct] Progress: 75%
+[DONE] N=80000, Ratio=30% -> Avg: 24000.0/24000 (100.00%)
+[START] N=10000, Ratio=35%, Runs=10000
+  [N=10000, 35pct] Progress: 0%
+  [N=10000, 35pct] Progress: 25%
+  [N=10000, 35pct] Progress: 50%
+  [N=10000, 35pct] Progress: 75%
+[DONE] N=10000, Ratio=35% -> Avg: 3500.0/3500 (100.00%)
+[START] N=70000, Ratio=40%, Runs=70000
+  [N=70000, 40pct] Progress: 0%
+  [N=70000, 40pct] Progress: 25%
+  [N=70000, 40pct] Progress: 50%
+  [N=70000, 40pct] Progress: 75%
+[DONE] N=70000, Ratio=40% -> Avg: 23815.7/28000 (85.06%)
+[START] N=20000, Ratio=30%, Runs=20000
+  [N=20000, 30pct] Progress: 0%
+  [N=20000, 30pct] Progress: 25%
+  [N=20000, 30pct] Progress: 50%
+  [N=20000, 30pct] Progress: 75%
+[DONE] N=20000, Ratio=30% -> Avg: 6000.0/6000 (100.00%)
+[START] N=80000, Ratio=35%, Runs=80000
+  [N=80000, 35pct] Progress: 0%
+  [N=80000, 35pct] Progress: 25%
+  [N=80000, 35pct] Progress: 50%
+  [N=80000, 35pct] Progress: 75%
+[DONE] N=80000, Ratio=35% -> Avg: 28000.0/28000 (100.00%)
+[START] N=10000, Ratio=45%, Runs=10000
+  [N=10000, 45pct] Progress: 0%
+  [N=10000, 45pct] Progress: 25%
+  [N=10000, 45pct] Progress: 50%
+  [N=10000, 45pct] Progress: 75%
+[DONE] N=10000, Ratio=45% -> Avg: 3076.2/4500 (68.36%)
+[START] N=70000, Ratio=45%, Runs=70000
+  [N=70000, 45pct] Progress: 0%
+  [N=70000, 45pct] Progress: 25%
+  [N=70000, 45pct] Progress: 50%
+  [N=70000, 45pct] Progress: 75%
+[DONE] N=70000, Ratio=45% -> Avg: 21798.9/31500 (69.20%)
+[START] N=20000, Ratio=50%, Runs=20000
+  [N=20000, 50pct] Progress: 0%
+  [N=20000, 50pct] Progress: 25%
+  [N=20000, 50pct] Progress: 50%
+  [N=20000, 50pct] Progress: 75%
+[DONE] N=20000, Ratio=50% -> Avg: 5766.7/10000 (57.67%)
+[START] N=90000, Ratio=30%, Runs=90000
+  [N=90000, 30pct] Progress: 0%
+  [N=90000, 30pct] Progress: 25%
+  [N=90000, 30pct] Progress: 50%
+  [N=90000, 30pct] Progress: 75%
+[DONE] N=90000, Ratio=30% -> Avg: 27000.0/27000 (100.00%)
+[START] N=10000, Ratio=40%, Runs=10000
+  [N=10000, 40pct] Progress: 0%
+  [N=10000, 40pct] Progress: 25%
+  [N=10000, 40pct] Progress: 50%
+  [N=10000, 40pct] Progress: 75%
+[DONE] N=10000, Ratio=40% -> Avg: 3447.9/4000 (86.20%)
+[START] N=70000, Ratio=50%, Runs=70000
+  [N=70000, 50pct] Progress: 0%
+  [N=70000, 50pct] Progress: 25%
+  [N=70000, 50pct] Progress: 50%
+  [N=70000, 50pct] Progress: 75%
+[DONE] N=70000, Ratio=50% -> Avg: 20258.2/35000 (57.88%)
+[START] N=20000, Ratio=35%, Runs=20000
+  [N=20000, 35pct] Progress: 0%
+  [N=20000, 35pct] Progress: 25%
+  [N=20000, 35pct] Progress: 50%
+  [N=20000, 35pct] Progress: 75%
+[DONE] N=20000, Ratio=35% -> Avg: 7000.0/7000 (100.00%)
+[START] N=80000, Ratio=40%, Runs=80000
+  [N=80000, 40pct] Progress: 0%
+  [N=80000, 40pct] Progress: 25%
+  [N=80000, 40pct] Progress: 50%
+  [N=80000, 40pct] Progress: 75%
+[DONE] N=80000, Ratio=40% -> Avg: 27323.7/32000 (85.39%)
+[START] N=30000, Ratio=30%, Runs=30000
+  [N=30000, 30pct] Progress: 0%
+  [N=30000, 30pct] Progress: 25%
+  [N=30000, 30pct] Progress: 50%
+  [N=30000, 30pct] Progress: 75%
+[DONE] N=30000, Ratio=30% -> Avg: 9000.0/9000 (100.00%)
+[START] N=90000, Ratio=35%, Runs=90000
+  [N=90000, 35pct] Progress: 0%
+  [N=90000, 35pct] Progress: 25%
+  [N=90000, 35pct] Progress: 50%
+  [N=90000, 35pct] Progress: 75%
+[DONE] N=90000, Ratio=35% -> Avg: 31499.0/31499 (100.00%)
+[START] N=30000, Ratio=50%, Runs=30000
+  [N=30000, 50pct] Progress: 0%
+  [N=30000, 50pct] Progress: 25%
+  [N=30000, 50pct] Progress: 50%
+  [N=30000, 50pct] Progress: 75%
+[DONE] N=30000, Ratio=50% -> Avg: 8641.7/15000 (57.61%)
+[START] N=100000, Ratio=30%, Runs=100000
+  [N=100000, 30pct] Progress: 0%
+  [N=100000, 30pct] Progress: 25%
+  [N=100000, 30pct] Progress: 50%
+  [N=100000, 30pct] Progress: 75%
+[DONE] N=100000, Ratio=30% -> Avg: 30000.0/30000 (100.00%)
+[START] N=20000, Ratio=40%, Runs=20000
+  [N=20000, 40pct] Progress: 0%
+  [N=20000, 40pct] Progress: 25%
+  [N=20000, 40pct] Progress: 50%
+  [N=20000, 40pct] Progress: 75%
+[DONE] N=20000, Ratio=40% -> Avg: 6837.2/8000 (85.47%)
+[START] N=80000, Ratio=45%, Runs=80000
+  [N=80000, 45pct] Progress: 0%
+  [N=80000, 45pct] Progress: 25%
+  [N=80000, 45pct] Progress: 50%
+  [N=80000, 45pct] Progress: 75%
+[DONE] N=80000, Ratio=45% -> Avg: 24902.6/36000 (69.17%)
+[START] N=20000, Ratio=45%, Runs=20000
+  [N=20000, 45pct] Progress: 0%
+  [N=20000, 45pct] Progress: 25%
+  [N=20000, 45pct] Progress: 50%
+  [N=20000, 45pct] Progress: 75%
+[DONE] N=20000, Ratio=45% -> Avg: 6196.4/9000 (68.85%)
+[START] N=80000, Ratio=50%, Runs=80000
+  [N=80000, 50pct] Progress: 0%
+  [N=80000, 50pct] Progress: 25%
+  [N=80000, 50pct] Progress: 50%
+  [N=80000, 50pct] Progress: 75%
+[DONE] N=80000, Ratio=50% -> Avg: 23194.5/40000 (57.99%)
+[START] N=30000, Ratio=35%, Runs=30000
+  [N=30000, 35pct] Progress: 0%
+  [N=30000, 35pct] Progress: 25%
+  [N=30000, 35pct] Progress: 50%
+  [N=30000, 35pct] Progress: 75%
+[DONE] N=30000, Ratio=35% -> Avg: 10500.0/10500 (100.00%)
+[START] N=90000, Ratio=40%, Runs=90000
+  [N=90000, 40pct] Progress: 0%
+  [N=90000, 40pct] Progress: 25%
+  [N=90000, 40pct] Progress: 50%
+  [N=90000, 40pct] Progress: 75%
+[DONE] N=90000, Ratio=40% -> Avg: 30668.5/36000 (85.19%)
+[START] N=40000, Ratio=30%, Runs=40000
+  [N=40000, 30pct] Progress: 0%
+  [N=40000, 30pct] Progress: 25%
+  [N=40000, 30pct] Progress: 50%
+  [N=40000, 30pct] Progress: 75%
+[DONE] N=40000, Ratio=30% -> Avg: 12000.0/12000 (100.00%)
+[START] N=100000, Ratio=35%, Runs=100000
+  [N=100000, 35pct] Progress: 0%
+  [N=100000, 35pct] Progress: 25%
+  [N=100000, 35pct] Progress: 50%
+  [N=100000, 35pct] Progress: 75%
+[DONE] N=100000, Ratio=35% -> Avg: 35000.0/35000 (100.00%)
+[START] N=30000, Ratio=40%, Runs=30000
+  [N=30000, 40pct] Progress: 0%
+  [N=30000, 40pct] Progress: 25%
+  [N=30000, 40pct] Progress: 50%
+  [N=30000, 40pct] Progress: 75%
+[DONE] N=30000, Ratio=40% -> Avg: 10256.6/12000 (85.47%)
+[START] N=90000, Ratio=45%, Runs=90000
+  [N=90000, 45pct] Progress: 0%
+  [N=90000, 45pct] Progress: 25%
+  [N=90000, 45pct] Progress: 50%
+  [N=90000, 45pct] Progress: 75%
+[DONE] N=90000, Ratio=45% -> Avg: 27946.3/40500 (69.00%)
+[START] N=30000, Ratio=45%, Runs=30000
+  [N=30000, 45pct] Progress: 0%
+  [N=30000, 45pct] Progress: 25%
+  [N=30000, 45pct] Progress: 50%
+  [N=30000, 45pct] Progress: 75%
+[DONE] N=30000, Ratio=45% -> Avg: 9320.8/13500 (69.04%)
+[START] N=90000, Ratio=50%, Runs=90000
+  [N=90000, 50pct] Progress: 0%
+  [N=90000, 50pct] Progress: 25%
+  [N=90000, 50pct] Progress: 50%
+  [N=90000, 50pct] Progress: 75%
+[DONE] N=90000, Ratio=50% -> Avg: 26084.2/45000 (57.96%)
+[START] N=40000, Ratio=35%, Runs=40000
+  [N=40000, 35pct] Progress: 0%
+  [N=40000, 35pct] Progress: 25%
+  [N=40000, 35pct] Progress: 50%
+  [N=40000, 35pct] Progress: 75%
+[DONE] N=40000, Ratio=35% -> Avg: 14000.0/14000 (100.00%)
+[START] N=100000, Ratio=40%, Runs=100000
+  [N=100000, 40pct] Progress: 0%
+  [N=100000, 40pct] Progress: 25%
+  [N=100000, 40pct] Progress: 50%
+  [N=100000, 40pct] Progress: 75%
+[DONE] N=100000, Ratio=40% -> Avg: 34081.3/40000 (85.20%)
+[START] N=40000, Ratio=40%, Runs=40000
+  [N=40000, 40pct] Progress: 0%
+  [N=40000, 40pct] Progress: 25%
+  [N=40000, 40pct] Progress: 50%
+  [N=40000, 40pct] Progress: 75%
+[DONE] N=40000, Ratio=40% -> Avg: 13692.7/16000 (85.58%)
+[START] N=100000, Ratio=45%, Runs=100000
+  [N=100000, 45pct] Progress: 0%
+  [N=100000, 45pct] Progress: 25%
+  [N=100000, 45pct] Progress: 50%
+  [N=100000, 45pct] Progress: 75%
+[DONE] N=100000, Ratio=45% -> Avg: 31167.1/45000 (69.26%)
+[START] N=50000, Ratio=30%, Runs=50000
+  [N=50000, 30pct] Progress: 0%
+  [N=50000, 30pct] Progress: 25%
+  [N=50000, 30pct] Progress: 50%
+  [N=50000, 30pct] Progress: 75%
+[DONE] N=50000, Ratio=30% -> Avg: 15000.0/15000 (100.00%)
+[START] N=100000, Ratio=50%, Runs=100000
+  [N=100000, 50pct] Progress: 0%
+  [N=100000, 50pct] Progress: 25%
+  [N=100000, 50pct] Progress: 50%
+  [N=100000, 50pct] Progress: 75%
+[DONE] N=100000, Ratio=50% -> Avg: 28890.5/50000 (57.78%)
+
+======================================================================
+EXPERIMENT COMPLETE
+======================================================================
+Duration: 8 days, 3:57:20.395091
+Summary saved to: ./data/throwbin_parallel_summary_20251218_051941.csv
+
+Results by (N, Ratio):
+----------------------------------------------------------------------
+         N |  Ratio |     Bins |  Avg Covered |    Avg %
+----------------------------------------------------------------------
+     10000 |    30% |     3000 |      3000.00 |  100.00%
+     10000 |    35% |     3500 |      3500.00 |  100.00%
+     10000 |    40% |     4000 |      3447.90 |   86.20%
+     10000 |    45% |     4500 |      3076.18 |   68.36%
+     10000 |    50% |     5000 |      2870.18 |   57.40%
+     20000 |    30% |     6000 |      6000.00 |  100.00%
+     20000 |    35% |     7000 |      7000.00 |  100.00%
+     20000 |    40% |     8000 |      6837.23 |   85.47%
+     20000 |    45% |     9000 |      6196.38 |   68.85%
+     20000 |    50% |    10000 |      5766.70 |   57.67%
+     30000 |    30% |     9000 |      9000.00 |  100.00%
+     30000 |    35% |    10500 |     10500.00 |  100.00%
+     30000 |    40% |    12000 |     10256.56 |   85.47%
+     30000 |    45% |    13500 |      9320.78 |   69.04%
+     30000 |    50% |    15000 |      8641.71 |   57.61%
+     40000 |    30% |    12000 |     12000.00 |  100.00%
+     40000 |    35% |    14000 |     14000.00 |  100.00%
+     40000 |    40% |    16000 |     13692.73 |   85.58%
+     40000 |    45% |    18000 |     12470.06 |   69.28%
+     40000 |    50% |    20000 |     11569.20 |   57.85%
+     50000 |    30% |    15000 |     15000.00 |  100.00%
+     50000 |    35% |    17500 |     17500.00 |  100.00%
+     50000 |    40% |    20000 |     17028.80 |   85.14%
+     50000 |    45% |    22500 |     15531.58 |   69.03%
+     50000 |    50% |    25000 |     14404.37 |   57.62%
+     60000 |    30% |    18000 |     18000.00 |  100.00%
+     60000 |    35% |    21000 |     21000.00 |  100.00%
+     60000 |    40% |    24000 |     20490.38 |   85.38%
+     60000 |    45% |    27000 |     18676.22 |   69.17%
+     60000 |    50% |    30000 |     17345.86 |   57.82%
+     70000 |    30% |    21000 |     21000.00 |  100.00%
+     70000 |    35% |    24500 |     24500.00 |  100.00%
+     70000 |    40% |    28000 |     23815.70 |   85.06%
+     70000 |    45% |    31500 |     21798.89 |   69.20%
+     70000 |    50% |    35000 |     20258.17 |   57.88%
+     80000 |    30% |    24000 |     24000.00 |  100.00%
+     80000 |    35% |    28000 |     28000.00 |  100.00%
+     80000 |    40% |    32000 |     27323.75 |   85.39%
+     80000 |    45% |    36000 |     24902.64 |   69.17%
+     80000 |    50% |    40000 |     23194.53 |   57.99%
+     90000 |    30% |    27000 |     27000.00 |  100.00%
+     90000 |    35% |    31499 |     31499.00 |  100.00%
+     90000 |    40% |    36000 |     30668.52 |   85.19%
+     90000 |    45% |    40500 |     27946.33 |   69.00%
+     90000 |    50% |    45000 |     26084.15 |   57.96%
+    100000 |    30% |    30000 |     30000.00 |  100.00%
+    100000 |    35% |    35000 |     35000.00 |  100.00%
+    100000 |    40% |    40000 |     34081.34 |   85.20%
+    100000 |    45% |    45000 |     31167.12 |   69.26%
+    100000 |    50% |    50000 |     28890.47 |   57.78%
+----------------------------------------------------------------------
+
+Generated CSV files:
+  - ./data/throwbin_parallel_10000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_10000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_10000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_10000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_10000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_20000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_20000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_20000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_20000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_20000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_30000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_30000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_30000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_30000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_30000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_40000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_40000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_40000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_40000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_40000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_50000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_50000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_50000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_50000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_50000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_60000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_60000items_35pct_20251210_012221.csv
+  - ./data/throwbin_parallel_60000items_40pct_20251210_012221.csv
+  - ./data/throwbin_parallel_60000items_45pct_20251210_012221.csv
+  - ./data/throwbin_parallel_60000items_50pct_20251210_012221.csv
+  - ./data/throwbin_parallel_70000items_30pct_20251210_012221.csv
+  - ./data/throwbin_parallel_70000items_35pct_20251210_013246.csv
+  - ./data/throwbin_parallel_70000items_40pct_20251210_013634.csv
+  - ./data/throwbin_parallel_70000items_45pct_20251210_013823.csv
+  - ./data/throwbin_parallel_70000items_50pct_20251210_013833.csv
+  - ./data/throwbin_parallel_80000items_30pct_20251210_014251.csv
+  - ./data/throwbin_parallel_80000items_35pct_20251210_022644.csv
+  - ./data/throwbin_parallel_80000items_40pct_20251210_024053.csv
+  - ./data/throwbin_parallel_80000items_45pct_20251210_030316.csv
+  - ./data/throwbin_parallel_80000items_50pct_20251210_031752.csv
+  - ./data/throwbin_parallel_90000items_30pct_20251210_032842.csv
+  - ./data/throwbin_parallel_90000items_35pct_20251210_043624.csv
+  - ./data/throwbin_parallel_90000items_40pct_20251210_053353.csv
+  - ./data/throwbin_parallel_90000items_45pct_20251210_064154.csv
+  - ./data/throwbin_parallel_90000items_50pct_20251210_073942.csv
+  - ./data/throwbin_parallel_100000items_30pct_20251210_081918.csv
+  - ./data/throwbin_parallel_100000items_35pct_20251210_083502.csv
+  - ./data/throwbin_parallel_100000items_40pct_20251210_105334.csv
+  - ./data/throwbin_parallel_100000items_45pct_20251210_135558.csv
+  - ./data/throwbin_parallel_100000items_50pct_20251210_150237.csv
+
+All experiments complete!
+To analyze individual results:
+  python3 custom_code/analyze_csv_results.py data/throwbin_parallel_*.csv

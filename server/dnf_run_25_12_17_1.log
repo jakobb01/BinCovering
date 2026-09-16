@@ -1,0 +1,36 @@
+nohup: ignoring input
+
+======================================================================
+ThrowBin Parallel Experiment Runner
+======================================================================
+N values: [10000, 30000]
+Bin ratios: ['37%']
+Total experiment combinations: 2
+Workers: 31
+Data path: ./data/
+======================================================================
+
+
+Summary plots saved to: ./data/throwbin_parallel_summary_20251217_022521.png
+
+======================================================================
+EXPERIMENT COMPLETE
+======================================================================
+Duration: 3:13:36.182930
+Summary saved to: ./data/throwbin_parallel_summary_20251217_022521.csv
+
+Results by (N, Ratio):
+----------------------------------------------------------------------
+         N |  Ratio |     Bins |  Avg Covered |    Avg %
+----------------------------------------------------------------------
+     10000 |    37% |     3725 |      3723.95 |   99.97%
+     30000 |    37% |    11175 |     11174.98 |  100.00%
+----------------------------------------------------------------------
+
+Generated CSV files:
+  - ./data/throwbin_parallel_10000items_37pct_20251216_231145.csv
+  - ./data/throwbin_parallel_30000items_37pct_20251216_231145.csv
+
+All experiments complete!
+To analyze individual results:
+  python3 custom_code/analyze_csv_results.py data/throwbin_parallel_*.csv

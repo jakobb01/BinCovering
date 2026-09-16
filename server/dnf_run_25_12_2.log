@@ -1,0 +1,377 @@
+nohup: ignoring input
+
+======================================================================
+PARALLEL TRUE UNIFORM DNF EXPERIMENTS (PERMUTATIONS)
+======================================================================
+CPU cores available: 32
+Workers to use: 32
+Experiments to run: 10
+N values: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
+Mode: PERMUTATIONS
+Num permutations: 10*N
+======================================================================
+
+
+[PID 3364017] Starting PERMUTATION experiment with n=30000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 30000, Permutations: 600000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 30000 items in [0.0001, 1.0]
+Total items generated: 30000
+Base file generated: TrueUniform_20251202_201000_659513_3364017.txt
+
+Running 600000 permutation experiments...
+Progress: 0.0% (0/600000) - Permutation: 0, Bins: 11035
+Progress: 10.0% (60000/600000) - Permutation: 60000, Bins: 11045
+Progress: 20.0% (120000/600000) - Permutation: 120000, Bins: 11043
+Progress: 30.0% (180000/600000) - Permutation: 180000, Bins: 11025
+Progress: 40.0% (240000/600000) - Permutation: 240000, Bins: 11064
+Progress: 50.0% (300000/600000) - Permutation: 300000, Bins: 11065
+Progress: 60.0% (360000/600000) - Permutation: 360000, Bins: 11039
+Progress: 70.0% (420000/600000) - Permutation: 420000, Bins: 11061
+Progress: 80.0% (480000/600000) - Permutation: 480000, Bins: 11069
+Progress: 90.0% (540000/600000) - Permutation: 540000, Bins: 11056
+
+Results saved to: ./data/true_uniform_permutation_results_30000items_20251202_201000_3364017.csv
+Total items: 30000
+Total permutations: 600000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_30000items_20251202_201000_3364017.png
+
+[PID 3364017] Completed PERMUTATION experiment with n=30000
+
+[PID 3364016] Starting PERMUTATION experiment with n=20000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 20000, Permutations: 400000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 20000 items in [0.0001, 1.0]
+Total items generated: 20000
+Base file generated: TrueUniform_20251202_201000_659335_3364016.txt
+
+Running 400000 permutation experiments...
+Progress: 0.0% (0/400000) - Permutation: 0, Bins: 7408
+Progress: 10.0% (40000/400000) - Permutation: 40000, Bins: 7384
+Progress: 20.0% (80000/400000) - Permutation: 80000, Bins: 7418
+Progress: 30.0% (120000/400000) - Permutation: 120000, Bins: 7405
+Progress: 40.0% (160000/400000) - Permutation: 160000, Bins: 7394
+Progress: 50.0% (200000/400000) - Permutation: 200000, Bins: 7393
+Progress: 60.0% (240000/400000) - Permutation: 240000, Bins: 7397
+Progress: 70.0% (280000/400000) - Permutation: 280000, Bins: 7374
+Progress: 80.0% (320000/400000) - Permutation: 320000, Bins: 7406
+Progress: 90.0% (360000/400000) - Permutation: 360000, Bins: 7415
+
+Results saved to: ./data/true_uniform_permutation_results_20000items_20251202_201000_3364016.csv
+Total items: 20000
+Total permutations: 400000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_20000items_20251202_201000_3364016.png
+
+[PID 3364016] Completed PERMUTATION experiment with n=20000
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:201: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:204: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.savefig(output_path, dpi=150, bbox_inches='tight')
+
+[PID 3364018] Starting PERMUTATION experiment with n=40000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 40000, Permutations: 800000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 40000 items in [0.0001, 1.0]
+Total items generated: 40000
+Base file generated: TrueUniform_20251202_201000_659779_3364018.txt
+
+Running 800000 permutation experiments...
+Progress: 0.0% (0/800000) - Permutation: 0, Bins: 14766
+Progress: 10.0% (80000/800000) - Permutation: 80000, Bins: 14726
+Progress: 20.0% (160000/800000) - Permutation: 160000, Bins: 14750
+Progress: 30.0% (240000/800000) - Permutation: 240000, Bins: 14764
+Progress: 40.0% (320000/800000) - Permutation: 320000, Bins: 14749
+Progress: 50.0% (400000/800000) - Permutation: 400000, Bins: 14755
+Progress: 60.0% (480000/800000) - Permutation: 480000, Bins: 14759
+Progress: 70.0% (560000/800000) - Permutation: 560000, Bins: 14784
+Progress: 80.0% (640000/800000) - Permutation: 640000, Bins: 14747
+Progress: 90.0% (720000/800000) - Permutation: 720000, Bins: 14756
+
+Results saved to: ./data/true_uniform_permutation_results_40000items_20251202_201000_3364018.csv
+Total items: 40000
+Total permutations: 800000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_40000items_20251202_201000_3364018.png
+
+[PID 3364018] Completed PERMUTATION experiment with n=40000
+
+[PID 3364015] Starting PERMUTATION experiment with n=10000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 10000, Permutations: 200000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 10000 items in [0.0001, 1.0]
+Total items generated: 10000
+Base file generated: TrueUniform_20251202_201000_658021_3364015.txt
+
+Running 200000 permutation experiments...
+Progress: 0.0% (0/200000) - Permutation: 0, Bins: 3689
+Progress: 10.0% (20000/200000) - Permutation: 20000, Bins: 3690
+Progress: 20.0% (40000/200000) - Permutation: 40000, Bins: 3659
+Progress: 30.0% (60000/200000) - Permutation: 60000, Bins: 3694
+Progress: 40.0% (80000/200000) - Permutation: 80000, Bins: 3691
+Progress: 50.0% (100000/200000) - Permutation: 100000, Bins: 3674
+Progress: 60.0% (120000/200000) - Permutation: 120000, Bins: 3680
+Progress: 70.0% (140000/200000) - Permutation: 140000, Bins: 3691
+Progress: 80.0% (160000/200000) - Permutation: 160000, Bins: 3713
+Progress: 90.0% (180000/200000) - Permutation: 180000, Bins: 3699
+
+Results saved to: ./data/true_uniform_permutation_results_10000items_20251202_201000_3364015.csv
+Total items: 10000
+Total permutations: 200000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_10000items_20251202_201000_3364015.png
+
+[PID 3364015] Completed PERMUTATION experiment with n=10000
+
+[PID 3364019] Starting PERMUTATION experiment with n=50000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 50000, Permutations: 1000000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 50000 items in [0.0001, 1.0]
+Total items generated: 50000
+Base file generated: TrueUniform_20251202_201000_660055_3364019.txt
+
+Running 1000000 permutation experiments...
+Progress: 0.0% (0/1000000) - Permutation: 0, Bins: 18359
+Progress: 10.0% (100000/1000000) - Permutation: 100000, Bins: 18394
+Progress: 20.0% (200000/1000000) - Permutation: 200000, Bins: 18359
+Progress: 30.0% (300000/1000000) - Permutation: 300000, Bins: 18360
+Progress: 40.0% (400000/1000000) - Permutation: 400000, Bins: 18386
+Progress: 50.0% (500000/1000000) - Permutation: 500000, Bins: 18436
+Progress: 60.0% (600000/1000000) - Permutation: 600000, Bins: 18397
+Progress: 70.0% (700000/1000000) - Permutation: 700000, Bins: 18382
+Progress: 80.0% (800000/1000000) - Permutation: 800000, Bins: 18402
+Progress: 90.0% (900000/1000000) - Permutation: 900000, Bins: 18404
+
+Results saved to: ./data/true_uniform_permutation_results_50000items_20251202_201000_3364019.csv
+Total items: 50000
+Total permutations: 1000000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_50000items_20251202_201000_3364019.png
+
+[PID 3364019] Completed PERMUTATION experiment with n=50000
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:201: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:204: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.savefig(output_path, dpi=150, bbox_inches='tight')
+
+[PID 3364020] Starting PERMUTATION experiment with n=60000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 60000, Permutations: 1200000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 60000 items in [0.0001, 1.0]
+Total items generated: 60000
+Base file generated: TrueUniform_20251202_201000_660420_3364020.txt
+
+Running 1200000 permutation experiments...
+Progress: 0.0% (0/1200000) - Permutation: 0, Bins: 22111
+Progress: 10.0% (120000/1200000) - Permutation: 120000, Bins: 22083
+Progress: 20.0% (240000/1200000) - Permutation: 240000, Bins: 22107
+Progress: 30.0% (360000/1200000) - Permutation: 360000, Bins: 22108
+Progress: 40.0% (480000/1200000) - Permutation: 480000, Bins: 22092
+Progress: 50.0% (600000/1200000) - Permutation: 600000, Bins: 22130
+Progress: 60.0% (720000/1200000) - Permutation: 720000, Bins: 22076
+Progress: 70.0% (840000/1200000) - Permutation: 840000, Bins: 22076
+Progress: 80.0% (960000/1200000) - Permutation: 960000, Bins: 22104
+Progress: 90.0% (1080000/1200000) - Permutation: 1080000, Bins: 22065
+
+Results saved to: ./data/true_uniform_permutation_results_60000items_20251202_201000_3364020.csv
+Total items: 60000
+Total permutations: 1200000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_60000items_20251202_201000_3364020.png
+
+[PID 3364020] Completed PERMUTATION experiment with n=60000
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:201: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+
+[PID 3364021] Starting PERMUTATION experiment with n=70000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 70000, Permutations: 1400000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 70000 items in [0.0001, 1.0]
+Total items generated: 70000
+Base file generated: TrueUniform_20251202_201000_660568_3364021.txt
+
+Running 1400000 permutation experiments...
+Progress: 0.0% (0/1400000) - Permutation: 0, Bins: 25761
+Progress: 10.0% (140000/1400000) - Permutation: 140000, Bins: 25769
+Progress: 20.0% (280000/1400000) - Permutation: 280000, Bins: 25769
+Progress: 30.0% (420000/1400000) - Permutation: 420000, Bins: 25795
+Progress: 40.0% (560000/1400000) - Permutation: 560000, Bins: 25806
+Progress: 50.0% (700000/1400000) - Permutation: 700000, Bins: 25773
+Progress: 60.0% (840000/1400000) - Permutation: 840000, Bins: 25737
+Progress: 70.0% (980000/1400000) - Permutation: 980000, Bins: 25787
+Progress: 80.0% (1120000/1400000) - Permutation: 1120000, Bins: 25738
+Progress: 90.0% (1260000/1400000) - Permutation: 1260000, Bins: 25778
+
+Results saved to: ./data/true_uniform_permutation_results_70000items_20251202_201000_3364021.csv
+Total items: 70000
+Total permutations: 1400000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_70000items_20251202_201000_3364021.png
+
+[PID 3364021] Completed PERMUTATION experiment with n=70000
+
+[PID 3364022] Starting PERMUTATION experiment with n=80000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 80000, Permutations: 1600000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 80000 items in [0.0001, 1.0]
+Total items generated: 80000
+Base file generated: TrueUniform_20251202_201000_661081_3364022.txt
+
+Running 1600000 permutation experiments...
+Progress: 0.0% (0/1600000) - Permutation: 0, Bins: 29508
+Progress: 10.0% (160000/1600000) - Permutation: 160000, Bins: 29452
+Progress: 20.0% (320000/1600000) - Permutation: 320000, Bins: 29524
+Progress: 30.0% (480000/1600000) - Permutation: 480000, Bins: 29501
+Progress: 40.0% (640000/1600000) - Permutation: 640000, Bins: 29513
+Progress: 50.0% (800000/1600000) - Permutation: 800000, Bins: 29576
+Progress: 60.0% (960000/1600000) - Permutation: 960000, Bins: 29473
+Progress: 70.0% (1120000/1600000) - Permutation: 1120000, Bins: 29505
+Progress: 80.0% (1280000/1600000) - Permutation: 1280000, Bins: 29473
+Progress: 90.0% (1440000/1600000) - Permutation: 1440000, Bins: 29486
+
+Results saved to: ./data/true_uniform_permutation_results_80000items_20251202_201000_3364022.csv
+Total items: 80000
+Total permutations: 1600000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_80000items_20251202_201000_3364022.png
+
+[PID 3364022] Completed PERMUTATION experiment with n=80000
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:201: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+
+[PID 3364024] Starting PERMUTATION experiment with n=100000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 100000, Permutations: 2000000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 100000 items in [0.0001, 1.0]
+Total items generated: 100000
+Base file generated: TrueUniform_20251202_201000_661458_3364024.txt
+
+Running 2000000 permutation experiments...
+Progress: 0.0% (0/2000000) - Permutation: 0, Bins: 36796
+Progress: 10.0% (200000/2000000) - Permutation: 200000, Bins: 36781
+Progress: 20.0% (400000/2000000) - Permutation: 400000, Bins: 36731
+Progress: 30.0% (600000/2000000) - Permutation: 600000, Bins: 36784
+Progress: 40.0% (800000/2000000) - Permutation: 800000, Bins: 36787
+Progress: 50.0% (1000000/2000000) - Permutation: 1000000, Bins: 36691
+Progress: 60.0% (1200000/2000000) - Permutation: 1200000, Bins: 36746
+Progress: 70.0% (1400000/2000000) - Permutation: 1400000, Bins: 36726
+Progress: 80.0% (1600000/2000000) - Permutation: 1600000, Bins: 36726
+Progress: 90.0% (1800000/2000000) - Permutation: 1800000, Bins: 36803
+
+Results saved to: ./data/true_uniform_permutation_results_100000items_20251202_201000_3364024.csv
+Total items: 100000
+Total permutations: 2000000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_100000items_20251202_201000_3364024.png
+
+[PID 3364024] Completed PERMUTATION experiment with n=100000
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:201: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.tight_layout()
+/home/jakob/workspace/python-bincovering/custom_code/main_TrueUniform_Permutation_DNF.py:204: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.savefig(output_path, dpi=150, bbox_inches='tight')
+
+[PID 3364023] Starting PERMUTATION experiment with n=90000
+
+============================================================
+Running True Uniform DNF Experiment (Permutations)
+Items: 90000, Permutations: 1800000
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 90000 items in [0.0001, 1.0]
+Total items generated: 90000
+Base file generated: TrueUniform_20251202_201000_661078_3364023.txt
+
+Running 1800000 permutation experiments...
+Progress: 0.0% (0/1800000) - Permutation: 0, Bins: 33029
+Progress: 10.0% (180000/1800000) - Permutation: 180000, Bins: 33090
+Progress: 20.0% (360000/1800000) - Permutation: 360000, Bins: 33017
+Progress: 30.0% (540000/1800000) - Permutation: 540000, Bins: 33048
+Progress: 40.0% (720000/1800000) - Permutation: 720000, Bins: 33008
+Progress: 50.0% (900000/1800000) - Permutation: 900000, Bins: 33093
+Progress: 60.0% (1080000/1800000) - Permutation: 1080000, Bins: 33092
+Progress: 70.0% (1260000/1800000) - Permutation: 1260000, Bins: 33075
+Progress: 80.0% (1440000/1800000) - Permutation: 1440000, Bins: 33050
+Progress: 90.0% (1620000/1800000) - Permutation: 1620000, Bins: 33090
+
+Results saved to: ./data/true_uniform_permutation_results_90000items_20251202_201000_3364023.csv
+Total items: 90000
+Total permutations: 1800000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_permutation_plot_90000items_20251202_201000_3364023.png
+
+[PID 3364023] Completed PERMUTATION experiment with n=90000
+
+======================================================================
+SUMMARY (PERMUTATIONS)
+======================================================================
+  n= 10000: SUCCESS -> ./data/true_uniform_permutation_results_10000items_20251202_201000_3364015.csv
+  n= 20000: SUCCESS -> ./data/true_uniform_permutation_results_20000items_20251202_201000_3364016.csv
+  n= 30000: SUCCESS -> ./data/true_uniform_permutation_results_30000items_20251202_201000_3364017.csv
+  n= 40000: SUCCESS -> ./data/true_uniform_permutation_results_40000items_20251202_201000_3364018.csv
+  n= 50000: SUCCESS -> ./data/true_uniform_permutation_results_50000items_20251202_201000_3364019.csv
+  n= 60000: SUCCESS -> ./data/true_uniform_permutation_results_60000items_20251202_201000_3364020.csv
+  n= 70000: SUCCESS -> ./data/true_uniform_permutation_results_70000items_20251202_201000_3364021.csv
+  n= 80000: SUCCESS -> ./data/true_uniform_permutation_results_80000items_20251202_201000_3364022.csv
+  n= 90000: SUCCESS -> ./data/true_uniform_permutation_results_90000items_20251202_201000_3364023.csv
+  n=100000: SUCCESS -> ./data/true_uniform_permutation_results_100000items_20251202_201000_3364024.csv
+
+Total: 10 successful, 0 failed
+======================================================================
+

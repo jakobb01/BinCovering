@@ -1,0 +1,359 @@
+nohup: ignoring input
+
+======================================================================
+PARALLEL TRUE UNIFORM DNF EXPERIMENTS
+======================================================================
+CPU cores available: 32
+Workers to use: 32
+Experiments to run: 10
+N values: [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000]
+======================================================================
+
+
+[PID 3357699] Starting experiment with n=10000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 10000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 10000 items in [0.0001, 1.0]
+Total items generated: 10000
+Base file generated: TrueUniform_20251201_105339_958066_3357699.txt
+
+Running experiments (0 to 10000 swaps)...
+Progress: 0.0% (0/10001) - Swaps: 0, Bins: 3544
+Progress: 10.0% (1000/10001) - Swaps: 1000, Bins: 3583
+Progress: 20.0% (2000/10001) - Swaps: 2000, Bins: 3604
+Progress: 30.0% (3000/10001) - Swaps: 3000, Bins: 3635
+Progress: 40.0% (4000/10001) - Swaps: 4000, Bins: 3659
+Progress: 50.0% (5000/10001) - Swaps: 5000, Bins: 3671
+Progress: 60.0% (6000/10001) - Swaps: 6000, Bins: 3666
+Progress: 70.0% (7000/10001) - Swaps: 7000, Bins: 3675
+Progress: 80.0% (8000/10001) - Swaps: 8000, Bins: 3656
+Progress: 90.0% (9000/10001) - Swaps: 9000, Bins: 3673
+Progress: 100.0% (10000/10001) - Swaps: 10000, Bins: 3647
+
+Results saved to: ./data/true_uniform_dnf_results_10000items_20251201_105339.csv
+Total items: 10000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_10000items_20251201_105339.png
+
+[PID 3357699] Completed experiment with n=10000
+
+[PID 3357701] Starting experiment with n=30000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 30000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 30000 items in [0.0001, 1.0]
+Total items generated: 30000
+Base file generated: TrueUniform_20251201_105339_960094_3357701.txt
+
+Running experiments (0 to 30000 swaps)...
+Progress: 0.0% (0/30001) - Swaps: 0, Bins: 10639
+Progress: 10.0% (3000/30001) - Swaps: 3000, Bins: 10735
+Progress: 20.0% (6000/30001) - Swaps: 6000, Bins: 10829
+Progress: 30.0% (9000/30001) - Swaps: 9000, Bins: 10878
+Progress: 40.0% (12000/30001) - Swaps: 12000, Bins: 10914
+Progress: 50.0% (15000/30001) - Swaps: 15000, Bins: 10959
+Progress: 60.0% (18000/30001) - Swaps: 18000, Bins: 10976
+Progress: 70.0% (21000/30001) - Swaps: 21000, Bins: 10980
+Progress: 80.0% (24000/30001) - Swaps: 24000, Bins: 10999
+Progress: 90.0% (27000/30001) - Swaps: 27000, Bins: 11012
+Progress: 100.0% (30000/30001) - Swaps: 30000, Bins: 10998
+
+Results saved to: ./data/true_uniform_dnf_results_30000items_20251201_105340.csv
+Total items: 30000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_30000items_20251201_105340.png
+
+[PID 3357701] Completed experiment with n=30000
+
+[PID 3357702] Starting experiment with n=40000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 40000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 40000 items in [0.0001, 1.0]
+Total items generated: 40000
+Base file generated: TrueUniform_20251201_105339_960285_3357702.txt
+
+Running experiments (0 to 40000 swaps)...
+Progress: 0.0% (0/40001) - Swaps: 0, Bins: 14197
+Progress: 10.0% (4000/40001) - Swaps: 4000, Bins: 14328
+Progress: 20.0% (8000/40001) - Swaps: 8000, Bins: 14442
+Progress: 30.0% (12000/40001) - Swaps: 12000, Bins: 14513
+Progress: 40.0% (16000/40001) - Swaps: 16000, Bins: 14571
+Progress: 50.0% (20000/40001) - Swaps: 20000, Bins: 14590
+Progress: 60.0% (24000/40001) - Swaps: 24000, Bins: 14663
+Progress: 70.0% (28000/40001) - Swaps: 28000, Bins: 14666
+Progress: 80.0% (32000/40001) - Swaps: 32000, Bins: 14678
+Progress: 90.0% (36000/40001) - Swaps: 36000, Bins: 14697
+Progress: 100.0% (40000/40001) - Swaps: 40000, Bins: 14670
+
+Results saved to: ./data/true_uniform_dnf_results_40000items_20251201_105340.csv
+Total items: 40000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_40000items_20251201_105340.png
+
+[PID 3357702] Completed experiment with n=40000
+
+[PID 3357700] Starting experiment with n=20000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 20000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 20000 items in [0.0001, 1.0]
+Total items generated: 20000
+Base file generated: TrueUniform_20251201_105339_959959_3357700.txt
+
+Running experiments (0 to 20000 swaps)...
+Progress: 0.0% (0/20001) - Swaps: 0, Bins: 7097
+Progress: 10.0% (2000/20001) - Swaps: 2000, Bins: 7182
+Progress: 20.0% (4000/20001) - Swaps: 4000, Bins: 7218
+Progress: 30.0% (6000/20001) - Swaps: 6000, Bins: 7250
+Progress: 40.0% (8000/20001) - Swaps: 8000, Bins: 7288
+Progress: 50.0% (10000/20001) - Swaps: 10000, Bins: 7329
+Progress: 60.0% (12000/20001) - Swaps: 12000, Bins: 7325
+Progress: 70.0% (14000/20001) - Swaps: 14000, Bins: 7353
+Progress: 80.0% (16000/20001) - Swaps: 16000, Bins: 7359
+Progress: 90.0% (18000/20001) - Swaps: 18000, Bins: 7326
+Progress: 100.0% (20000/20001) - Swaps: 20000, Bins: 7357
+
+Results saved to: ./data/true_uniform_dnf_results_20000items_20251201_105340.csv
+Total items: 20000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_20000items_20251201_105340.png
+
+[PID 3357700] Completed experiment with n=20000
+
+[PID 3357703] Starting experiment with n=50000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 50000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 50000 items in [0.0001, 1.0]
+Total items generated: 50000
+Base file generated: TrueUniform_20251201_105339_960464_3357703.txt
+
+Running experiments (0 to 50000 swaps)...
+Progress: 0.0% (0/50001) - Swaps: 0, Bins: 17748
+Progress: 10.0% (5000/50001) - Swaps: 5000, Bins: 17885
+Progress: 20.0% (10000/50001) - Swaps: 10000, Bins: 18031
+Progress: 30.0% (15000/50001) - Swaps: 15000, Bins: 18159
+Progress: 40.0% (20000/50001) - Swaps: 20000, Bins: 18226
+Progress: 50.0% (25000/50001) - Swaps: 25000, Bins: 18299
+Progress: 60.0% (30000/50001) - Swaps: 30000, Bins: 18334
+Progress: 70.0% (35000/50001) - Swaps: 35000, Bins: 18308
+Progress: 80.0% (40000/50001) - Swaps: 40000, Bins: 18327
+Progress: 90.0% (45000/50001) - Swaps: 45000, Bins: 18352
+Progress: 100.0% (50000/50001) - Swaps: 50000, Bins: 18408
+
+Results saved to: ./data/true_uniform_dnf_results_50000items_20251201_105340.csv
+Total items: 50000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_50000items_20251201_105340.png
+
+[PID 3357703] Completed experiment with n=50000
+
+[PID 3357704] Starting experiment with n=60000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 60000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 60000 items in [0.0001, 1.0]
+Total items generated: 60000
+Base file generated: TrueUniform_20251201_105339_960791_3357704.txt
+
+Running experiments (0 to 60000 swaps)...
+Progress: 0.0% (0/60001) - Swaps: 0, Bins: 21352
+Progress: 10.0% (6000/60001) - Swaps: 6000, Bins: 21556
+Progress: 20.0% (12000/60001) - Swaps: 12000, Bins: 21684
+Progress: 30.0% (18000/60001) - Swaps: 18000, Bins: 21852
+Progress: 40.0% (24000/60001) - Swaps: 24000, Bins: 21991
+Progress: 50.0% (30000/60001) - Swaps: 30000, Bins: 22015
+Progress: 60.0% (36000/60001) - Swaps: 36000, Bins: 22027
+Progress: 70.0% (42000/60001) - Swaps: 42000, Bins: 22103
+Progress: 80.0% (48000/60001) - Swaps: 48000, Bins: 22084
+Progress: 90.0% (54000/60001) - Swaps: 54000, Bins: 22155
+Progress: 100.0% (60000/60001) - Swaps: 60000, Bins: 22116
+
+Results saved to: ./data/true_uniform_dnf_results_60000items_20251201_105340.csv
+Total items: 60000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_60000items_20251201_105340.png
+
+[PID 3357704] Completed experiment with n=60000
+
+[PID 3357708] Starting experiment with n=100000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 100000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 100000 items in [0.0001, 1.0]
+Total items generated: 100000
+Base file generated: TrueUniform_20251201_105339_961947_3357708.txt
+
+Running experiments (0 to 100000 swaps)...
+Progress: 0.0% (0/100001) - Swaps: 0, Bins: 35490
+Progress: 10.0% (10000/100001) - Swaps: 10000, Bins: 35801
+Progress: 20.0% (20000/100001) - Swaps: 20000, Bins: 36120
+Progress: 30.0% (30000/100001) - Swaps: 30000, Bins: 36341
+Progress: 40.0% (40000/100001) - Swaps: 40000, Bins: 36446
+Progress: 50.0% (50000/100001) - Swaps: 50000, Bins: 36567
+Progress: 60.0% (60000/100001) - Swaps: 60000, Bins: 36665
+Progress: 70.0% (70000/100001) - Swaps: 70000, Bins: 36668
+Progress: 80.0% (80000/100001) - Swaps: 80000, Bins: 36751
+Progress: 90.0% (90000/100001) - Swaps: 90000, Bins: 36741
+Progress: 100.0% (100000/100001) - Swaps: 100000, Bins: 36734
+
+Results saved to: ./data/true_uniform_dnf_results_100000items_20251201_105340.csv
+Total items: 100000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_100000items_20251201_105340.png
+
+[PID 3357708] Completed experiment with n=100000
+
+[PID 3357706] Starting experiment with n=80000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 80000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 80000 items in [0.0001, 1.0]
+Total items generated: 80000
+Base file generated: TrueUniform_20251201_105339_961468_3357706.txt
+
+Running experiments (0 to 80000 swaps)...
+Progress: 0.0% (0/80001) - Swaps: 0, Bins: 28372
+Progress: 10.0% (8000/80001) - Swaps: 8000, Bins: 28629
+Progress: 20.0% (16000/80001) - Swaps: 16000, Bins: 28860
+Progress: 30.0% (24000/80001) - Swaps: 24000, Bins: 29012
+Progress: 40.0% (32000/80001) - Swaps: 32000, Bins: 29138
+Progress: 50.0% (40000/80001) - Swaps: 40000, Bins: 29239
+Progress: 60.0% (48000/80001) - Swaps: 48000, Bins: 29277
+Progress: 70.0% (56000/80001) - Swaps: 56000, Bins: 29340
+Progress: 80.0% (64000/80001) - Swaps: 64000, Bins: 29365
+Progress: 90.0% (72000/80001) - Swaps: 72000, Bins: 29367
+Progress: 100.0% (80000/80001) - Swaps: 80000, Bins: 29323
+
+Results saved to: ./data/true_uniform_dnf_results_80000items_20251201_105340.csv
+Total items: 80000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_80000items_20251201_105340.png
+
+[PID 3357706] Completed experiment with n=80000
+
+[PID 3357705] Starting experiment with n=70000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 70000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 70000 items in [0.0001, 1.0]
+Total items generated: 70000
+Base file generated: TrueUniform_20251201_105339_961204_3357705.txt
+
+Running experiments (0 to 70000 swaps)...
+Progress: 0.0% (0/70001) - Swaps: 0, Bins: 24822
+Progress: 10.0% (7000/70001) - Swaps: 7000, Bins: 25057
+Progress: 20.0% (14000/70001) - Swaps: 14000, Bins: 25294
+Progress: 30.0% (21000/70001) - Swaps: 21000, Bins: 25428
+Progress: 40.0% (28000/70001) - Swaps: 28000, Bins: 25516
+Progress: 50.0% (35000/70001) - Swaps: 35000, Bins: 25589
+Progress: 60.0% (42000/70001) - Swaps: 42000, Bins: 25648
+Progress: 70.0% (49000/70001) - Swaps: 49000, Bins: 25695
+Progress: 80.0% (56000/70001) - Swaps: 56000, Bins: 25667
+Progress: 90.0% (63000/70001) - Swaps: 63000, Bins: 25686
+Progress: 100.0% (70000/70001) - Swaps: 70000, Bins: 25721
+
+Results saved to: ./data/true_uniform_dnf_results_70000items_20251201_105340.csv
+Total items: 70000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_70000items_20251201_105340.png
+
+[PID 3357705] Completed experiment with n=70000
+
+[PID 3357707] Starting experiment with n=90000
+
+============================================================
+Running True Uniform DNF Experiment
+Items: 90000, Swap step: 1
+============================================================
+
+Generating true uniform distribution data file...
+True Uniform Generator: 90000 items in [0.0001, 1.0]
+Total items generated: 90000
+Base file generated: TrueUniform_20251201_105339_961634_3357707.txt
+
+Running experiments (0 to 90000 swaps)...
+Progress: 0.0% (0/90001) - Swaps: 0, Bins: 31938
+Progress: 10.0% (9000/90001) - Swaps: 9000, Bins: 32246
+Progress: 20.0% (18000/90001) - Swaps: 18000, Bins: 32478
+Progress: 30.0% (27000/90001) - Swaps: 27000, Bins: 32653
+Progress: 40.0% (36000/90001) - Swaps: 36000, Bins: 32782
+Progress: 50.0% (45000/90001) - Swaps: 45000, Bins: 32874
+Progress: 60.0% (54000/90001) - Swaps: 54000, Bins: 32956
+Progress: 70.0% (63000/90001) - Swaps: 63000, Bins: 32997
+Progress: 80.0% (72000/90001) - Swaps: 72000, Bins: 32994
+Progress: 90.0% (81000/90001) - Swaps: 81000, Bins: 33000
+Progress: 100.0% (90000/90001) - Swaps: 90000, Bins: 33044
+
+Results saved to: ./data/true_uniform_dnf_results_90000items_20251201_105340.csv
+Total items: 90000
+
+Generating plot...
+Plot saved to: ./data/true_uniform_dnf_plot_90000items_20251201_105340.png
+
+[PID 3357707] Completed experiment with n=90000
+
+======================================================================
+SUMMARY
+======================================================================
+  n= 10000: SUCCESS -> ./data/true_uniform_dnf_results_10000items_20251201_105339.csv
+  n= 20000: SUCCESS -> ./data/true_uniform_dnf_results_20000items_20251201_105340.csv
+  n= 30000: SUCCESS -> ./data/true_uniform_dnf_results_30000items_20251201_105340.csv
+  n= 40000: SUCCESS -> ./data/true_uniform_dnf_results_40000items_20251201_105340.csv
+  n= 50000: SUCCESS -> ./data/true_uniform_dnf_results_50000items_20251201_105340.csv
+  n= 60000: SUCCESS -> ./data/true_uniform_dnf_results_60000items_20251201_105340.csv
+  n= 70000: SUCCESS -> ./data/true_uniform_dnf_results_70000items_20251201_105340.csv
+  n= 80000: SUCCESS -> ./data/true_uniform_dnf_results_80000items_20251201_105340.csv
+  n= 90000: SUCCESS -> ./data/true_uniform_dnf_results_90000items_20251201_105340.csv
+  n=100000: SUCCESS -> ./data/true_uniform_dnf_results_100000items_20251201_105340.csv
+
+Total: 10 successful, 0 failed
+======================================================================
+
