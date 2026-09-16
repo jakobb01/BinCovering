@@ -1,0 +1,141 @@
+{
+  "baseline": "65e0180",
+  "policy": "Untrack, retain local copies; original content remains in baseline Git history.",
+  "files": [
+    {
+      "path": "executables/dnf.exe",
+      "bytes": 30424,
+      "sha256": "85097233667e4c32ccab1bef2213b95b77e1291e0b3b6ddb91a5cf91a2de6d86"
+    },
+    {
+      "path": "executables/generator.exe",
+      "bytes": 37680,
+      "sha256": "13bf520bdeecda84c98d210225006bc4336d1f2060adae6ae0166457a840ebad"
+    },
+    {
+      "path": "server/custom_code/__pycache__/main_TrueUniform_DNF.cpython-38.pyc",
+      "bytes": 9216,
+      "sha256": "3ec9d9c3ed865a966ef57624931217b7aeb2ac30a40ba0ff0e1f129dc1eb2f9f"
+    },
+    {
+      "path": "server/custom_code/__pycache__/main_TrueUniform_Permutation_DNF.cpython-38.pyc",
+      "bytes": 9257,
+      "sha256": "29e0d666966cd4bfd6343a4bcd23a38258315530ba71bda113210c2f1a03be01"
+    },
+    {
+      "path": "server/dnf_run.log",
+      "bytes": 2675,
+      "sha256": "2b79207f5608b147937bde8c935582b3df2b6480ac53727973e2ade305535473"
+    },
+    {
+      "path": "server/dnf_run_25_12_10_1.log",
+      "bytes": 18720,
+      "sha256": "2bd166a6a80f373708d663b47b9a396205118bbebbb2162198a5457fdea6ac69"
+    },
+    {
+      "path": "server/dnf_run_25_12_14_1.log",
+      "bytes": 15401,
+      "sha256": "e662447056b288ee718227298409a27e186ca119146a2b730d1929ae758f7b1a"
+    },
+    {
+      "path": "server/dnf_run_25_12_17_1.log",
+      "bytes": 1413,
+      "sha256": "8a3da40b5c6837b10ce3119452c8538a89515b0e64f34887204c3e6f7c7c7b45"
+    },
+    {
+      "path": "server/dnf_run_25_12_2.log",
+      "bytes": 18439,
+      "sha256": "09119725d820360cf680952c30becbf895148b9f58f22738f0c7ba174a176f4c"
+    },
+    {
+      "path": "server/dnf_run_25_12_2_2.log",
+      "bytes": 1627,
+      "sha256": "24d5346d7e90f68b0b0efb9ae20e3af0f144dfae04744065bb36169ff7e1cd5f"
+    },
+    {
+      "path": "server/dnf_run_26_01_19_1.log",
+      "bytes": 6277,
+      "sha256": "c509faf3ba5e1bd26cee7517ee26f7963491bc5580ec8b4f9380be6e0b65a876"
+    },
+    {
+      "path": "server/dnf_run_6_11.log",
+      "bytes": 22,
+      "sha256": "0ea7cf1d885ad4976e0150df9dce6ffc37f00cf7db07e24b2b2e886ad0493c46"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/BigItemsGenerator.cpython-38.pyc",
+      "bytes": 4817,
+      "sha256": "b830b4656bfd632bc067ecba4d3b05cd97f49ca2def47869b82c2e1282fc4e98"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/FilePermutationGenerator.cpython-38.pyc",
+      "bytes": 3038,
+      "sha256": "23290fb2ff8005bfc1cfc415978347f6fa515da830ebe0678a1a938f21d89400"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/FileShuffleGenerator.cpython-38.pyc",
+      "bytes": 2746,
+      "sha256": "a977fd2a491a6c894ac1940cadad8435cf4195d51314eee429b1ad5c57453d9e"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/OneOverN.cpython-38.pyc",
+      "bytes": 3225,
+      "sha256": "9cd2f9bad751045bf917c2ce6e3cd235378a40c99e854a8aec58400ff1c2580e"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/OptimalUniformGenerator.cpython-38.pyc",
+      "bytes": 5006,
+      "sha256": "47d99b0a181209e93e44ba78306a014464f29dc81f926f8617fceed7645c05c4"
+    },
+    {
+      "path": "server/generate_bins/__pycache__/UniformGenerator.cpython-38.pyc",
+      "bytes": 3794,
+      "sha256": "7e8d0ed049c8a73014f29fedb1cb1aa14ed0970385d5b8738511143b796d29a2"
+    },
+    {
+      "path": "server/run.log",
+      "bytes": 15023,
+      "sha256": "f9b0acee581909c78e7a56099d22f1529f47a226da2ff3df29f2a9cc655422bc"
+    },
+    {
+      "path": "server/strategies/__pycache__/AdaptiveBin.cpython-38.pyc",
+      "bytes": 6258,
+      "sha256": "f5032a37ad435f6a0c8f323f46776096fc736f1fc7ba1f65c6fa7fb318896ca6"
+    },
+    {
+      "path": "server/strategies/__pycache__/AdaptiveBinCovered.cpython-38.pyc",
+      "bytes": 5033,
+      "sha256": "b9bf5e5843df66f0b3a62cd94699918eb406dc639e71499303aba9a1405c26b0"
+    },
+    {
+      "path": "server/strategies/__pycache__/DNF_1.cpython-38.pyc",
+      "bytes": 1708,
+      "sha256": "9561b47007d874d98847be6fc445e91e56f04fde747c8bc7e64a1ed2ecd252ca"
+    },
+    {
+      "path": "server/strategies/__pycache__/ThrowBin.cpython-38.pyc",
+      "bytes": 4106,
+      "sha256": "ce9ab60e3cdff074c6e128093f28b44b1cd4e4248a92641712c1ec513b9ce0cc"
+    },
+    {
+      "path": "server/strategies/__pycache__/ThrowBin_1.cpython-38.pyc",
+      "bytes": 4343,
+      "sha256": "46a000f95a21b219ac924a34e60684646a84a6f2eb31dfc31f5a28f75af42485"
+    },
+    {
+      "path": "server/strategies/__pycache__/ThrowBin_DNF.cpython-38.pyc",
+      "bytes": 3847,
+      "sha256": "ced5bf3e5321188ad7a5c65a5c92d28b73830a17d8eb3663db843dbd3cedb5b6"
+    },
+    {
+      "path": "web_interface/src/custom_code/__pycache__/element_iterator.cpython-310.pyc",
+      "bytes": 1217,
+      "sha256": "ac378df78feee7a1733df3bbc1c4492908967e0a9ed8835e0841f9f7e8688bfb"
+    },
+    {
+      "path": "web_interface/src/data/test.txt",
+      "bytes": 2732,
+      "sha256": "1ab92d80ca781158d04993fb8f862c30b6a9d8735d25b3f09eeb37fac66d0633"
+    }
+  ]
+}

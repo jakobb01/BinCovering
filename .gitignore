@@ -1,0 +1,28 @@
+# Generated research artifacts (never commit runs).
+/outputs/
+/runs/
+/multirun/
+/archive/
+/datasets/generated/
+/data/
+/server/data/
+/web_interface/src/data/
+/web_interface/data/
+/python_graphs/*.txt
+/python_graphs/*.csv
+/python_graphs/*.xlsx
+/python_graphs/*.png
+*.log
+# Build products and local environments.
+/build/
+/dist/
+/executables/*.exe
+/.venv/
+/.tools/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
