@@ -53,6 +53,19 @@ def trial_job(cfg, trial, out):
             reference_kind="unavailable",
         )
         input_error = f"Input generation: {type(exc).__name__}: {exc}"
+    if input_error is None:
+        from bincovering.reporting.distributions import input_histogram
+
+        statistics_dir = out / "input-statistics"
+        statistics_dir.mkdir(exist_ok=True)
+        write_json(
+            statistics_dir / f"{trial}.json",
+            {
+                **input_histogram(items, cfg["threshold"]),
+                "trial": trial,
+                "input_hash": info["input_hash"],
+            },
+        )
     if cfg["save_inputs"]:
         (out / "inputs").mkdir(exist_ok=True)
         write_json(out / "inputs" / f"{trial}.json", items)

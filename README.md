@@ -87,6 +87,12 @@ bincovering cleanup             # preview disposable figures and traces
 bincovering cleanup --apply     # removes those only; skips pinned/active runs
 ```
 
+Plots show per-round coverage percentages, variation across rounds, and generated
+item-size distributions. References are labelled as known OPT or mass upper bound.
+PNG, SVG, and plot data are saved together; compact input histograms are retained
+without requiring full sequences. See [research plots](docs/RESEARCH_PLOTS.md) for
+interpretation and proposed next visualizations.
+
 Plots use saved trials and do not rerun algorithms. Comparisons report whether the
 ordered trial inputs match. Cleanup never deletes raw trials, saved inputs, logs,
 or source provenance. Export creates a zip under the run's `exports/` directory
