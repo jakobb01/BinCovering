@@ -124,7 +124,14 @@ bincovering web
 ```
 
 Configure experiments, inspect progress, cancel jobs, compare selected runs,
-create plots, pin results, and export them. The web interface reads the same output
+create plots, pin results, and export them. Saved runs are grouped by their exact
+experiment name, with fuzzy search and a bounded history panel. Opening results
+scrolls to them. Select runs and use **DNF / ordering plots** for paired baseline
+and controlled ordering comparisons.
+
+**Remove** moves an unpinned, finished experiment to `<output-root>/.trash/`;
+**Undo** restores it. Removal hides it from history and CLI listings while retaining
+its files. Trash is local retained data, not a backup or permanent erasure. The web interface reads the same output
 directories as the CLI. Background workers continue if a browser tab closes or the
 server restarts. Run locks distinguish live workers from abandoned runs; listing
 reconciles abandoned records without discarding evidence. Cancellation is cooperative.

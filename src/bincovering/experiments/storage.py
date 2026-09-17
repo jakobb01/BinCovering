@@ -109,6 +109,8 @@ def list_runs(root):
         return []
     rows = []
     for path in sorted(root.rglob("manifest.json"), reverse=True):
+        if ".trash" in path.relative_to(root).parts:
+            continue
         try:
             record = json.loads(path.read_text())
             if (

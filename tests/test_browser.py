@@ -1,6 +1,7 @@
 """Opt-in real browser check: BINCOVERING_BROWSER=1 pytest tests/test_browser.py."""
 
 import os
+import re
 import threading
 from pathlib import Path
 
@@ -61,6 +62,37 @@ def test_browser_experiment_compare_export_and_mobile(tmp_path):
             with page.expect_download() as download:
                 page.get_by_role("link", name="Export", exact=True).first.click()
             download.value.save_as(str(tmp_path / "export.zip"))
+            expect(page.locator(".run-group")).to_have_count(1)
+            page.get_by_label("Search experiments").fill("basline")
+            expect(page.locator("#runs tr")).to_have_count(2)
+            page.get_by_label("Search experiments").fill("nothingmatches")
+            expect(page.locator("#runs tr")).to_have_count(0)
+            page.get_by_label("Search experiments").fill("")
+            expect(page.locator("#runs input:checked")).to_have_count(2)
+            page.get_by_role("button", name="Remove", exact=True).click()
+            expect(page.locator("#runs tr")).to_have_count(1)
+            page.get_by_role("button", name="Undo", exact=True).click()
+            expect(page.locator("#runs tr")).to_have_count(2)
+            page.get_by_label("Name", exact=True).fill("ordering-study")
+            page.get_by_label("Item order", exact=True).select_option("descending")
+            page.get_by_role("button", name="Run experiment", exact=True).click()
+            expect(page.locator(".run-group")).to_have_count(2, timeout=15000)
+            new_group = page.locator(".run-group").filter(
+                has=page.locator("summary", has_text="ordering-study")
+            )
+            new_group.locator("summary").click()
+            expect(new_group).to_contain_text("completed", timeout=15000)
+            for checkbox in page.locator("#runs input[type=checkbox]").all():
+                checkbox.check()
+            page.get_by_role("button", name="DNF / ordering plots", exact=True).click()
+            expect(page.locator("#figure")).to_have_attribute(
+                "src", re.compile("/api/comparison-figure/"), timeout=15000
+            )
+            expect(page.locator("#figure")).to_be_visible()
+            page.wait_for_function(
+                'document.querySelector("#figure").complete && document.querySelector("#figure").naturalWidth>0'
+            )
+            assert page.locator("#runs").bounding_box()["height"] <= 421
             page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
             page.set_viewport_size({"width": 390, "height": 844})
             assert page.evaluate(

@@ -1,6 +1,8 @@
+import hashlib
 import json
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, send_file
@@ -20,7 +22,12 @@ def create_app(output_root="outputs"):
 
     def locate(run_id):
         path = (root / run_id).resolve()
-        if not path.is_relative_to(root) or not (path / "manifest.json").is_file():
+        if (
+            path == root
+            or not path.is_relative_to(root)
+            or ".trash" in path.relative_to(root).parts
+            or not (path / "manifest.json").is_file()
+        ):
             raise ValueError("Unknown run")
         return path
 
@@ -99,6 +106,74 @@ def create_app(output_root="outputs"):
             raise ValueError("Could not launch experiment worker") from exc
         jobs[path.name] = process
         return jsonify(id=path.name), 202
+
+    @app.post("/api/remove/<path:run_id>")
+    def remove(run_id):
+        from bincovering.experiments.lifecycle import RunLease
+
+        path = locate(run_id)
+        with RunLease(path):
+            record = json.loads((path / "manifest.json").read_text())
+            if record["status"] in ("queued", "running") or (path / "PINNED").exists():
+                raise ValueError("Finish the run and unpin it before removing")
+            token = uuid.uuid4().hex
+            trash = root / ".trash"
+            trash.mkdir(exist_ok=True)
+            write_json(
+                trash / (token + ".json"), {"original_id": str(path.relative_to(root))}
+            )
+            path.rename(trash / token)
+        jobs.pop(run_id, None)
+        return jsonify(token=token, message="Moved to trash")
+
+    @app.post("/api/restore/<token>")
+    def restore(token):
+        if len(token) != 32 or any(c not in "0123456789abcdef" for c in token):
+            raise ValueError("Unknown removed experiment")
+        trash = root / ".trash"
+        metadata = trash / (token + ".json")
+        source = trash / token
+        if not metadata.is_file() or not source.is_dir():
+            raise ValueError("Unknown removed experiment")
+        original = json.loads(metadata.read_text())["original_id"]
+        destination = (root / original).resolve()
+        if (
+            destination == root
+            or not destination.is_relative_to(root)
+            or destination.exists()
+        ):
+            raise ValueError("Cannot restore over an existing location")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        source.rename(destination)
+        metadata.unlink()
+        return jsonify(id=original)
+
+    @app.post("/api/comparison-plot")
+    def comparison_plot():
+        from bincovering.reporting.comparisons import plot_comparison
+
+        body = request.get_json(silent=True) or {}
+        ids = body.get("ids")
+        if (
+            not isinstance(ids, list)
+            or not ids
+            or not all(isinstance(i, str) for i in ids)
+        ):
+            raise ValueError("Select experiments to plot")
+        token = hashlib.sha256(json.dumps(sorted(set(ids))).encode()).hexdigest()[:32]
+        plot_comparison(
+            [locate(i) for i in ids], root / ".comparisons" / (token + ".png")
+        )
+        return jsonify(url="/api/comparison-figure/" + token)
+
+    @app.get("/api/comparison-figure/<token>")
+    def comparison_figure(token):
+        if len(token) != 32 or any(c not in "0123456789abcdef" for c in token):
+            raise ValueError("Unknown comparison")
+        path = root / ".comparisons" / (token + ".png")
+        if not path.is_file():
+            raise ValueError("Unknown comparison")
+        return send_file(path)
 
     @app.post("/api/cancel/<path:run_id>")
     def cancel(run_id):

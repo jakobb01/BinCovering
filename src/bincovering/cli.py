@@ -36,6 +36,7 @@ def _main():
         p.add_argument("run")
     p = sub.add_parser("compare")
     p.add_argument("runs", nargs="+")
+    p.add_argument("--plot", metavar="PNG", help="Save paired DNF and ordering plots")
     p = sub.add_parser("export")
     p.add_argument("run")
     p.add_argument("--destination", default=None)
@@ -73,6 +74,10 @@ def _main():
         from bincovering.reporting.reports import compare
 
         print(json.dumps(compare(args.runs), indent=2))
+        if args.plot:
+            from bincovering.reporting.comparisons import plot_comparison
+
+            print(plot_comparison(args.runs, args.plot))
     elif args.command in ("pin", "unpin"):
         run = Path(args.run)
         if not (run / "manifest.json").is_file():

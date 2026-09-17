@@ -29,7 +29,39 @@ Plotting never regenerates sequences using a possibly changed generator.
 Here, "round" means a trial. The figure does not show individual bin loads or the
 process of closing bins as each item arrives. Those require additional instrumentation.
 
-## Recommended next plots (proposals, not implemented)
+## Paired DNF and ordering plots
+
+Select one or more saved runs and click **DNF / ordering plots**, or use:
+
+```bash
+bincovering compare outputs/<run-a> outputs/<run-b> --plot outputs/comparison.png
+```
+
+The paired panel shows `100 × (algorithm bins − DNF bins) / reference`, in
+percentage points, with a zero line. Pairs require identical ordered input hashes,
+trial IDs, numeric domain, threshold, and reference. DNF from the same run is
+preferred, then matching selected runs; matching backends are preferred. Conflicting
+DNF counts are excluded. Missing or invalid pairs are counted explicitly.
+
+The ordering panel requires matching base input hashes for every trial across
+selected runs. Select at least two ordering/swap settings. It shows median coverage
+with the interquartile range; swap-only studies use a numeric swap-count axis when
+the swap method agrees. Other orderings are categorical, with no interpolated lines.
+Algorithms, parameters and backends remain separate. Percentages use recorded OPT
+or the mass upper bound as labelled. No new experiments are silently launched.
+
+To create a controlled study with DNF and harmonic:
+
+```bash
+bincovering run --multirun name=order-study dataset_mode=fixed ordering=swaps swaps=0,100,1000 n=1000 trials=30 seed=42
+```
+
+Select the resulting three runs for plotting. Fixed-input results are conditional
+on that input. Repeated runs are repeated records, not necessarily independent
+samples; neither the paired box plots nor the ordering ranges are confidence intervals.
+Web comparison PNG/SVG/JSON files are under ignored `outputs/.comparisons/`.
+
+## Plot roadmap
 
 Research distinguishes worst-order, random-order, and distribution-dependent
 performance; a single average cannot express all these questions. See
@@ -39,8 +71,8 @@ The following are project-specific recommendations based on those distinctions.
 
 | Priority | Plot | Research question / experimental design |
 | --- | --- | --- |
-| 1 | Paired advantage over DNF, in percentage points | On identical trial inputs, does the new algorithm improve coverage consistently? Plot the distribution of paired differences with a zero line. Keep backend and parameter identities separate. |
-| 2 | Coverage versus swap count or input order | How much does performance depend on ordering? Hold the base multiset fixed, vary ordering, and repeat random permutations. Show median and quantile bands. Swap count is not percentage of items moved. |
+| Implemented | Paired advantage over DNF, in percentage points | On identical trial inputs, does the new algorithm improve coverage consistently? Plot the distribution of paired differences with a zero line. Keep backend and parameter identities separate. |
+| Implemented | Coverage versus swap count or input order | How much does performance depend on ordering? Hold the base multiset fixed, vary ordering, and repeat random permutations. Show median and quantile bands. Swap count is not percentage of items moved. |
 | 3 | Coverage and runtime versus N, in separate panels | Does quality stabilize as inputs grow, and what does that cost? Use multiple independent inputs per N; report process/serialization overhead in native timings. |
 | 4 | Empirical CDF of coverage | What fraction of trials falls below a chosen quality threshold? Useful for reliability and comparing lower tails without choosing histogram bins. |
 | 5 | Overshoot and unfinished-bin mass per round | Why are bins lost? Requires recording actual loads at bin closure, residual mass, and discarded mass, consistently across Python and C++ backends. |
