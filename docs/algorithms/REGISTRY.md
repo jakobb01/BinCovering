@@ -11,6 +11,8 @@ in every trial; filenames and timestamps never identify an algorithm variant.
 | `throwbin_replace` | `ThrowBin_1` | Same initial bin count; replace covered bins with empty bins. |
 | `throwbin_fixed_active` | `ThrowBin_DNF` | Ten active bins, random placement, replacement after coverage. |
 | `adaptive_items` | `AdaptiveBin` | Grow total bins to ceil(items_received/2); ensure an active bin; random placement. |
+| `advice_reserved` | `advice` | Reservation advice, k=5 layout; supplied reserved-bin count m=103 and fraction x_m=0.8. Actual loads determine coverage. |
+| `advice_reserved_k4` | `advice_k` | Distinct k=4 layout with the same explicit advice parameters. |
 | `adaptive_covered` | `AdaptiveBinCovered` | Initial bins (default 1); after covering, grow total bins to max(ceil(covered × multiplier), covered+1); default multiplier 2. |
 
 The adaptive-items implementation uses division by 2. Some historical comments
@@ -27,7 +29,10 @@ division. Exactly threshold-sized items are allowed; larger and nonpositive item
 are rejected by the shared input layer. The native integer threshold is bounded
 by 10^9 to keep its sums well inside signed 64-bit arithmetic.
 
-Legacy `advice` and `advice_k` remain outside the registry pending validation.
+The advice variants correct the historical accounting errors described in
+[MIGRATION.md](../MIGRATION.md). Their supplied advice values are not inferred from
+an oracle; neither their theoretical guarantees nor advice-bit complexity are
+claimed. Historical advice results are not correctness references.
 The archived source revision and each run's source snapshot distinguish old
 behavior from corrected implementations. Do not compare historical outputs by
 algorithm label alone.

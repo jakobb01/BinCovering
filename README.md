@@ -31,6 +31,9 @@ bincovering run --multirun n=1000,5000 seed=1,2,3 trials=5
 bincovering run --config-dir configs --config-name throwbin n=1000 trials=5
 bincovering run --config-dir configs --config-name adaptive n=1000 trials=5
 bincovering run --config-dir configs --config-name permutations n=1000 trials=100
+bincovering run --config-dir configs --config-name advice n=1000 trials=5
+bincovering run --config-dir configs --config-name one_over_n n=1000 trials=5
+bincovering run --config-dir configs --config-name optimal_uniform generator.bins=100
 
 # Explicit configuration overrides.
 bincovering run 'algorithms=[{id:ThrowBin_1,params:{bin_ratio:0.3}}]' ordering=descending
@@ -42,6 +45,8 @@ generates a new base input per trial; `dataset_mode=fixed` reuses one base input
 and varies the trial's order/algorithm seed. Every algorithm in a trial receives
 the same ordered input. `ordering=swaps swaps=50` performs 50 random pair swaps
 starting from descending order; it does not promise 50 distinct moved items.
+Use `swap_mode=distinct` for two distinct positions per swap, as in the old server
+studies. The default `with_replacement` allows the same position twice.
 
 Hydra runs sweep jobs serially; `workers` controls the process pool within each
 job. Seeds do not depend on process scheduling. Neither float experiments nor
@@ -58,6 +63,8 @@ bincovering plot outputs/<run>
 bincovering compare outputs/<run-a> outputs/<run-b>
 bincovering export outputs/<run>
 bincovering pin outputs/<run>
+bincovering rerun outputs/<run>  # new record, current Python code, archived input/binary
+bincovering cancel outputs/<run> # cooperative cancellation
 bincovering cleanup             # preview disposable figures and traces
 bincovering cleanup --apply     # removes those only; skips pinned/active runs
 ```
@@ -75,8 +82,15 @@ Each run contains `config.json`, `manifest.json`, `trials.csv`, `summary.json`,
 `run.log`, and a source snapshot. Hydra jobs additionally include `.hydra/` settings.
 Inputs, bounded traces, and figures are optional. Imported file inputs are always
 saved; use `generator.id=file generator.path=/absolute/path/to/items.txt`.
-A failed algorithm produces a failed trial row; an interrupted run keeps completed
-trial records and a cancelled status. Failed/cancelled CLI runs exit nonzero.
+A failed algorithm or generator produces failed trial rows. Cancellation preserves
+completed trials; abandoned processes are marked interrupted when runs are listed.
+Failed/cancelled CLI runs exit nonzero. Imported files are frozen before trials,
+and native runs retain the executable and available source/build settings.
+
+`construction_target` is not an optimum certificate: historical OneOverN and
+OptimalUniform generators retain their old distributions but use a mass bound.
+If float rounding produces coverage above the real-arithmetic bound, the trial
+records a numerical warning and omits the ratio. See the migration guide for details.
 
 ## Web interface
 
@@ -85,18 +99,22 @@ bincovering web
 # Open http://127.0.0.1:5000
 ```
 
-Configure experiments, inspect progress, cancel jobs, compare selected runs, and
-create plots. The web interface reads the same output directories as the CLI.
-Background workers continue if a browser tab closes. On server restart, persisted
-results remain available; this first version does not recover supervision of
-previously launched workers. Cancellation is cooperative and may wait for input
-generation or the current processing chunk.
+Configure experiments, inspect progress, cancel jobs, compare selected runs,
+create plots, pin results, and export them. The web interface reads the same output
+directories as the CLI. Background workers continue if a browser tab closes or the
+server restarts. Run locks distinguish live workers from abandoned runs; listing
+reconciles abandoned records without discarding evidence. Cancellation is cooperative.
 
 The compatibility command `python web_interface/app.py` opens the same interface.
-The previous script editor assets remain historical and are not served by it.
-The container builds from the repository root using `web_interface/Containerfile`;
-mount `/app/outputs` to retain results. Container execution has not been validated
-in this development environment.
+The old script editor is retired. Build and run the container from the repository root:
+
+```bash
+podman build -f web_interface/Containerfile -t bincovering:dev .
+podman run --rm -p 5000:5000 -v "$PWD/outputs:/app/outputs" bincovering:dev
+```
+
+The image includes the native baselines. Container runs with multiple workers,
+plotting, and native comparison have been validated.
 
 ## Native baselines
 
@@ -108,8 +126,13 @@ bincovering run --config-dir configs --config-name integer n=1000 trials=5
 
 The native runner supports DNF and harmonic in integer or float64 mode. Native
 results include subprocess/serialization time; compare timings with that overhead
-in mind. Native source/binary provenance is saved with the run. C++ threading is
-not introduced: independent trials already run in separate worker processes.
+in mind. Native source/binary provenance is saved with the run. Independent trials run in
+separate worker processes.
+`bincovering benchmark --items 1000 10000 100000 --trials 3` records paired
+Python/native timings under ignored outputs. Native startup and serialization
+dominate small inputs; profiling supported faster parsing, not a blanket speedup
+claim or adding native threads. The reusable native state is in `cpp/include/`;
+historical executables are in `cpp/reference/`.
 
 ## Development
 
@@ -121,11 +144,27 @@ ruff format --check src tests
 
 The tests cover algorithm boundaries, a tiny exhaustive optimum oracle, private
 random streams, serial/parallel repeatability, Python/C++ agreement, failure and
-cancellation handling, and web/CLI interoperability. Native checks skip if `g++`
-is unavailable.
+cancellation handling, restart recovery, advice accounting, historical generator
+semantics, and web/CLI interoperability. Native checks skip if `g++` is unavailable.
+
+For the opt-in browser test, install `.[browser]` and Chromium with its system
+dependencies, then run `BINCOVERING_BROWSER=1 pytest tests/test_browser.py -q`.
+Alternatively build `tools/Containerfile.test` after the application image; it
+installs browser system dependencies and expects Chromium at `/browsers`:
+
+```bash
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.tools/browsers" python -m playwright install chromium
+podman build -f tools/Containerfile.test -t bincovering-test:dev .
+mkdir -p outputs/browser-validation
+podman run --rm -v "$PWD/.tools/browsers:/browsers:ro" -v "$PWD/outputs/browser-validation:/screenshots" bincovering-test:dev
+```
+
+Browser validation covers actual jobs, comparison, plots, pinning, export, and mobile layout.
 
 See [algorithm identities](docs/algorithms/REGISTRY.md) and the historical
 [artifact inventory](docs/ARTIFACT_INVENTORY.json).
-Older server drivers remain for historical studies; their configuration semantics
-and performance claims are not automatically equivalent to the new runner.
+See the [study migration guide](docs/MIGRATION.md) for replacement commands and
+changes in result interpretation. Retired drivers print migration instructions;
+original implementations remain in Git history. Advice variants are experimental
+implementations with explicit supplied parameters, not validated theoretical guarantees.
 The historical research reference is https://arxiv.org/pdf/2309.13647.
