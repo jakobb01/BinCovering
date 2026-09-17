@@ -13,9 +13,12 @@ generator:
   min: 0.0001
   max: 1.0
   path: null
+  bins: 100
+  completion_fraction: 0.15
 ordering: shuffle
 dataset_mode: fresh
 swaps: 0
+swap_mode: with_replacement
 algorithms:
   - id: dual_next_fit
   - id: dual_harmonic

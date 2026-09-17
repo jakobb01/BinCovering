@@ -1,10 +1,13 @@
 import csv
 import json
 import os
+import threading
 from pathlib import Path
 
 from bincovering.experiments.runner import summarize
 from bincovering.experiments.storage import write_json
+
+PLOT_LOCK = threading.RLock()
 
 
 def read_trials(path):
@@ -17,6 +20,11 @@ def read_trials(path):
 
 
 def plot_run(path):
+    with PLOT_LOCK:
+        return _plot_run(path)
+
+
+def _plot_run(path):
     path = Path(path)
     os.environ.setdefault("MPLCONFIGDIR", str(path.resolve() / "cache" / "matplotlib"))
     import matplotlib
@@ -60,7 +68,17 @@ def compare(paths):
     for path in paths:
         path = Path(path)
         rows = read_trials(path)
-        identities.append({(r["trial"], r["input_hash"]) for r in rows})
+        manifest = json.loads((path / "manifest.json").read_text())
+        cfg = manifest["config"]
+        identities.append(
+            {
+                (r["trial"], r["input_hash"], cfg["domain"], cfg["threshold"])
+                for r in rows
+                if r["input_hash"]
+            }
+        )
         records.append({"path": str(path), "summary": summarize(rows)})
-    paired = all(s == identities[0] for s in identities[1:]) if identities else False
+    paired = bool(identities and identities[0]) and all(
+        s == identities[0] for s in identities[1:]
+    )
     return {"same_trial_inputs": paired, "runs": records}

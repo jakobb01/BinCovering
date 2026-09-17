@@ -1,0 +1,19 @@
+defaults:
+  - config
+  - _self_
+name: reservation-advice-comparison
+generator:
+  id: complementary_pairs
+algorithms:
+  - id: dual_next_fit
+  - id: dual_harmonic
+    params:
+      k: 5
+  - id: advice_reserved
+    params:
+      m: 103
+      x_m: 0.8
+  - id: advice_reserved_k4
+    params:
+      m: 103
+      x_m: 0.8

@@ -1,0 +1,10 @@
+defaults:
+  - config
+  - _self_
+name: one-over-n-study
+generator:
+  id: one_over_n
+ordering: descending
+algorithms:
+  - id: dual_next_fit
+  - id: adaptive_items

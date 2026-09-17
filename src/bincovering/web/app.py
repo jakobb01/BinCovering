@@ -7,6 +7,7 @@ from flask import Flask, jsonify, render_template, request, send_file
 
 from bincovering.algorithms.registry import PARAMETERS
 from bincovering.experiments.config import validate
+from bincovering.experiments.lifecycle import reconcile_runs
 from bincovering.experiments.storage import list_runs, new_run, now, write_json
 from bincovering.reporting.reports import compare, plot_run
 
@@ -45,9 +46,14 @@ def create_app(output_root="outputs"):
                     )
                     write_json(path / "manifest.json", record)
                 del jobs[key]
+        reconcile_runs(root)
         return jsonify(
             [
-                {**r, "id": str(Path(r["path"]).relative_to(root))}
+                {
+                    **r,
+                    "id": str(Path(r["path"]).relative_to(root)),
+                    "pinned": (Path(r["path"]) / "PINNED").exists(),
+                }
                 for r in list_runs(root)
             ]
         )
@@ -57,7 +63,10 @@ def create_app(output_root="outputs"):
         raw = request.get_json()
         if not isinstance(raw, dict):
             raise ValueError("Expected experiment settings")
-        if raw.get("generator", {}).get("id") == "file":
+        if (
+            isinstance(raw.get("generator"), dict)
+            and raw["generator"].get("id") == "file"
+        ):
             raise ValueError("Use the CLI to import a file")
         # Browser jobs use fixed server-owned output and executable paths.
         raw["output_root"] = str(root)
@@ -76,18 +85,29 @@ def create_app(output_root="outputs"):
                 "config": cfg,
             },
         )
-        with (path / "worker.log").open("w") as log:
-            process = subprocess.Popen(
-                [sys.executable, "-m", "bincovering.web.worker", str(path)],
-                stdout=log,
-                stderr=log,
-            )
+        try:
+            with (path / "worker.log").open("w") as log:
+                process = subprocess.Popen(
+                    [sys.executable, "-m", "bincovering.web.worker", str(path)],
+                    stdout=log,
+                    stderr=log,
+                )
+        except OSError as exc:
+            manifest = json.loads((path / "manifest.json").read_text())
+            manifest.update(status="failed", error=str(exc), finished_at=now())
+            write_json(path / "manifest.json", manifest)
+            raise ValueError("Could not launch experiment worker") from exc
         jobs[path.name] = process
         return jsonify(id=path.name), 202
 
     @app.post("/api/cancel/<path:run_id>")
     def cancel(run_id):
         path = locate(run_id)
+        if json.loads((path / "manifest.json").read_text())["status"] not in (
+            "queued",
+            "running",
+        ):
+            raise ValueError("Run is already finished")
         (path / "CANCEL").touch()
         return jsonify(message="Cancellation requested")
 
@@ -98,6 +118,24 @@ def create_app(output_root="outputs"):
         if (path / "summary.json").exists():
             result["summary"] = json.loads((path / "summary.json").read_text())
         return jsonify(result)
+
+    @app.get("/api/export/<path:run_id>")
+    def export(run_id):
+        from bincovering.experiments.artifacts import export_run
+
+        path = locate(run_id)
+        destination = export_run(path)
+        return send_file(destination, as_attachment=True)
+
+    @app.post("/api/pin/<path:run_id>")
+    def pin(run_id):
+        path = locate(run_id)
+        body = request.get_json(silent=True) or {}
+        if body.get("pinned", True):
+            (path / "PINNED").touch()
+        else:
+            (path / "PINNED").unlink(missing_ok=True)
+        return jsonify(pinned=(path / "PINNED").exists())
 
     @app.get("/api/compare")
     def comparison():

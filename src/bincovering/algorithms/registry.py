@@ -19,6 +19,8 @@ ALIASES = {
     "ThrowBin_DNF": "throwbin_fixed_active",
     "AdaptiveBin": "adaptive_items",
     "AdaptiveBinCovered": "adaptive_covered",
+    "advice": "advice_reserved",
+    "advice_k": "advice_reserved_k4",
 }
 PARAMETERS = {
     "dual_next_fit": {},
@@ -28,14 +30,22 @@ PARAMETERS = {
     "throwbin_fixed_active": {},
     "adaptive_items": {},
     "adaptive_covered": {"multiplier": 2.0, "initial_bins": 1},
+    "advice_reserved": {"m": 103, "x_m": 0.8},
+    "advice_reserved_k4": {"m": 103, "x_m": 0.8},
 }
 
 
 def normalize(spec):
+    if not isinstance(spec, dict) or not isinstance(spec.get("id"), str):
+        raise ValueError("Each algorithm must have a string id")
+    if spec.keys() - {"id", "params", "backend"}:
+        raise ValueError("Unknown algorithm setting")
     spec = dict(spec)
     name = ALIASES.get(spec["id"], spec["id"])
     if name not in PARAMETERS:
         raise ValueError(f"Unknown algorithm: {name}")
+    if not isinstance(spec.get("params", {}), dict):
+        raise ValueError("Algorithm params must be an object")
     params = dict(spec.get("params", {}))
     if params.keys() - PARAMETERS[name].keys():
         raise ValueError(
@@ -44,16 +54,26 @@ def normalize(spec):
     params = PARAMETERS[name] | params
     if "k" in params and (type(params["k"]) is not int or not 2 <= params["k"] <= 1000):
         raise ValueError("k must be an integer in [2, 1000]")
-    if "bin_ratio" in params and not 0 < params["bin_ratio"] <= 1:
+
+    def finite(value):
+        return type(value) in (int, float) and math.isfinite(value)
+
+    if "bin_ratio" in params and (
+        not finite(params["bin_ratio"]) or not 0 < params["bin_ratio"] <= 1
+    ):
         raise ValueError("bin_ratio must be in (0, 1]")
     if "initial_bins" in params and (
         type(params["initial_bins"]) is not int or params["initial_bins"] < 1
     ):
         raise ValueError("initial_bins must be a positive integer")
     if "multiplier" in params and (
-        not math.isfinite(params["multiplier"]) or params["multiplier"] <= 0
+        not finite(params["multiplier"]) or params["multiplier"] <= 0
     ):
         raise ValueError("multiplier must be finite and positive")
+    if "m" in params and (type(params["m"]) is not int or params["m"] < 0):
+        raise ValueError("m must be a nonnegative integer")
+    if "x_m" in params and (not finite(params["x_m"]) or not 0.5 <= params["x_m"] <= 1):
+        raise ValueError("x_m must be a threshold fraction in [0.5, 1]")
     backend = spec.get("backend", "python")
     if backend not in ("python", "cpp") or (
         backend == "cpp" and name not in ("dual_next_fit", "dual_harmonic")
@@ -79,6 +99,20 @@ class Stream:
 def solve(items, spec, threshold, seed, trace=None, cancelled=lambda: False):
     """Process in order. No epsilon or conversion between integer and float domains."""
     name, params = spec["id"], spec["params"]
+    if name.startswith("advice_reserved"):
+        from .advice import reserved_advice
+
+        return Result(
+            reserved_advice(
+                items,
+                threshold,
+                params["m"],
+                params["x_m"],
+                4 if name.endswith("k4") else 5,
+                trace,
+                cancelled,
+            )
+        )
     if name in ("dual_next_fit", "dual_harmonic"):
         k = params.get("k", 2)
         loads = [0] * (k if name == "dual_harmonic" else 1)

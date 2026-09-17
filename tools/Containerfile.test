@@ -1,0 +1,6 @@
+# Optional isolated browser validation; build the application image first.
+FROM localhost/bincovering:dev
+COPY tests /app/tests
+RUN pip install --no-cache-dir -c requirements.lock '.[test,browser]' && python -m playwright install-deps chromium
+ENV BINCOVERING_BROWSER=1 BINCOVERING_SCREENSHOTS=/screenshots PLAYWRIGHT_BROWSERS_PATH=/browsers
+CMD ["python", "-m", "pytest", "tests/test_browser.py", "-q"]

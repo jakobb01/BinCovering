@@ -15,7 +15,16 @@ def executable(tmp_path_factory):
         pytest.skip("g++ not installed")
     target = tmp_path_factory.mktemp("native") / "solver"
     subprocess.run(
-        ["g++", "-std=c++17", "-O2", "cpp/src/main.cpp", "-o", str(target)], check=True
+        [
+            "g++",
+            "-std=c++17",
+            "-O2",
+            "-Icpp/include",
+            "cpp/src/main.cpp",
+            "-o",
+            str(target),
+        ],
+        check=True,
     )
     return target
 
@@ -85,7 +94,9 @@ def test_legacy_dnf_regression(tmp_path):
     if not shutil.which("g++"):
         pytest.skip("g++ not installed")
     binary = tmp_path / "dnf"
-    subprocess.run(["g++", "-std=c++17", "main.cpp", "-o", str(binary)], check=True)
+    subprocess.run(
+        ["g++", "-std=c++17", "cpp/reference/main.cpp", "-o", str(binary)], check=True
+    )
     items = tmp_path / "items.txt"
     items.write_text("1\n")
     assert subprocess.check_output([str(binary), str(items)], text=True).strip() == "0"

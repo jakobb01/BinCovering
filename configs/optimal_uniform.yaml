@@ -1,0 +1,12 @@
+defaults:
+  - config
+  - _self_
+name: historical-optimal-uniform
+generator:
+  id: optimal_uniform_legacy
+  bins: 100
+  completion_fraction: 0.15
+ordering: descending
+dataset_mode: fixed
+algorithms:
+  - id: dual_next_fit

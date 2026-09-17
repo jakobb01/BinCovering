@@ -1,0 +1,11 @@
+defaults:
+  - config
+  - _self_
+name: uniform-swap-study
+ordering: swaps
+swap_mode: distinct
+swaps: 100
+dataset_mode: fixed
+trials: 10
+algorithms:
+  - id: dual_next_fit

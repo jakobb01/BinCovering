@@ -6,6 +6,8 @@ antlr4-python3-runtime==4.9.3
     #   omegaconf
 blinker==1.9.0
     # via flask
+build==1.6.1
+    # via bincovering (pyproject.toml)
 click==8.5.0
     # via flask
 cmake==4.4.3
@@ -18,6 +20,8 @@ flask==3.1.3
     # via bincovering (pyproject.toml)
 fonttools==4.65.0
     # via matplotlib
+greenlet==3.5.6
+    # via playwright
 hydra-core==1.3.2
     # via bincovering (pyproject.toml)
 iniconfig==2.3.0
@@ -43,17 +47,24 @@ omegaconf==2.3.1
     # via hydra-core
 packaging==26.3
     # via
+    #   build
     #   hydra-core
     #   matplotlib
     #   pytest
 pillow==12.3.0
     # via matplotlib
+playwright==1.63.0
+    # via bincovering (pyproject.toml)
 pluggy==1.6.0
     # via pytest
+pyee==13.0.1
+    # via playwright
 pygments==2.21.0
     # via pytest
 pyparsing==3.3.2
     # via matplotlib
+pyproject-hooks==1.3.3
+    # via build
 pytest==8.4.2
     # via bincovering (pyproject.toml)
 python-dateutil==2.9.0.post0
@@ -64,5 +75,7 @@ ruff==0.16.8
     # via bincovering (pyproject.toml)
 six==1.17.0
     # via python-dateutil
+typing-extensions==4.16.0
+    # via pyee
 werkzeug==3.1.8
     # via flask

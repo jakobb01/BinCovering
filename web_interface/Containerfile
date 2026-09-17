@@ -1,11 +1,18 @@
-# Build from the repository root:
-# docker build -f web_interface/Containerfile -t bincovering .
+# Build from the repository root.
+FROM python:3.11-slim AS native
+RUN apt-get update && apt-get install -y --no-install-recommends g++ && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
+COPY cpp ./cpp
+RUN g++ -std=c++17 -O3 -DNDEBUG -Icpp/include cpp/src/main.cpp -o bincovering-native
+
 FROM python:3.11-slim
 WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 MPLCONFIGDIR=/app/outputs/.cache/matplotlib
 COPY pyproject.toml requirements.lock ./
 COPY src ./src
 COPY configs ./configs
+COPY cpp ./cpp
+COPY --from=native /build/bincovering-native ./build/bincovering-native
 RUN pip install --no-cache-dir -c requirements.lock '.[web,plot]'
 EXPOSE 5000
 # Mount /app/outputs for durable experiment storage.

@@ -8,11 +8,13 @@ import multiprocessing
 import shutil
 import statistics
 import time
-from concurrent.futures import ProcessPoolExecutor, as_completed
+import zipfile
+from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from pathlib import Path
 
 from bincovering.algorithms.registry import solve
 from bincovering.experiments.config import validate
+from bincovering.experiments.lifecycle import RunLease
 from bincovering.experiments.storage import new_run, now, provenance, write_json
 from bincovering.generators.instances import generate
 
@@ -35,7 +37,22 @@ def trial_job(cfg, trial, out):
         cfg["seed"], trial if cfg["dataset_mode"] == "fresh" else 0, "data"
     )
     order_seed = seed_for(cfg["seed"], trial, "order")
-    items, info = generate(cfg, data_seed, order_seed)
+    input_error = None
+    try:
+        items, info = generate(cfg, data_seed, order_seed, cancelled)
+    except InterruptedError:
+        raise
+    except Exception as exc:
+        items = []
+        info = dict(
+            base_input_hash=None,
+            input_hash=None,
+            upper_bound=None,
+            exact_optimum=None,
+            construction_target=None,
+            reference_kind="unavailable",
+        )
+        input_error = f"Input generation: {type(exc).__name__}: {exc}"
     if cfg["save_inputs"]:
         (out / "inputs").mkdir(exist_ok=True)
         write_json(out / "inputs" / f"{trial}.json", items)
@@ -57,12 +74,15 @@ def trial_job(cfg, trial, out):
             "order_seed": order_seed,
             "algorithm_seed": algorithm_seed,
             "num_items": len(items),
+            "domain": cfg["domain"],
+            "threshold": cfg["threshold"],
             **info,
             "status": "completed",
             "error": "",
             "covered_bins": None,
             "discarded_items": None,
             "ratio_to_reference": None,
+            "numeric_warning": "",
             "reference_value": info["exact_optimum"]
             if info["exact_optimum"] is not None
             else info["upper_bound"],
@@ -75,6 +95,8 @@ def trial_job(cfg, trial, out):
 
         start = time.perf_counter()
         try:
+            if input_error:
+                raise ValueError(input_error)
             if spec["backend"] == "cpp":
                 from bincovering.backends.native import solve_native
 
@@ -97,7 +119,14 @@ def trial_job(cfg, trial, out):
                 )
             row["covered_bins"] = result.covered_bins
             row["discarded_items"] = result.discarded_items
-            if row["reference_value"]:
+            if (
+                row["reference_value"] is not None
+                and result.covered_bins > row["reference_value"]
+            ):
+                row["numeric_warning"] = (
+                    "Computed coverage exceeds the real-arithmetic reference; inspect floating-point boundary effects."
+                )
+            elif row["reference_value"]:
                 row["ratio_to_reference"] = result.covered_bins / row["reference_value"]
         except InterruptedError:
             raise
@@ -143,6 +172,11 @@ def run_experiment(raw, output_dir=None):
     cfg = validate(raw)
     out = Path(output_dir).resolve() if output_dir else new_run(cfg["output_root"])
     out.mkdir(parents=True, exist_ok=True)
+    with RunLease(out):
+        return _run_owned(cfg, out)
+
+
+def _run_owned(cfg, out):
     if (out / "manifest.json").exists():
         existing = json.loads((out / "manifest.json").read_text())
         if existing["status"] != "queued":
@@ -153,7 +187,7 @@ def run_experiment(raw, output_dir=None):
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "name": cfg["name"],
         "status": "running",
         "created_at": now(),
@@ -165,6 +199,16 @@ def run_experiment(raw, output_dir=None):
     }
     rows = []
     try:
+        write_json(out / "manifest.json", manifest)
+        if cfg["generator"]["id"] == "file":
+            source = Path(cfg["generator"]["path"])
+            frozen = out / "input-source.txt"
+            shutil.copyfile(source, frozen)
+            manifest["input_source"] = {
+                "original_path": str(source),
+                "sha256": hashlib.sha256(frozen.read_bytes()).hexdigest(),
+            }
+            cfg["generator"]["path"] = str(frozen)
         manifest["provenance"] = provenance(out)
         if any(a["backend"] == "cpp" for a in cfg["algorithms"]):
             executable = Path(cfg["native_executable"])
@@ -172,6 +216,16 @@ def run_experiment(raw, output_dir=None):
                 executable.read_bytes()
             ).hexdigest()
             shutil.copy2(executable, out / "native-executable")
+            native_source = executable.parent.parent / "cpp"
+            if native_source.is_dir():
+                with zipfile.ZipFile(
+                    out / "native-source.zip", "w", zipfile.ZIP_DEFLATED
+                ) as archive:
+                    for source in sorted(native_source.rglob("*")):
+                        if source.is_file() and source.suffix in (".cpp", ".hpp", ".h"):
+                            archive.write(
+                                source, str(source.relative_to(native_source))
+                            )
             build_cache = executable.parent / "CMakeCache.txt"
             if build_cache.is_file():
                 manifest["native_build_settings"] = [
@@ -210,16 +264,26 @@ def run_experiment(raw, output_dir=None):
                     max_workers=cfg["workers"],
                     mp_context=multiprocessing.get_context("spawn"),
                 ) as pool:
-                    futures = [
-                        pool.submit(trial_job, cfg, t, str(out))
-                        for t in range(cfg["trials"])
-                    ]
+                    trials = iter(range(cfg["trials"]))
+                    pending = set()
+
+                    def refill():
+                        while len(pending) < 2 * cfg["workers"]:
+                            trial = next(trials, None)
+                            if trial is None:
+                                break
+                            pending.add(pool.submit(trial_job, cfg, trial, str(out)))
+
+                    refill()
                     try:
-                        for future in as_completed(futures):
-                            collect(future.result())
+                        while pending:
+                            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+                            for future in done:
+                                collect(future.result())
+                            refill()
                     except BaseException:
                         (out / "CANCEL").touch()
-                        for future in futures:
+                        for future in pending:
                             future.cancel()
                         raise
         manifest["status"] = (
@@ -239,6 +303,7 @@ def run_experiment(raw, output_dir=None):
         logger.exception("Run failed")
         raise
     finally:
+        write_json(out / "summary.json", summarize(rows))
         manifest["finished_at"] = now()
         write_json(out / "manifest.json", manifest)
         logger.removeHandler(handler)

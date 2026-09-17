@@ -2,17 +2,33 @@ import argparse
 import json
 import shutil
 import sys
-import zipfile
 from pathlib import Path
 
 from bincovering.experiments.storage import list_runs
 
 
 def main():
+    try:
+        _main()
+    except (ValueError, OSError) as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        raise SystemExit(2) from None
+
+
+def _main():
     parser = argparse.ArgumentParser(description="Bin covering research tools")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("run", help="Hydra run: bincovering run seed=42 n=1000")
     sub.add_parser("algorithms")
+    p = sub.add_parser("rerun")
+    p.add_argument("run")
+    p.add_argument("--root")
+    p = sub.add_parser("cancel")
+    p.add_argument("run")
+    p = sub.add_parser("benchmark")
+    p.add_argument("--items", type=int, nargs="+", default=[1000, 10000, 100000])
+    p.add_argument("--trials", type=int, default=3)
+    p.add_argument("--root", default="outputs")
     p = sub.add_parser("list")
     p.add_argument("--root", default="outputs")
     for name in ("inspect", "plot", "pin", "unpin"):
@@ -42,6 +58,9 @@ def main():
 
         print(json.dumps({"algorithms": PARAMETERS, "aliases": ALIASES}, indent=2))
     elif args.command == "list":
+        from bincovering.experiments.lifecycle import reconcile_runs
+
+        reconcile_runs(args.root)
         for r in list_runs(args.root):
             print(r["status"], r["name"], r["path"])
     elif args.command == "inspect":
@@ -78,23 +97,29 @@ def main():
                     if args.apply:
                         shutil.rmtree(candidate)
     elif args.command == "export":
-        run = Path(args.run).resolve()
-        destination = (
-            Path(args.destination)
-            if args.destination
-            else run / "exports" / f"{run.name}.zip"
-        )
-        destination = destination.resolve()
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(destination, "x", zipfile.ZIP_DEFLATED) as archive:
-            for file in run.rglob("*"):
-                if (
-                    file.is_file()
-                    and file != destination
-                    and "exports" not in file.relative_to(run).parts
-                ):
-                    archive.write(file, str(file.relative_to(run)))
-        print(destination)
+        from bincovering.experiments.artifacts import export_run
+
+        print(export_run(args.run, args.destination))
+    elif args.command == "rerun":
+        from bincovering.experiments.artifacts import rerun
+
+        print(rerun(args.run, args.root))
+    elif args.command == "cancel":
+        path = Path(args.run)
+        if not (path / "manifest.json").is_file():
+            parser.error("Not an experiment directory")
+        if json.loads((path / "manifest.json").read_text())["status"] not in (
+            "queued",
+            "running",
+        ):
+            parser.error("Run is already finished")
+        (path / "CANCEL").touch()
+        print("Cancellation requested")
+    elif args.command == "benchmark":
+        from bincovering.reporting.benchmark import benchmark
+
+        for path in benchmark(args.items, args.trials, args.root):
+            print(path)
     elif args.command == "web":
         from bincovering.web.app import create_app
 

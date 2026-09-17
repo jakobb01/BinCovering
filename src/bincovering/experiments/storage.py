@@ -111,7 +111,12 @@ def list_runs(root):
     for path in sorted(root.rglob("manifest.json"), reverse=True):
         try:
             record = json.loads(path.read_text())
-            rows.append({"path": str(path.parent), **record})
+            if (
+                not isinstance(record, dict)
+                or not {"name", "status", "created_at"} <= record.keys()
+            ):
+                continue
+            rows.append({**record, "path": str(path.parent)})
         except (ValueError, OSError):
             continue
     return rows
