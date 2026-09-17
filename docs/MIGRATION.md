@@ -3,14 +3,14 @@
 The pre-reorganization checkout is `65e0180`; the first packaged checkpoint is
 `0da1672`. Use Git to inspect those implementations and historical output formats.
 Source copies retired during local migration were retained under ignored
-`archive/retired-source/`. No research outputs were deleted.
+`outputs/historical/layout-cleanup-20260917/archive/retired-source/`. No research outputs were deleted.
 
 ## Study entry points
 
 Use the commands below from the repository root. All new results stay under
-`outputs/`. The former `server/custom_code/main_*.py` entry points now print migration
-instructions instead of launching large hardcoded studies. They deliberately do
-not silently reinterpret old command-line flags.
+`outputs/`. The former `server/custom_code/main_*.py` entry points and compatibility import
+folders have been removed from the active tree. Use the replacements below; old
+command-line flags are not silently reinterpreted.
 
 | Old entry point | Replacement |
 | --- | --- |
@@ -63,9 +63,10 @@ ratios, and ordering. Hydra sweeps jobs; the runner parallelizes trials within a
   do not promise identical end-to-end histories across that change. New run metadata
   records the independent seeds and actual input hashes.
 
-The old CSV analyzer remains available for old files; the new reporter consumes
-run directories. Historical adaptive diagnostic scripts remain as examples and
-are not part of the automated correctness suite.
+The old CSV analyzer and adaptive diagnostics are retained in Git history and the
+local historical archive; they are not supported entry points. The new reporter
+consumes run directories. Import strategies and generators from `bincovering`,
+not the removed `server` wrappers.
 
 ## Corrected advice variants
 
@@ -82,11 +83,25 @@ infer an oracle or compute a theoretical advice bit budget.
 
 ## Output and source preservation
 
-The old web editor is retired; its assets are preserved in Git history. The new web
-entry point uses the shared experiment runner. Old C++ research prototypes are now
+The old web editor is retired; its assets are preserved in Git history. The `bincovering web`
+entry point uses the shared experiment runner. Its container definition lives in
+`tools/Containerfile`. Old C++ research prototypes are now
 in `cpp/reference/`; their build targets retain the `legacy-` names. Only the new
 native library is used by the shared runner.
 
 Agent context/planning files, generated artifacts, local archives, screenshots,
 benchmark output, wheels, environments, and caches are ignored. Human-facing
 documentation, code, test fixtures, configurations, and dependency pins are tracked.
+
+## Final directory cleanup
+
+The old top-level `server/`, `python_graphs/`, `web_interface/`, `executables/`, and
+`archive/` directories were consolidated under ignored
+`outputs/historical/layout-cleanup-20260917/`. All files were retained byte-for-byte;
+`relocation.json` there maps original paths to retained paths with SHA-256 hashes.
+The original artifact inventory continues to describe the original paths at its
+baseline revision; use the relocation manifest to locate those files locally.
+
+The percentage-mixer regression reference is retained in `tests/reference/mixer.py`.
+Historical C++ sources remain in `cpp/reference/` because the build and differential
+tests still exercise them. The active Python/web application is in `src/bincovering/`.

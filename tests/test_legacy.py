@@ -1,5 +1,6 @@
 import importlib.util
 import random
+from pathlib import Path
 
 import pytest
 
@@ -8,7 +9,8 @@ from bincovering.algorithms.registry import normalize, solve
 
 def test_mixer_percentage(tmp_path, monkeypatch):
     spec = importlib.util.spec_from_file_location(
-        "legacy_mixer", "python_graphs/mixer.py"
+        "legacy_mixer",
+        str(Path(__file__).parent / "reference" / "mixer.py"),
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

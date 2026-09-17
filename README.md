@@ -4,6 +4,24 @@ Academic research tools for **bin covering**: maximize the number of bins whose
 item load reaches the covering threshold. The project has a shared Python
 experiment runner, Hydra configuration, a local web interface, and C++ baselines.
 
+## Repository layout
+
+```text
+src/bincovering/   algorithms, generators, runner, CLI, and web application
+configs/          versioned experiment configurations
+cpp/              native implementation, headers, and historical C++ references
+tests/            automated tests and small regression references
+tools/            application and browser-test container definitions
+docs/             algorithm definitions and migration documentation
+outputs/          ignored results, figures, exports, and retained historical files
+```
+
+`build/`, `.venv/`, and `.tools/` are ignored local build/environment directories.
+The old `server/`, `python_graphs/`, `web_interface/`, `executables/`, and `archive/`
+trees are consolidated locally under `outputs/historical/layout-cleanup-20260917/`.
+Their relocation manifest records original paths, retained paths, and file hashes.
+New checkouts obtain historical source from Git; local research data needs its own backup.
+
 ## Install
 
 Use Python 3.11. From the repository root:
@@ -105,11 +123,10 @@ directories as the CLI. Background workers continue if a browser tab closes or t
 server restarts. Run locks distinguish live workers from abandoned runs; listing
 reconciles abandoned records without discarding evidence. Cancellation is cooperative.
 
-The compatibility command `python web_interface/app.py` opens the same interface.
-The old script editor is retired. Build and run the container from the repository root:
+The old web entry point and script editor are retired; use `bincovering web`. Build and run the container from the repository root:
 
 ```bash
-podman build -f web_interface/Containerfile -t bincovering:dev .
+podman build -f tools/Containerfile -t bincovering:dev .
 podman run --rm -p 5000:5000 -v "$PWD/outputs:/app/outputs" bincovering:dev
 ```
 
@@ -164,7 +181,7 @@ Browser validation covers actual jobs, comparison, plots, pinning, export, and m
 See [algorithm identities](docs/algorithms/REGISTRY.md) and the historical
 [artifact inventory](docs/ARTIFACT_INVENTORY.json).
 See the [study migration guide](docs/MIGRATION.md) for replacement commands and
-changes in result interpretation. Retired drivers print migration instructions;
-original implementations remain in Git history. Advice variants are experimental
+changes in result interpretation. Old directory trees and compatibility drivers have been removed from the active
+layout; original implementations remain in Git history. Advice variants are experimental
 implementations with explicit supplied parameters, not validated theoretical guarantees.
 The historical research reference is https://arxiv.org/pdf/2309.13647.
