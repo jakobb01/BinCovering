@@ -5,11 +5,18 @@ interpretation of the historical code, not a claim of matching a published theor
 """
 
 
-def reserved_advice(items, threshold, m, fraction, k, trace, cancelled):
+def reserved_advice(
+    items, threshold, m, fraction, k, trace, cancelled, accounting=None
+):
+    from .accounting import ObservedLoads
+
     reservation = threshold * fraction
     loads = [0] * m
     present = [False] * m
     harmonic = [0] * k
+    if accounting is not None:
+        loads = ObservedLoads(loads, accounting)
+        harmonic = ObservedLoads(harmonic, accounting)
     critical_cursor = 0
     small_cursor = 0
     covered = 0
@@ -50,4 +57,6 @@ def reserved_advice(items, threshold, m, fraction, k, trace, cancelled):
                 harmonic[bucket] = 0
         if trace:
             trace(index, item, covered)
+    if accounting is not None:
+        return covered, accounting.finish(items, [*loads, *harmonic])
     return covered

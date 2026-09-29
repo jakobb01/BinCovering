@@ -87,11 +87,14 @@ bincovering cleanup             # preview disposable figures and traces
 bincovering cleanup --apply     # removes those only; skips pinned/active runs
 ```
 
-Plots show per-round coverage percentages, variation across rounds, and generated
-item-size distributions. References are labelled as known OPT or mass upper bound.
-PNG, SVG, and plot data are saved together; compact input histograms are retained
-without requiring full sequences. See [research plots](docs/RESEARCH_PLOTS.md) for
-interpretation and proposed next visualizations.
+Plots show input-size distributions, per-trial coverage percentages, and frequency
+of coverage outcomes for a selected algorithm. References are labelled as known
+OPT or mass upper bound. PNG, SVG, and plot data are saved together. New runs retain
+compact input histograms and bin-mass measurements without requiring full sequences.
+The dashboard also offers adjustable target achievement, paired DNF improvement,
+mass accounting, controlled ordering studies, and ThrowBin parameter sweeps.
+See [research plots](docs/RESEARCH_PLOTS.md) for interpretation,
+study requirements, and the follow-up review page.
 
 Plots use saved trials and do not rerun algorithms. Comparisons report whether the
 ordered trial inputs match. Cleanup never deletes raw trials, saved inputs, logs,
@@ -123,11 +126,16 @@ bincovering web
 # Open http://127.0.0.1:5000
 ```
 
-Configure experiments, inspect progress, cancel jobs, compare selected runs,
-create plots, pin results, and export them. Saved runs are grouped by their exact
-experiment name, with fuzzy search and a bounded history panel. Opening results
-scrolls to them. Select runs and use **DNF / ordering plots** for paired baseline
-and controlled ordering comparisons.
+Home contains the experiment form, workspace counts, and recent/active runs.
+**Saved experiments** opens `/experiments`, a full-width page with normal page
+scrolling, name groups, search, selection, and aligned row actions. Search covers
+names, algorithms, input ordering, and saved settings; see [search examples](docs/SEARCH.md).
+Configure experiments, cancel jobs, compare runs, create plots, pin results, and
+export them. Opening a result shows a plot/summary/provenance dialog; closing it
+restores your position. **Study plots** offers saved-run comparisons. The viewer
+supports individual overview panels, algorithm selection, an adjustable coverage
+target, zoom, and PNG/SVG downloads. Mass accounting requires the bin-load
+measurements retained by new runs.
 
 **Remove** moves an unpinned, finished experiment to `<output-root>/.trash/`;
 **Undo** restores it. Removal hides it from history and CLI listings while retaining

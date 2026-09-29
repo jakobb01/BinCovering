@@ -11,7 +11,7 @@ from bincovering.algorithms.registry import PARAMETERS
 from bincovering.experiments.config import validate
 from bincovering.experiments.lifecycle import reconcile_runs
 from bincovering.experiments.storage import list_runs, new_run, now, write_json
-from bincovering.reporting.reports import compare, plot_run
+from bincovering.reporting.reports import compare
 
 
 def create_app(output_root="outputs"):
@@ -37,7 +37,41 @@ def create_app(output_root="outputs"):
 
     @app.get("/")
     def index():
-        return render_template("index.html", algorithms=PARAMETERS)
+        return render_template("index.html", algorithms=PARAMETERS, page="home")
+
+    @app.get("/experiments")
+    def experiments():
+        return render_template("index.html", algorithms=PARAMETERS, page="experiments")
+
+    def coverage_target(body):
+        value = body.get("target", 70)
+        if type(value) not in (int, float) or not 0 <= value <= 100:
+            raise ValueError("Minimum coverage target must be a number from 0 to 100%")
+        return float(value)
+
+    def target_results(paths, minimum):
+        from bincovering.reporting.visualizations import reliability_data
+
+        data = reliability_data(paths, minimum)
+        # Full per-trial evidence stays in figure JSON. The interactive table
+        # needs only counts and labels, even for studies with many trials.
+        return {
+            "target": data["target"],
+            "omitted": data["omitted"],
+            "groups": [
+                {
+                    key: group[key]
+                    for key in (
+                        "label",
+                        "reached",
+                        "total",
+                        "percentage",
+                        "reference_label",
+                    )
+                }
+                for group in data["groups"]
+            ],
+        }
 
     @app.get("/api/runs")
     def runs():
@@ -170,7 +204,10 @@ def create_app(output_root="outputs"):
     def comparison_figure(token):
         if len(token) != 32 or any(c not in "0123456789abcdef" for c in token):
             raise ValueError("Unknown comparison")
-        path = root / ".comparisons" / (token + ".png")
+        extension = request.args.get("format", "png")
+        if extension not in {"png", "svg"}:
+            raise ValueError("Unknown figure format")
+        path = root / ".comparisons" / (token + "." + extension)
         if not path.is_file():
             raise ValueError("Unknown comparison")
         return send_file(path)
@@ -221,15 +258,98 @@ def create_app(output_root="outputs"):
 
     @app.post("/api/plot/<path:run_id>")
     def plot(run_id):
+        from bincovering.reporting.visualizations import render_plot
+
         path = locate(run_id)
         record = json.loads((path / "manifest.json").read_text())
         if record["status"] in ("queued", "running"):
             raise ValueError("Wait for the run to finish")
-        plot_run(path)
-        return jsonify(url="/api/figure/" + run_id)
+        body = request.get_json(silent=True) or {}
+        if not isinstance(body, dict):
+            raise ValueError("Expected plot settings")
+        kind = body.get("kind", "overview")
+        algorithm = body.get("algorithm", 0)
+        if (
+            not isinstance(kind, str)
+            or kind not in {"overview", "mass", "reliability", "paired"}
+            or type(algorithm) is not int
+            or algorithm < 0
+        ):
+            raise ValueError("Choose an available plot and algorithm")
+        minimum = coverage_target(body) if kind == "reliability" else 70
+        target = render_plot(
+            [path],
+            kind,
+            algorithm=algorithm,
+            panel=body.get("panel", "all"),
+            minimum_coverage=minimum,
+        )
+        name = target.stem
+        payload = dict(
+            url=f"/api/figure/{run_id}?name={name}",
+            svg_url=f"/api/figure/{run_id}?name={name}&format=svg",
+            kind=kind,
+        )
+        if kind == "reliability":
+            payload["target_data"] = target_results([path], minimum)
+        return jsonify(payload)
 
     @app.get("/api/figure/<path:run_id>")
     def figure(run_id):
-        return send_file(locate(run_id) / "figures" / "coverage.png")
+        name = request.args.get("name", "coverage")
+        extension = request.args.get("format", "png")
+        if (
+            not name
+            or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in name)
+            or extension not in {"png", "svg"}
+        ):
+            raise ValueError("Unknown figure")
+        target = locate(run_id) / "figures" / f"{name}.{extension}"
+        if not target.is_file():
+            raise ValueError("This figure has not been generated")
+        return send_file(target)
+
+    @app.post("/api/study-plot")
+    def study_plot():
+        from bincovering.reporting.visualizations import render_plot
+
+        body = request.get_json(silent=True)
+        if not isinstance(body, dict):
+            raise ValueError("Expected selected studies")
+        ids = body.get("ids")
+        kind = body.get("kind")
+        if (
+            not isinstance(kind, str)
+            or kind not in {"ordering", "parameters", "paired", "reliability"}
+            or not isinstance(ids, list)
+            or not ids
+            or not all(isinstance(i, str) for i in ids)
+        ):
+            raise ValueError("Select saved experiments and an available study plot")
+        paths = [locate(i) for i in sorted(set(ids))]
+        if any(
+            json.loads((p / "manifest.json").read_text())["status"]
+            in {"queued", "running"}
+            for p in paths
+        ):
+            raise ValueError("Wait for selected experiments to finish")
+        minimum = coverage_target(body) if kind == "reliability" else 70
+        token = hashlib.sha256(
+            json.dumps([kind, sorted(set(ids)), minimum]).encode()
+        ).hexdigest()[:32]
+        render_plot(
+            paths,
+            kind,
+            root / ".comparisons" / f"{token}.png",
+            minimum_coverage=minimum,
+        )
+        payload = dict(
+            url="/api/comparison-figure/" + token,
+            svg_url="/api/comparison-figure/" + token + "?format=svg",
+            kind=kind,
+        )
+        if kind == "reliability":
+            payload["target_data"] = target_results(paths, minimum)
+        return jsonify(payload)
 
     return app

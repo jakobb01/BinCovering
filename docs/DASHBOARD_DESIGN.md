@@ -27,20 +27,25 @@ These project-specific rules are informed by the following component guides:
 
 ## Layout
 
-The page has a lightweight brand/navigation bar, a title and real workspace counts,
-then two columns: experiment configuration on the left, history and results on the
-right. The maximum shell width is 1440px. Padding is 48px on wide screens, 28px at
-intermediate widths, and 16px on phones.
+The navigation has two real pages. **Dashboard** (`/`) owns experiment configuration,
+workspace counts, all active jobs, and six recent completed/failed results. **Saved
+experiments** (`/experiments`) owns the full history, search, grouping, selection,
+comparison, and study plots. Keep its heading compact and use the toolbar counts;
+do not repeat the home hero, workspace metrics, or a second large panel heading.
+The first saved row should start within 500px of the page top on desktop. Both pages
+use the same result viewer. Do not duplicate
+launch controls on the history page or turn navigation into in-page anchors.
 
-At 900px and below, columns stack. At 600px and below, experiment table rows become
-readable records with all actions reachable by touch. History remains bounded to
-420px with its own scroll area. Experiment groups use exact saved names. Search
-and selection stay visible above the list. Results open below history and receive
-focus, with scrolling that respects reduced-motion preferences.
+The home page uses two columns: configuration and recent activity. At 900px and
+below they stack. History spans the available page width and uses normal page
+scrolling; never restore the old 420px nested list. Search and selection controls
+stay sticky within history. At 600px and below table rows become compact records.
+Experiment groups use exact saved names. Maximum shell width is 1440px, with 48px
+wide-screen padding, 28px at intermediate widths, and 16px on phones.
 
-Do not put a sidebar or tabs in a view with no distinct destinations to navigate.
-New screens can introduce them when the task actually needs them. Preserve a clear
-path from configuration to history to result interpretation.
+Results open in a native modal viewer with a fixed header and tabs. Closing restores
+keyboard focus and the page scroll position. Preserve a clear path from launching a
+study to reviewing its recorded evidence.
 
 ## Visual tokens
 
@@ -83,7 +88,13 @@ moderate weight and slightly tight tracking. Numbers use tabular figures where u
 
 - `.button-primary` is for **Run experiment**. Keep the other actions quieter.
 - `.button-secondary` is for a main alternative such as **Compare selected**.
-- `.button-ghost` is for toolbars and row actions. Give it an explicit hover/focus state.
+- `.button-plot` uses accessible orange (`--accent-ink`) with white text for **Plot**.
+- **Inspect** uses the neutral bordered `.button-secondary`; **More** uses a quiet
+  outlined disclosure. Keep row targets at least 40px on desktop and 44px on phones.
+  Use compact horizontal padding so Inspect, Plot, and More stay in one aligned row.
+  More opens a small anchored menu; it must not expand the table row or wrap the
+  primary actions. Escape and clicking outside dismiss it.
+- `.button-ghost` is for quiet toolbar actions. Give it an explicit hover/focus state.
 - `.button-danger` is for **Remove**, with a visible verb and restrained red text.
 - Use `<button type="button">` for actions and real links for navigation/downloads.
   Form submission alone uses `type="submit"`.
@@ -110,7 +121,9 @@ native checkbox state. Controls have 40px height, with larger touch targets on p
 ### History and tables
 
 Keep fuzzy search, matched/total counts, selected count, and **Clear selection** together.
-Filtering must not lose selections from other groups. Preserve expanded group state,
+Filtering must not lose selections from other groups. Use `static/search.js` for
+query semantics instead of adding page-local matchers; see `SEARCH.md`. Keep the
+ordering/count examples visible near the search input. Preserve expanded group state,
 scroll position, open row actions, and keyboard focus during background refreshes.
 Unchanged polls must not rebuild the list.
 
@@ -136,8 +149,32 @@ own labelled state. Failure feedback uses both explanatory text and color.
 ### Results
 
 Use compact cards for algorithm summaries, with explicit units and trial counts.
-Keep configuration/source details in **Settings and provenance**. Figures link to
-the full-size image so small screens can inspect labels. Keep the scientific meaning
+Keep configuration/source details in **Settings and provenance**. Use the native result dialog for Plot, Inspect, and Compare. Its Plot, Summary, and
+Settings and provenance tabs must support arrows/Home/End, visible focus, Escape,
+and a labelled Close action. Preserve the opener and scroll position on close.
+
+Open immediately with a loading state; do not wait for figure generation before
+showing the viewer. A new request invalidates earlier responses, including responses
+after closing. Keep errors inside the viewer, and hide stale figure/download links.
+
+Figures initially fit the viewport. Offer **Zoom to full size** with a scrollable
+image region, **Fit to view**, **Open PNG**, and **Download SVG**. For the three-panel
+overview offer individual panels, so labels remain readable on small screens.
+The overview algorithm selector includes backend and parameter values, using the
+same unique groups as the plot data. Mass accounting compares all recorded algorithm
+groups and hides the overview-only selector. Never combine distinct identities into
+one choice.
+
+Single-run choices are Research overview, Coverage targets, Paired comparison with
+DNF, and Mass accounting. Selected-run studies offer Ordering sensitivity, ThrowBin
+parameter study, and Paired comparison with DNF.
+
+Coverage targets has a labelled 0–100% numeric control, initially 70%. Changing it
+updates both the plotted guide and an accessible disclosure containing the table of
+reached/valid trial counts and empirical shares. Keep the disclosure closed initially
+so the target plot fits on phones; preserve its open state when the target changes. Explain the recorded OPT/upper-bound denominator and avoid
+calling observed frequencies future guarantees. Paired charts explain the sign of
+differences and compare identical ordered inputs. Keep the scientific meaning
 of percentages, OPT/upper bounds, paired comparisons, and uncertainty labels intact;
 see `RESEARCH_PLOTS.md`. Do not change interpretation for visual simplicity.
 
@@ -166,5 +203,5 @@ components evolve.
 5. Run applicable web tests. The opt-in Playwright workflow in `tests/test_browser.py`
    covers the actual browser; screenshots stay in ignored `outputs/`.
 
-Future ideas such as tabs, drawers, themes, or a full component gallery are proposals
+Future ideas such as drawers, themes, or a full component gallery are proposals
 until explicitly adopted. Extend the smallest component that serves the research task.

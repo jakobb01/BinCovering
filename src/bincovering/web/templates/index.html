@@ -1,34 +1,38 @@
+{% set current_page = page|default("home") %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>BinCovering · Research dashboard</title>
+  <title>BinCovering · {{ "Saved experiments" if current_page == "experiments" else "Research dashboard" }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-  <a class="skip-link" href="#configure">Skip to experiments</a>
+<body data-page="{{ current_page }}">
+  <a class="skip-link" href="{{ "#history" if current_page == "experiments" else "#configure" }}">Skip to content</a>
   <div class="site-bar">
-    <a class="brand" href="#top" aria-label="BinCovering dashboard">
+    <a class="brand" href="/" aria-label="BinCovering dashboard">
       <svg viewBox="0 0 28 28" width="28" height="28" aria-hidden="true"><path d="M3 4h9v9H3zM16 4h9v9h-9zM3 17h9v7H3zM16 17h9v7h-9z" fill="currentColor"/><path d="M3 13h9M16 13h9M3 24h9M16 24h9" stroke="currentColor" stroke-width="2"/></svg>
       BinCovering
     </a>
-    <nav aria-label="Dashboard navigation"><a href="#configure">New experiment</a><a href="#history">Saved experiments</a></nav>
+    <nav aria-label="Dashboard navigation"><a href="/" {% if current_page == "home" %}aria-current="page"{% endif %}>Dashboard</a><a href="/experiments" {% if current_page == "experiments" %}aria-current="page"{% endif %}>Saved experiments</a><a href="http://127.0.0.1:5001/" target="_blank" rel="noopener">Plot review ↗</a></nav>
     <span class="workspace-label"><span class="connection-dot" aria-hidden="true"></span>Local workspace</span>
   </div>
   <main id="top">
     <header class="page-header">
-      <p class="eyebrow">Research / Dashboard</p>
-      <h1>Bin covering experiments<span class="accent-mark">.</span></h1>
-      <p class="page-intro">A workspace for testing ideas, comparing algorithms, and understanding the results.</p>
+      <p class="eyebrow">Research / {{ "Experiments" if current_page == "experiments" else "Dashboard" }}</p>
+      <h1>{{ "Saved experiments" if current_page == "experiments" else "Bin covering experiments" }}<span class="accent-mark">.</span></h1>
+      <p class="page-intro">{{ "Your studies, results, and comparisons in one place." if current_page == "experiments" else "Start a study, follow active runs, and return to your latest results." }}</p>
+      {% if current_page == "home" %}
       <div class="workspace-stats" aria-label="Workspace overview">
         <div><strong id="stat-experiments">—</strong><span>Saved experiments</span></div>
         <div><strong id="stat-groups">—</strong><span>Study groups</span></div>
         <div><strong id="stat-running">—</strong><span>Running now</span></div>
       </div>
+      {% endif %}
     </header>
-    <div class="dashboard-grid">
+    {% if current_page == "home" %}
+    <div class="dashboard-grid home-grid">
       <section id="configure" class="panel configuration-panel" aria-labelledby="configure-title">
         <div class="panel-heading"><div><p class="eyebrow">01 / Configure</p><h2 id="configure-title">New experiment</h2><p class="section-description">Define your input and choose what to compare.</p></div></div>
         <form id="experiment">
@@ -75,27 +79,57 @@
         </form>
       </section>
       <div class="workspace-column">
-        <section id="history" class="panel history-panel" aria-labelledby="history-title">
-          <div class="panel-heading"><div><p class="eyebrow">02 / Explore</p><h2 id="history-title">Saved experiments</h2><p class="section-description">Find a study, inspect a run, or compare selected results.</p></div></div>
-          <div class="history-search"><label class="visually-hidden" for="run-search">Search experiments</label><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="run-search" type="search" placeholder="Search by name, algorithm, or execution…" autocomplete="off"></div>
-          <div class="history-toolbar"><div class="toolbar-actions"><button id="compare" type="button" class="button button-secondary">Compare selected</button><button id="research-plots" type="button" class="button button-ghost">DNF / ordering plots</button></div><button id="clear-selection" type="button" class="button button-ghost button-small" hidden>Clear selection</button></div>
-          <p id="history-count" class="field-help history-count" aria-live="polite"></p>
+        <section class="panel recent-panel" aria-labelledby="recent-title">
+          <div class="panel-heading"><div><p class="eyebrow">Workspace / Recent activity</p><h2 id="recent-title">Latest experiments</h2><p class="section-description">Active runs and your six most recent results.</p></div></div>
           <p id="history-message" class="feedback" role="status" aria-live="polite"></p>
-          <div id="runs" class="history-list" tabindex="0" role="region" aria-label="Saved experiment groups"><div class="empty-state"><span class="loading-dot" aria-hidden="true"></span><p>Loading your experiments…</p></div></div>
-          <p class="history-footnote">Same name, one group. Select runs across groups to compare them.</p>
+          <div id="runs" class="recent-list"><p class="field-help">Loading your experiments…</p></div>
+          <a class="button button-secondary all-experiments-link" href="/experiments">View all saved experiments →</a>
         </section>
-        <section id="results" class="panel results-panel" hidden aria-labelledby="results-title" tabindex="-1">
-          <div class="panel-heading"><div><p class="eyebrow">03 / Understand</p><h2 id="results-title">Results</h2></div><span id="result-context" class="result-context"></span></div>
-          <p id="comparison-note" class="comparison-note"></p>
-          <div id="summary" class="result-summaries"></div>
-          <details class="settings-disclosure provenance-disclosure"><summary>Settings and provenance<span class="disclosure-chevron" aria-hidden="true"></span></summary><pre id="details"></pre></details>
-          <a id="figure-link" class="figure-link" target="_blank" rel="noopener" hidden><img id="figure" alt="Experiment coverage and distribution plots" hidden><span>Open full-size figure ↗</span></a>
-        </section>
-        <aside id="results-placeholder" class="results-placeholder"><span class="placeholder-symbol" aria-hidden="true">↗</span><div><h3>Make the next comparison.</h3><p>Inspect an experiment or plot your selected runs. The results will appear here.</p></div></aside>
+        <aside class="results-placeholder"><span class="placeholder-symbol" aria-hidden="true">↗</span><div><h3>Build a comparison.</h3><p>Select related runs on the Saved experiments page to compare ordering, ThrowBin settings, or improvements over DNF.</p></div></aside>
       </div>
     </div>
+    {% else %}
+        <section id="history" class="panel history-panel" aria-labelledby="history-title">
+          <h2 id="history-title" class="visually-hidden">Saved experiments</h2>
+          <div class="history-controls">
+          <div class="history-search"><label class="visually-hidden" for="run-search">Search experiments</label><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><input id="run-search" type="search" placeholder="Search by name, algorithm, or execution…" autocomplete="off"></div>
+          <p class="field-help search-help">Search name, ordering, generator or algorithm. Try <code>shuffle 1000</code>, <code>swaps 100</code>, <code>n&gt;=1000</code>, or <code>trials:30</code>.</p>
+          <div class="history-toolbar"><div class="toolbar-actions"><button id="compare" type="button" class="button button-secondary">Compare selected</button><button id="research-plots" type="button" class="button button-ghost">Study plots</button></div><button id="clear-selection" type="button" class="button button-ghost button-small" hidden>Clear selection</button></div>
+          <p id="history-count" class="field-help history-count" aria-live="polite"></p>
+          <p id="history-message" class="feedback" role="status" aria-live="polite"></p>
+          </div>
+          <div id="runs" class="history-list" aria-label="Saved experiment groups"><div class="empty-state"><span class="loading-dot" aria-hidden="true"></span><p>Loading your experiments…</p></div></div>
+          <p class="history-footnote">Same name, one group. Select runs across groups to compare them.</p>
+        </section>
+    {% endif %}
     <footer class="page-footer"><span>BinCovering · Academic research workspace</span><span>Reproducible inputs. Traceable results.</span></footer>
   </main>
+  <dialog id="results" class="result-dialog" aria-labelledby="results-title">
+    <header class="viewer-header"><div><p class="eyebrow">Research / Results</p><h2 id="results-title">Experiment results</h2><p id="result-context" class="result-context"></p></div><button id="viewer-close" type="button" class="button button-secondary" autofocus>Close</button></header>
+    <div class="viewer-tabs" role="tablist" aria-label="Result views">
+      <button id="tab-plot" type="button" role="tab" aria-selected="true" aria-controls="panel-plot" tabindex="0">Plot</button>
+      <button id="tab-summary" type="button" role="tab" aria-selected="false" aria-controls="panel-summary" tabindex="-1">Summary</button>
+      <button id="tab-provenance" type="button" role="tab" aria-selected="false" aria-controls="panel-provenance" tabindex="-1">Settings and provenance</button>
+    </div>
+    <div class="viewer-body">
+      <section id="panel-plot" role="tabpanel" aria-labelledby="tab-plot">
+        <div class="viewer-controls">
+          <label>Plot type<select id="plot-kind"><option value="overview">Research overview</option><option value="mass">Mass accounting</option></select></label>
+          <label id="algorithm-control">Algorithm<select id="plot-algorithm"></select></label>
+          <label id="target-control" hidden>Minimum coverage target (%)<input id="coverage-target" type="number" min="0" max="100" step="any" value="70" required aria-describedby="target-help"><span id="target-help" class="field-help">Share of the recorded OPT or upper bound.</span></label>
+          <label id="overview-control">Overview panel<select id="plot-panel"><option value="all">All three panels</option><option value="input">Input distribution</option><option value="trials">Coverage per trial</option><option value="outcomes">Outcome frequencies</option></select></label>
+        </div>
+        <p id="plot-description" class="field-help"></p>
+        <p id="viewer-status" class="feedback" role="status" aria-live="polite"></p>
+        <div id="plot-tools" class="plot-tools" hidden><button id="plot-fit" type="button" class="button button-secondary" aria-pressed="true">Fit to view</button><button id="plot-zoom" type="button" class="button button-secondary" aria-pressed="false">Zoom to full size</button><a id="figure-link" class="button button-ghost" target="_blank" rel="noopener">Open PNG ↗</a><a id="figure-svg" class="button button-ghost" download>Download SVG</a></div>
+        <details id="target-results" class="target-results" aria-live="polite" hidden></details>
+        <div id="figure-stage" class="figure-stage" hidden tabindex="0" role="region" aria-label="Plot image; use arrow keys to scroll when zoomed"><img id="figure" alt="Research plot" hidden></div>
+      </section>
+      <section id="panel-summary" role="tabpanel" aria-labelledby="tab-summary" hidden><p id="comparison-note" class="comparison-note"></p><div id="summary" class="result-summaries"></div></section>
+      <section id="panel-provenance" role="tabpanel" aria-labelledby="tab-provenance" hidden><pre id="details"></pre></section>
+    </div>
+  </dialog>
+  <script src="{{ url_for('static', filename='search.js') }}"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

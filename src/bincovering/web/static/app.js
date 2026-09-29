@@ -1,3 +1,4 @@
+const isHistoryPage = document.body.dataset.page === 'experiments';
 const selected = new Set();
 const groupState = new Map();
 const message = document.querySelector('#message');
@@ -14,6 +15,7 @@ function element(tag, className, text) {
 }
 
 function feedback(target, text, error = false) {
+  if (!target) return;
   target.textContent = text;
   target.classList.toggle('feedback-error', error);
 }
@@ -40,28 +42,122 @@ function button(label, action, variant = 'ghost') {
   control.type = 'button';
   control.onclick = async () => {
     if (control.disabled) return;
+    const ownedFocus = document.activeElement === control;
+    const focusedRun = control.closest('[data-run]')?.dataset.run;
+    const focusedAction = control.dataset.action;
     busy(control, true);
     try { await action(); }
     catch (error) { feedback(historyMessage, error.message, true); }
-    finally { busy(control, false); }
+    finally {
+      busy(control, false);
+      if (ownedFocus && (document.activeElement === document.body || document.activeElement === control)) {
+        const row = [...document.querySelectorAll('#runs [data-run]')].find(node => node.dataset.run === focusedRun);
+        const next = control.isConnected ? control : [...(row?.querySelectorAll('[data-action]') || [])].find(node => node.dataset.action === focusedAction);
+        next?.focus({preventScroll: true});
+      }
+    }
   };
   return control;
 }
 
-function setFigure(url) {
+const viewer = document.querySelector('#results');
+const viewerStatus = document.querySelector('#viewer-status');
+let view = {ids: [], mode: 'single', data: null};
+let viewRequest = 0;
+let returnFocus = null;
+let returnRun = null;
+let returnAction = null;
+let pagePosition = 0;
+let historyPosition = 0;
+let previousBodyOverflow = '';
+
+function switchTab(name, focus = false) {
+  for (const tab of viewer.querySelectorAll('[role=tab]')) {
+    const active = tab.id === 'tab-' + name;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+    document.querySelector('#' + tab.getAttribute('aria-controls')).hidden = !active;
+    if (active && focus) tab.focus();
+  }
+  if (name === 'plot' && view.data && !document.querySelector('#figure').getAttribute('src')) requestPlot();
+}
+for (const tab of viewer.querySelectorAll('[role=tab]')) {
+  tab.onclick = () => switchTab(tab.id.slice(4));
+  tab.onkeydown = event => {
+    const tabs = [...viewer.querySelectorAll('[role=tab]')];
+    const index = tabs.indexOf(tab);
+    let next;
+    if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+    else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    switchTab(tabs[next].id.slice(4), true);
+  };
+}
+
+function zoomFigure(zoomed) {
+  const stage = document.querySelector('#figure-stage');
+  stage.classList.toggle('is-zoomed', zoomed);
+  document.querySelector('#plot-fit').setAttribute('aria-pressed', String(!zoomed));
+  document.querySelector('#plot-zoom').setAttribute('aria-pressed', String(zoomed));
+  stage.scrollTo(0, 0);
+}
+document.querySelector('#plot-fit').onclick = () => zoomFigure(false);
+document.querySelector('#plot-zoom').onclick = () => { zoomFigure(true); document.querySelector('#figure-stage').focus(); };
+document.querySelector('#viewer-close').onclick = () => viewer.close();
+viewer.addEventListener('close', () => {
+  ++viewRequest;
+  document.body.style.overflow = previousBodyOverflow;
+  const replacement = [...document.querySelectorAll('#runs [data-run]')]
+    .find(row => row.dataset.run === returnRun);
+  const control = returnFocus?.isConnected ? returnFocus
+    : [...(replacement?.querySelectorAll('[data-action]') || [])].find(node => node.dataset.action === returnAction);
+  control?.focus({preventScroll: true});
+  window.scrollTo(0, pagePosition);
+  document.querySelector('#runs').scrollTop = historyPosition;
+});
+
+function clearFigure() {
   const image = document.querySelector('#figure');
-  const link = document.querySelector('#figure-link');
-  image.src = url + '?t=' + Date.now();
-  link.href = image.src;
-  image.hidden = false;
-  link.hidden = false;
+  image.onload = null;
+  image.onerror = null;
+  image.hidden = true;
+  image.removeAttribute('src');
+  document.querySelector('#figure-stage').hidden = true;
+  document.querySelector('#plot-tools').hidden = true;
+  document.querySelector('#target-results').hidden = true;
+  for (const selector of ['#figure-link', '#figure-svg']) document.querySelector(selector).removeAttribute('href');
+  zoomFigure(false);
+}
+
+function setFigure(data, request) {
+  const image = document.querySelector('#figure');
+  image.onload = () => {
+    if (request !== viewRequest || !viewer.open) return;
+    image.hidden = false;
+    document.querySelector('#figure-stage').hidden = false;
+    document.querySelector('#plot-tools').hidden = false;
+    document.querySelector('#figure-link').href = data.url;
+    document.querySelector('#figure-svg').href = data.svg_url;
+    document.querySelector('#figure-svg').hidden = !data.svg_url;
+    feedback(viewerStatus, '');
+    document.querySelector('#panel-plot').setAttribute('aria-busy', 'false');
+  };
+  image.onerror = () => {
+    if (request !== viewRequest || !viewer.open) return;
+    feedback(viewerStatus, 'The plot image could not be loaded. Choose a plot type or panel to try again.', true);
+    document.querySelector('#panel-plot').setAttribute('aria-busy', 'false');
+  };
+  image.alt = ({overview: 'Input distribution, trial coverage, and outcome frequencies', mass: 'Covered mass, excess bin load, and unfinished mass', ordering: 'Coverage by input ordering and swaps', parameters: 'ThrowBin coverage by parameter and input size', reliability: 'Share of trials reaching each coverage target', paired: 'Algorithm differences compared with DNF on identical trial inputs'})[data.kind] || 'Research plot';
+  if (data.target_data) showTargetResults(data.target_data);
+  image.src = data.url + (data.url.includes('?') ? '&' : '?') + 't=' + Date.now();
 }
 
 function show(data) {
-  const results = document.querySelector('#results');
-  results.hidden = false;
-  document.querySelector('#results-placeholder').hidden = true;
-  document.querySelector('#result-context').textContent = data.manifest?.name || (data.runs ? `${data.runs.length} selected runs` : 'Selected experiments');
+  view.data = data;
+  document.querySelector('#result-context').textContent = data.manifest?.name || (data.runs ? `${data.runs.length} selected runs` : `${view.ids.length} selected runs`);
   document.querySelector('#details').textContent = JSON.stringify(data, null, 2);
   const area = document.querySelector('#summary');
   area.replaceChildren();
@@ -78,36 +174,136 @@ function show(data) {
       area.append(card);
     }
   }
+  if (!area.childElementCount) area.append(element('p', 'field-help', 'No completed algorithm summaries are available for this selection.'));
   document.querySelector('#comparison-note').textContent = 'same_trial_inputs' in data
     ? (data.same_trial_inputs ? 'These runs use matching trial inputs.' : 'These runs use different trial inputs; this is not a paired comparison.') : '';
-  document.querySelector('#figure').hidden = true;
-  document.querySelector('#figure-link').hidden = true;
-  results.focus({preventScroll: true});
-  results.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
-}
-
-// Substrings, abbreviated subsequences, and one-edit typos in words.
-function fuzzyMatch(query, text) {
-  text = text.toLowerCase();
-  return query.toLowerCase().trim().split(/\s+/).every(term => {
-    if (!term || text.includes(term)) return true;
-    const words = text.split(/[^a-z0-9]+/);
-    return words.some(word => {
-      let at = 0;
-      for (const char of word) if (char === term[at]) at++;
-      if (at === term.length) return true;
-      if (term.length < 3 || Math.abs(word.length - term.length) > 1) return false;
-      let previous = Array.from({length: term.length + 1}, (_, i) => i);
-      for (let i = 0; i < word.length; i++) {
-        const current = [i + 1];
-        for (let j = 0; j < term.length; j++) current.push(Math.min(current[j] + 1, previous[j + 1] + 1, previous[j] + (word[i] === term[j] ? 0 : 1)));
-        previous = current;
-      }
-      return previous[term.length] <= 1;
+  if (view.mode === 'single') {
+    // Summary and plotting share the same unique algorithm/backend/parameter groups.
+    const configured = data.manifest?.config?.algorithms || [];
+    const seen = new Set();
+    const algorithms = data.summary?.length ? data.summary : configured.filter(algorithm => {
+      const params = algorithm.params || {};
+      const key = JSON.stringify([algorithm.id, algorithm.backend || 'python', Object.keys(params).sort().map(key => [key, params[key]])]);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
     });
-  });
+    const select = document.querySelector('#plot-algorithm');
+    select.replaceChildren();
+    algorithms.forEach((algorithm, index) => {
+      const params = algorithm.parameters || algorithm.params || {};
+      const settings = Object.entries(params).map(([key, value]) => `${key}=${value}`).join(', ');
+      const label = (algorithm.algorithm || algorithm.id || algorithm).replaceAll('_', ' ') + ` · ${algorithm.backend || 'python'}` + (settings ? ` · ${settings}` : '');
+      const option = element('option', '', label);
+      option.value = index;
+      select.append(option);
+    });
+  }
 }
 
+function showTargetResults(data) {
+  const area = document.querySelector('#target-results');
+  area.replaceChildren();
+  area.append(element('summary', '', `Trials reaching at least ${data.target}% coverage · ${(data.groups || []).length} algorithm groups`));
+  const table = element('table', 'target-table');
+  table.append(element('caption', 'visually-hidden', 'Observed trials reaching the selected coverage target'));
+  const header = element('tr');
+  for (const text of ['Algorithm / settings', 'Reached / valid trials', 'Share of trials']) {
+    const th = element('th', '', text); th.scope = 'col'; header.append(th);
+  }
+  const head = element('thead'); head.append(header); table.append(head);
+  const body = element('tbody');
+  for (const group of data.groups || []) {
+    const row = element('tr');
+    row.append(element('td', '', group.label + (group.reference_label ? ` · ${group.reference_label}` : '')), element('td', '', `${group.reached} / ${group.total}`), element('td', '', group.percentage == null ? 'Unavailable' : `${Number(group.percentage).toFixed(1)}%`));
+    body.append(row);
+  }
+  table.append(body); area.append(table);
+  area.hidden = false;
+}
+
+function plotDescription() {
+  const kind = document.querySelector('#plot-kind').value;
+  viewer.dataset.kind = kind;
+  document.querySelector('#overview-control').hidden = kind !== 'overview';
+  document.querySelector('#target-control').hidden = kind !== 'reliability';
+  document.querySelector('#algorithm-control').hidden = view.mode !== 'single' || kind !== 'overview';
+  document.querySelector('#plot-description').textContent = ({
+    overview: 'Input sizes, coverage in each trial, and the frequency of outcomes. Choose one panel for larger labels.',
+    mass: 'Where the input mass went: useful covered mass, excess load in covered bins, unfinished bins, and discarded items. Older runs may not contain this evidence.',
+    ordering: 'Select related runs with different ordering or swap settings. Each algorithm is shown separately; input and study settings must match.',
+    parameters: 'Select ThrowBin runs with varying bin ratio and input size. Fixed settings and algorithm variants remain separate.',
+    reliability: 'How often does an algorithm reach at least your chosen coverage target? Adjust the target to update the guide and observed trial counts. These are empirical frequencies, not future guarantees.',
+    paired: 'Compare each algorithm with DNF on the identical ordered trial input. Positive differences favor the other algorithm; negative differences favor DNF. Distinct settings stay separate.'
+  })[kind] || '';
+}
+
+async function requestPlot() {
+  const request = ++viewRequest;
+  clearFigure();
+  plotDescription();
+  feedback(viewerStatus, 'Generating plot…');
+  document.querySelector('#panel-plot').setAttribute('aria-busy', 'true');
+  const kind = document.querySelector('#plot-kind').value;
+  try {
+    const targetInput = document.querySelector('#coverage-target');
+    if (kind === 'reliability' && !targetInput.reportValidity()) throw Error('Choose a coverage target from 0 to 100%.');
+    const data = view.mode === 'single'
+      ? await post(endpoint('plot', view.ids[0]), {kind, algorithm: Number(document.querySelector('#plot-algorithm').value), panel: document.querySelector('#plot-panel').value, ...(kind === 'reliability' ? {target: Number(targetInput.value)} : {})})
+      : await post('/api/study-plot', {ids: view.ids, kind});
+    if (request !== viewRequest || !viewer.open) return;
+    setFigure(data, request);
+  } catch (error) {
+    if (request !== viewRequest || !viewer.open) return;
+    feedback(viewerStatus, error.message, true);
+    document.querySelector('#panel-plot').setAttribute('aria-busy', 'false');
+  }
+}
+for (const id of ['#plot-kind', '#plot-algorithm', '#plot-panel', '#coverage-target']) document.querySelector(id).onchange = requestPlot;
+
+async function openViewer(ids, mode = 'single', tab = 'plot') {
+  const request = ++viewRequest;
+  view = {ids: [...ids], mode, data: null};
+  returnFocus = document.activeElement;
+  returnRun = returnFocus?.closest('[data-run]')?.dataset.run;
+  returnAction = returnFocus?.dataset.action;
+  pagePosition = window.scrollY;
+  historyPosition = document.querySelector('#runs').scrollTop;
+  previousBodyOverflow = document.body.style.overflow;
+  clearFigure();
+  document.querySelector('#summary').replaceChildren(element('p', 'field-help', 'Loading results…'));
+  document.querySelector('#details').textContent = 'Loading saved settings…';
+  document.querySelector('#comparison-note').textContent = '';
+  document.querySelector('#result-context').textContent = mode === 'single' ? ids[0] : `${ids.length} selected runs`;
+  document.querySelector('#results-title').textContent = mode === 'single' ? 'Experiment results' : 'Study results';
+  const kind = document.querySelector('#plot-kind');
+  kind.replaceChildren();
+  for (const [value, label] of (mode === 'single' ? [['overview', 'Research overview'], ['reliability', 'Coverage targets'], ['paired', 'Paired comparison with DNF'], ['mass', 'Mass accounting']] : [['ordering', 'Ordering sensitivity'], ['parameters', 'ThrowBin parameter study'], ['paired', 'Paired comparison with DNF']])) {
+    const option = element('option', '', label); option.value = value; kind.append(option);
+  }
+  document.querySelector('#algorithm-control').hidden = mode !== 'single';
+  document.querySelector('#plot-panel').value = 'all';
+  for (const control of viewer.querySelectorAll('.viewer-controls select, .viewer-controls input')) control.disabled = true;
+  plotDescription();
+  feedback(viewerStatus, 'Loading saved experiment evidence…');
+  switchTab(tab);
+  viewer.showModal();
+  document.body.style.overflow = 'hidden';
+  try {
+    const data = mode === 'single' ? await api(endpoint('inspect', ids[0]))
+      : await api('/api/compare?' + ids.map(id => 'id=' + encodeURIComponent(id)).join('&'));
+    if (request !== viewRequest || !viewer.open) return;
+    show(data);
+    for (const control of viewer.querySelectorAll('.viewer-controls select, .viewer-controls input')) control.disabled = false;
+    if (tab === 'plot') await requestPlot();
+    else feedback(viewerStatus, 'Choose a plot type to generate a figure.');
+  } catch (error) {
+    if (request !== viewRequest || !viewer.open) return;
+    feedback(viewerStatus, error.message, true);
+    document.querySelector('#summary').replaceChildren(element('p', 'feedback feedback-error', error.message));
+    document.querySelector('#details').textContent = error.message;
+  }
+}
 function updateSelectionCount(filteredCount, groupCount) {
   document.querySelector('#history-count').textContent = `${filteredCount} of ${cachedRuns.length} experiments · ${groupCount} groups · ${selected.size} selected`;
   document.querySelector('#clear-selection').hidden = selected.size === 0;
@@ -125,9 +321,81 @@ function emptyState(body, searching) {
   body.append(state);
 }
 
+function runActions(run, runLabel, open = false) {
+  const actions = element('div', 'row-actions');
+  const inspect = button('Inspect', () => { void openViewer([run.id], 'single', 'summary'); }, 'secondary');
+  actions.append(inspect);
+  if (['running', 'queued'].includes(run.status)) {
+    actions.append(button('Cancel', async () => {
+      await post(endpoint('cancel', run.id)); feedback(historyMessage, 'Cancellation requested');
+    }));
+  } else {
+    actions.append(button('Plot', () => { void openViewer([run.id]); }, 'plot'));
+    const menu = element('details', 'row-menu');
+    menu.open = open;
+    const menuTitle = element('summary', '', 'More');
+    menuTitle.dataset.action = 'more';
+    menuTitle.append(element('span', 'visually-hidden', ' actions for ' + run.id));
+    const extra = element('div', 'action-list');
+    const pin = button(run.pinned ? 'Unpin' : 'Pin', async () => {
+      await post(endpoint('pin', run.id), {pinned: !run.pinned}); await refresh();
+    });
+    pin.dataset.action = 'pin';
+    extra.append(pin);
+    const download = element('a', 'button button-ghost', 'Export');
+    download.href = endpoint('export', run.id);
+    extra.append(download);
+    if (!run.pinned) extra.append(button('Remove', async () => {
+      const removed = await post(endpoint('remove', run.id));
+      selected.delete(run.id);
+      historyMessage.classList.remove('feedback-error');
+      historyMessage.replaceChildren(document.createTextNode('Experiment moved to trash. '), button('Undo', async () => {
+        await post('/api/restore/' + removed.token);
+        feedback(historyMessage, 'Experiment restored');
+        await refresh();
+      }));
+      await refresh();
+    }, 'danger'));
+    menu.append(menuTitle, extra); actions.append(menu);
+  }
+  for (const control of actions.querySelectorAll('button, a, summary')) {
+    control.setAttribute('aria-describedby', runLabel.id);
+    if (!control.dataset.action) control.dataset.action = control.textContent;
+  }
+  return actions;
+}
+
+function renderRecent() {
+  const body = document.querySelector('#runs');
+  const active = document.activeElement;
+  const focusedRun = active?.closest('[data-run]')?.dataset.run;
+  const focusedAction = active?.dataset.action;
+  const openMenus = new Set([...body.querySelectorAll('.row-menu[open]')].map(menu => menu.closest('[data-run]').dataset.run));
+  const activeRuns = cachedRuns.filter(run => ['running', 'queued'].includes(run.status));
+  const recent = cachedRuns.filter(run => !['running', 'queued'].includes(run.status)).slice(0, 6);
+  body.replaceChildren();
+  for (const [index, run] of [...activeRuns, ...recent].entries()) {
+    const card = element('article', 'recent-run'); card.dataset.run = run.id;
+    const heading = element('div', 'recent-heading');
+    heading.append(element('h3', '', run.name), element('span', 'status-badge status-' + (['completed', 'running', 'queued', 'failed', 'cancelled', 'interrupted'].includes(run.status) ? run.status : 'unknown'), run.status));
+    const label = element('span', 'run-id', run.id); label.id = 'recent-label-' + index;
+    card.append(heading, label, element('p', 'run-meta', `${(run.config?.n ?? '—').toLocaleString()} items · ${run.config?.ordering ?? '—'} · ${run.completed_trials ?? 0}/${run.total_trials ?? '—'} trials`));
+    card.append(runActions(run, label, openMenus.has(run.id)));
+    body.append(card);
+    if (run.id === focusedRun && focusedAction) [...card.querySelectorAll('[data-action]')].find(node => node.dataset.action === focusedAction)?.focus({preventScroll: true});
+  }
+  if (!body.childElementCount) emptyState(body, false);
+}
+
 function renderRuns() {
+  const pageY = window.scrollY;
+  if (isHistoryPage) renderHistory(); else renderRecent();
+  window.scrollTo(0, pageY);
+}
+
+function renderHistory() {
   const query = document.querySelector('#run-search').value;
-  const filtered = cachedRuns.filter(run => fuzzyMatch(query, [run.name, run.id, run.status, ...(run.config?.algorithms || []).map(a => a.id)].join(' ')));
+  const filtered = cachedRuns.filter(run => globalThis.BinCoveringSearch.matchesRun(query, run));
   const groups = new Map();
   for (const run of filtered) {
     if (!groups.has(run.name)) groups.set(run.name, []);
@@ -201,48 +469,7 @@ function renderRuns() {
       }
       tr.append(trialsCell);
       const actionsCell = element('td', 'actions-cell');
-      const actions = element('div', 'row-actions');
-      const inspect = button('Inspect', async () => show(await api(endpoint('inspect', run.id))));
-      actions.append(inspect);
-      if (['running', 'queued'].includes(run.status)) {
-        actions.append(button('Cancel', async () => {
-          await post(endpoint('cancel', run.id)); feedback(historyMessage, 'Cancellation requested');
-        }));
-      } else {
-        actions.append(button('Plot', async () => {
-          const data = await post(endpoint('plot', run.id));
-          show(await api(endpoint('inspect', run.id)));
-          setFigure(data.url);
-        }));
-        const menu = element('details', 'row-menu');
-        menu.open = openMenus.has(run.id);
-        const menuTitle = element('summary', '', 'More');
-        menuTitle.dataset.action = 'more';
-        menuTitle.append(element('span', 'visually-hidden', ' actions for ' + run.id));
-        const extra = element('div', 'action-list');
-        extra.append(button(run.pinned ? 'Unpin' : 'Pin', async () => {
-          await post(endpoint('pin', run.id), {pinned: !run.pinned}); await refresh();
-        }));
-        const download = element('a', 'button button-ghost', 'Export');
-        download.href = endpoint('export', run.id);
-        extra.append(download);
-        if (!run.pinned) extra.append(button('Remove', async () => {
-          const removed = await post(endpoint('remove', run.id));
-          selected.delete(run.id);
-          historyMessage.classList.remove('feedback-error');
-          historyMessage.replaceChildren(document.createTextNode('Experiment moved to trash. '), button('Undo', async () => {
-            await post('/api/restore/' + removed.token);
-            feedback(historyMessage, 'Experiment restored');
-            await refresh();
-          }));
-          await refresh();
-        }, 'danger'));
-        menu.append(menuTitle, extra); actions.append(menu);
-      }
-      for (const control of actions.querySelectorAll('button, a, summary')) {
-        control.setAttribute('aria-describedby', runLabel.id);
-        if (!control.dataset.action) control.dataset.action = control.textContent;
-      }
+      const actions = runActions(run, runLabel, openMenus.has(run.id));
       actionsCell.append(actions); tr.append(actionsCell); tbody.append(tr);
       if (run.id === focusedRun && focusedAction) {
         [...tr.querySelectorAll('[data-action]')].find(node => node.dataset.action === focusedAction)?.focus({preventScroll: true});
@@ -260,15 +487,20 @@ async function refresh() {
     cachedRuns = await api('/api/runs');
     const ids = new Set(cachedRuns.map(r => r.id));
     for (const id of selected) if (!ids.has(id)) selected.delete(id);
-    document.querySelector('#stat-experiments').textContent = cachedRuns.length;
-    document.querySelector('#stat-groups').textContent = new Set(cachedRuns.map(r => r.name)).size;
-    document.querySelector('#stat-running').textContent = cachedRuns.filter(r => ['queued', 'running'].includes(r.status)).length;
+    for (const [id, value] of [['stat-experiments', cachedRuns.length], ['stat-groups', new Set(cachedRuns.map(r => r.name)).size], ['stat-running', cachedRuns.filter(r => ['queued', 'running'].includes(r.status)).length]]) {
+      const counter = document.getElementById(id);
+      if (counter) counter.textContent = value;
+    }
     const records = JSON.stringify(cachedRuns);
     if (records !== lastRecords) { renderRuns(); lastRecords = records; }
   } finally { refreshing = false; }
 }
-document.querySelector('#run-search').addEventListener('input', renderRuns);
-document.querySelector('#clear-selection').onclick = () => { selected.clear(); renderRuns(); };
+document.querySelector('#run-search')?.addEventListener('input', renderRuns);
+const clearSelection = document.querySelector('#clear-selection');
+if (clearSelection) clearSelection.onclick = () => { selected.clear(); renderRuns(); };
+document.addEventListener('click', event => {
+  for (const menu of document.querySelectorAll('.row-menu[open]')) if (!menu.contains(event.target)) menu.open = false;
+});
 document.querySelector('#runs').addEventListener('keydown', event => {
   if (event.key === 'Escape') {
     const menu = event.target.closest('.row-menu');
@@ -276,21 +508,14 @@ document.querySelector('#runs').addEventListener('keydown', event => {
   }
 });
 
-document.querySelector('#research-plots').onclick = async event => {
-  const control = event.currentTarget;
-  if (control.disabled) return;
-  busy(control, true);
-  try {
-    if (!selected.size) throw Error('Select at least one experiment for DNF / ordering plots.');
-    const data = await post('/api/comparison-plot', {ids: [...selected]});
-    show({summary: []});
-    document.querySelector('#comparison-note').textContent = 'Paired improvement over DNF and ordering sensitivity. Only matched input comparisons are used.';
-    setFigure(data.url);
-  } catch (error) { feedback(historyMessage, error.message, true); }
-  finally { busy(control, false); }
+const studyPlots = document.querySelector('#research-plots');
+if (studyPlots) studyPlots.onclick = async () => {
+  if (!selected.size) { feedback(historyMessage, 'Select related experiments for an ordering or ThrowBin parameter study.', true); return; }
+  await openViewer([...selected], 'study');
 };
 
-document.querySelector('#experiment').onsubmit = async event => {
+const experimentForm = document.querySelector('#experiment');
+if (experimentForm) experimentForm.onsubmit = async event => {
   event.preventDefault();
   const submit = event.target.querySelector('[type=submit]');
   if (submit.disabled) return;
@@ -319,13 +544,14 @@ document.querySelector('#experiment').onsubmit = async event => {
   finally { busy(submit, false); }
 };
 
-document.querySelector('#compare').onclick = async event => {
+const compare = document.querySelector('#compare');
+if (compare) compare.onclick = async event => {
   const control = event.currentTarget;
   if (control.disabled) return;
   busy(control, true);
   try {
     if (selected.size < 2) throw Error('Select at least two experiments to compare.');
-    show(await api('/api/compare?' + [...selected].map(id => 'id=' + encodeURIComponent(id)).join('&')));
+    void openViewer([...selected], 'study', 'summary');
   } catch (error) { feedback(historyMessage, error.message, true); }
   finally { busy(control, false); }
 };

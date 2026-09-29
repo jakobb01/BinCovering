@@ -2,7 +2,7 @@
 
 import math
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .AdaptiveBin import AdaptiveBinStrategy
 from .AdaptiveBinCovered import AdaptiveBinCoveredStrategy
@@ -86,6 +86,8 @@ def normalize(spec):
 class Result:
     covered_bins: int
     discarded_items: int = 0
+    # Outcome equality remains about algorithm counts, not accumulated float telemetry.
+    bin_statistics: dict | None = field(default=None, compare=False)
 
 
 class Stream:
@@ -98,24 +100,27 @@ class Stream:
 
 def solve(items, spec, threshold, seed, trace=None, cancelled=lambda: False):
     """Process in order. No epsilon or conversion between integer and float domains."""
+    from .accounting import MassAccounting, ObservedLoads
+
+    accounting = MassAccounting(threshold)
     name, params = spec["id"], spec["params"]
     if name.startswith("advice_reserved"):
         from .advice import reserved_advice
 
-        return Result(
-            reserved_advice(
-                items,
-                threshold,
-                params["m"],
-                params["x_m"],
-                4 if name.endswith("k4") else 5,
-                trace,
-                cancelled,
-            )
+        covered, statistics = reserved_advice(
+            items,
+            threshold,
+            params["m"],
+            params["x_m"],
+            4 if name.endswith("k4") else 5,
+            trace,
+            cancelled,
+            accounting,
         )
+        return Result(covered, bin_statistics=statistics)
     if name in ("dual_next_fit", "dual_harmonic"):
         k = params.get("k", 2)
-        loads = [0] * (k if name == "dual_harmonic" else 1)
+        loads = ObservedLoads([0] * (k if name == "dual_harmonic" else 1), accounting)
         covered = 0
         for index, item in enumerate(items):
             if index % 1024 == 0 and cancelled():
@@ -133,7 +138,7 @@ def solve(items, spec, threshold, seed, trace=None, cancelled=lambda: False):
                 loads[bucket] = 0
             if trace:
                 trace(index, item, covered)
-        return Result(covered)
+        return Result(covered, bin_statistics=accounting.finish(items, loads))
     if threshold != 1.0:
         raise ValueError("Migrated server algorithms require float64 threshold 1.0")
     constructors = {
@@ -151,14 +156,21 @@ def solve(items, spec, threshold, seed, trace=None, cancelled=lambda: False):
         strategy.start(Stream(items), num_items=len(items))
     else:
         strategy.start(Stream(items))
+    strategy.bins = ObservedLoads(strategy.bins, accounting)
     discarded = 0
+    discarded_mass = 0.0
     for index, item in enumerate(items):
         if index % 1024 == 0 and cancelled():
             raise InterruptedError("Cancelled")
         if name == "throwbin_retire" and not strategy.active_bins:
             discarded += 1
+            discarded_mass += item
         strategy.next()
         if trace:
             trace(index, item, strategy.covered_bins)
     strategy.stop()
-    return Result(strategy.covered_bins, discarded)
+    return Result(
+        strategy.covered_bins,
+        discarded,
+        accounting.finish(items, strategy.bins, discarded_mass),
+    )

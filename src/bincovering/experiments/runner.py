@@ -146,6 +146,20 @@ def trial_job(cfg, trial, out):
         except Exception as exc:
             row.update(status="failed", error=f"{type(exc).__name__}: {exc}")
         row["elapsed_seconds"] = time.perf_counter() - start
+        if row["status"] == "completed" and result.bin_statistics is not None:
+            statistics_dir = out / "bin-statistics"
+            statistics_dir.mkdir(exist_ok=True)
+            write_json(
+                statistics_dir / f"{trial}-{i}.json",
+                {
+                    **result.bin_statistics,
+                    "trial": trial,
+                    "input_hash": info["input_hash"],
+                    "algorithm": spec["id"],
+                    "backend": spec["backend"],
+                    "parameters": row["parameters"],
+                },
+            )
         if trace:
             (out / "traces").mkdir(exist_ok=True)
             write_json(out / "traces" / f"{trial}-{i}.json", trace)
@@ -207,8 +221,9 @@ def _run_owned(cfg, out):
         "completed_trials": 0,
         "total_trials": cfg["trials"],
         "config": cfg,
-        "timing_scope": "algorithm adapter; native includes subprocess and serialization; excludes generation and plots",
+        "timing_scope": "algorithm adapter including compact load measurements; native includes subprocess and serialization; excludes generation, artifact writes and plots",
         "trace_enabled": bool(cfg["trace_limit"]),
+        "bin_statistics_schema": 1,
     }
     rows = []
     try:
