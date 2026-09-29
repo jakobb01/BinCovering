@@ -164,6 +164,10 @@ dominate small inputs; profiling supported faster parsing, not a blanket speedup
 claim or adding native threads. The reusable native state is in `cpp/include/`;
 historical executables are in `cpp/reference/`.
 
+The dashboard visual and interaction contract is documented in
+[the dashboard design guide](docs/DASHBOARD_DESIGN.md). Reuse its tokens and
+component rules when extending the interface.
+
 ## Development
 
 ```bash

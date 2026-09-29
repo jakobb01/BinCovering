@@ -35,13 +35,13 @@ def test_browser_experiment_compare_export_and_mobile(tmp_path):
             page.get_by_label("Trials", exact=True).fill("2")
             page.get_by_label("Workers", exact=True).fill("2")
             page.get_by_role("button", name="Run experiment", exact=True).click()
-            expect(page.locator("#runs tr")).to_have_count(1, timeout=15000)
-            expect(page.locator("#runs tr").first).to_contain_text(
+            expect(page.locator("#runs tbody tr")).to_have_count(1, timeout=15000)
+            expect(page.locator("#runs tbody tr").first).to_contain_text(
                 "completed", timeout=15000
             )
             page.get_by_role("button", name="Run experiment", exact=True).click()
-            expect(page.locator("#runs tr")).to_have_count(2, timeout=15000)
-            expect(page.locator("#runs tr").first).to_contain_text(
+            expect(page.locator("#runs tbody tr")).to_have_count(2, timeout=15000)
+            expect(page.locator("#runs tbody tr").first).to_contain_text(
                 "completed", timeout=15000
             )
             for checkbox in page.locator("#runs input[type=checkbox]").all():
@@ -55,24 +55,41 @@ def test_browser_experiment_compare_export_and_mobile(tmp_path):
             page.wait_for_function(
                 'document.querySelector("#figure").complete && document.querySelector("#figure").naturalWidth>0'
             )
+            page.locator(".row-menu > summary").first.click()
             page.get_by_role("button", name="Pin", exact=True).first.click()
             expect(page.get_by_role("button", name="Unpin", exact=True)).to_have_count(
                 1
             )
+            menu_title = page.locator(".row-menu > summary").first
+            menu_title.focus()
+            page.keyboard.press("Escape")
+            expect(page.locator(".row-menu").first).not_to_have_attribute("open", "")
+            expect(menu_title).to_be_focused()
+            page.keyboard.press("Enter")
+            expect(page.get_by_role("button", name="Unpin", exact=True)).to_be_visible()
+            with page.expect_response(
+                lambda response: response.url.endswith("/api/runs")
+            ):
+                menu_title.focus()
+            expect(menu_title).to_be_focused()
             with page.expect_download() as download:
                 page.get_by_role("link", name="Export", exact=True).first.click()
             download.value.save_as(str(tmp_path / "export.zip"))
             expect(page.locator(".run-group")).to_have_count(1)
+            expect(page.locator("#stat-experiments")).to_have_text("2")
+            expect(page.locator("#stat-groups")).to_have_text("1")
+            expect(page.locator("#figure-link")).to_have_attribute("target", "_blank")
             page.get_by_label("Search experiments").fill("basline")
-            expect(page.locator("#runs tr")).to_have_count(2)
+            expect(page.locator("#runs tbody tr")).to_have_count(2)
             page.get_by_label("Search experiments").fill("nothingmatches")
-            expect(page.locator("#runs tr")).to_have_count(0)
+            expect(page.locator("#runs tbody tr")).to_have_count(0)
             page.get_by_label("Search experiments").fill("")
             expect(page.locator("#runs input:checked")).to_have_count(2)
+            page.locator(".row-menu > summary").nth(1).click()
             page.get_by_role("button", name="Remove", exact=True).click()
-            expect(page.locator("#runs tr")).to_have_count(1)
+            expect(page.locator("#runs tbody tr")).to_have_count(1)
             page.get_by_role("button", name="Undo", exact=True).click()
-            expect(page.locator("#runs tr")).to_have_count(2)
+            expect(page.locator("#runs tbody tr")).to_have_count(2)
             page.get_by_label("Name", exact=True).fill("ordering-study")
             page.get_by_label("Item order", exact=True).select_option("descending")
             page.get_by_role("button", name="Run experiment", exact=True).click()
@@ -80,7 +97,7 @@ def test_browser_experiment_compare_export_and_mobile(tmp_path):
             new_group = page.locator(".run-group").filter(
                 has=page.locator("summary", has_text="ordering-study")
             )
-            new_group.locator("summary").click()
+            new_group.locator(":scope > summary").click()
             expect(new_group).to_contain_text("completed", timeout=15000)
             for checkbox in page.locator("#runs input[type=checkbox]").all():
                 checkbox.check()
