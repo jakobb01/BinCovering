@@ -4,7 +4,7 @@ from bincovering.web.app import create_app
 
 def test_web_reads_cli_runs_and_runs_background_job(tmp_path):
     cli_run = run_experiment({"output_root": str(tmp_path), "n": 10, "trials": 1})
-    app = create_app(tmp_path)
+    app = create_app(tmp_path, auth_required=False)
     client = app.test_client()
     assert client.get("/").status_code == 200
     assert client.get("/api/runs").json[0]["id"] == cli_run.name
@@ -31,7 +31,7 @@ def test_web_reads_cli_runs_and_runs_background_job(tmp_path):
 
 
 def test_web_validation(tmp_path):
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert client.post("/api/runs", json={"workers": 0}).status_code == 400
     assert client.get("/api/inspect/../../outside").status_code == 400
     assert (
@@ -43,7 +43,7 @@ def test_web_validation(tmp_path):
 
 
 def test_web_cancellation(tmp_path):
-    app = create_app(tmp_path)
+    app = create_app(tmp_path, auth_required=False)
     client = app.test_client()
     response = client.post("/api/runs", json={"n": 1000, "trials": 100})
     run_id = response.json["id"]

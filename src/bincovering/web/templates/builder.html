@@ -1,0 +1,50 @@
+{% set current_page = 'builder' %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light">
+  <title>BinCovering · Builder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='builder.css') }}">
+</head>
+<body data-page="builder">
+  <a class="skip-link" href="#builder-workspace">Skip to builder</a>
+  {% include '_site_header.html' %}
+  <main class="builder-main workspace-main">
+    <header class="page-header page-header-compact builder-page-header"><div><p class="eyebrow">Workspace / Build</p><h1 id="builder-page-title"><span id="builder-page-title-text">Build your algorithm</span><span class="accent-mark">.</span></h1><p id="builder-page-intro" class="page-intro">Keep the execution flow visible. Package small pieces of logic into reusable components.</p></div><button id="open-library" type="button" class="button button-secondary">Saved library</button></header>
+    <div class="builder-mode-tabs" role="tablist" aria-label="What to build">
+      <button id="builder-algorithm-tab" type="button" role="tab" data-builder-kind="algorithm" aria-selected="true" aria-controls="builder-workspace" tabindex="0">Algorithms</button>
+      <button id="builder-generator-tab" type="button" role="tab" data-builder-kind="generator" aria-selected="false" aria-controls="builder-workspace" tabindex="-1">Item generators</button>
+    </div>
+    <section id="builder-workspace" class="builder-workspace" role="tabpanel" aria-labelledby="builder-algorithm-tab">
+      <div class="builder-toolbar">
+        <div class="builder-identity"><label for="builder-name" class="visually-hidden">Builder name</label><input id="builder-name" maxlength="120" value="My next fit"><label for="builder-starter" class="visually-hidden">Builder starter</label><select id="builder-starter"></select><span id="draft-status" class="builder-badge">Loading…</span></div>
+        <div class="builder-actions"><button id="save-draft" type="button" class="button button-accent-soft">Save draft</button><button id="available" type="button" class="button button-accent-outline">Make available</button></div>
+      </div>
+      <p id="builder-feedback" class="feedback" role="status" aria-live="polite"></p>
+      <div class="builder-layout">
+        <aside class="builder-palette" aria-labelledby="palette-title"><p class="eyebrow">Building blocks</p><h2 id="palette-title">Components</h2><p class="field-help">Drag a component onto the graph or choose Add. Every socket also works with a keyboard.</p><div id="component-palette"></div><button id="save-component" type="button" class="button button-ghost">Save selection as component</button><p class="field-help">Shift-click nodes to select a connected group.</p><div id="component-breadcrumb" hidden><button id="close-component" type="button" class="button button-secondary">Return to parent graph</button></div></aside>
+        <div class="builder-canvas-column">
+          <div class="phase-toolbar"><div id="phase-tabs" class="phase-tabs" role="tablist" aria-label="Lifecycle"></div><div class="canvas-tools"><button id="undo" type="button" class="button button-ghost" aria-label="Undo">↶</button><button id="redo" type="button" class="button button-ghost" aria-label="Redo">↷</button><button id="zoom-out" type="button" class="button button-ghost" aria-label="Zoom out">−</button><span id="zoom-label">100%</span><button id="zoom-in" type="button" class="button button-ghost" aria-label="Zoom in">+</button><button id="fit" type="button" class="button button-ghost">Fit</button><button id="data-wiring" type="button" class="button button-ghost" aria-pressed="false">Value connections</button></div></div>
+          <p id="phase-help" class="canvas-hint">The system supplies lifecycle calls. Add your algorithm's operations below.</p>
+          <div id="canvas-viewport" class="builder-viewport" tabindex="0" role="region" aria-label="Graph canvas. Arrow keys move a selected component. Delete removes it; Control Z undoes."><div id="canvas-world" class="builder-world"></div></div>
+          <div class="canvas-footer"><span id="graph-summary"></span><span id="connection-help">Choose an output socket, then an input socket.</span></div>
+        </div>
+        <aside class="builder-inspector" aria-labelledby="inspector-title"><p class="eyebrow">Selected component</p><h2 id="inspector-title">Step settings</h2><div id="inspector"><p class="field-help">Select a component to configure it.</p></div><details class="builder-settings"><summary>Parameters, state and files</summary><div class="builder-declarations"><label>Parameters (JSON)<textarea id="builder-params" rows="3" spellcheck="false">{}</textarea></label><label>State (JSON)<textarea id="builder-state" rows="3" spellcheck="false">{}</textarea></label><label id="component-inputs-declaration" hidden>Typed inputs (JSON)<textarea id="builder-inputs" rows="3" spellcheck="false">{}</textarea></label><label id="component-outputs-declaration" hidden>Typed outputs (JSON)<textarea id="builder-outputs" rows="3" spellcheck="false">{}</textarea></label></div><p class="field-help">Parameters are available on Dashboard. State belongs to one execution.</p><div class="builder-actions"><button id="export-graph" type="button" class="button button-ghost">Export graph</button><button id="export-python" type="button" class="button button-ghost">Export Python</button><label class="button button-ghost import-button">Import graph<input id="import-graph" type="file" accept="application/json,.json" class="visually-hidden"></label></div></details></aside>
+      </div>
+    </section>
+      <section class="builder-preview" aria-labelledby="preview-title">
+        <div class="preview-heading"><div><p class="eyebrow">Verify your builder</p><h2 id="preview-title">Verify on a small sequence<span class="accent-mark">.</span></h2><p class="field-help">Run a short test and follow each recorded step. Execution traces are captured automatically.</p></div><div class="builder-actions"><button id="run-preview" type="button" class="button button-accent">Run preview</button><button id="cancel-preview" type="button" class="button button-danger" hidden>Cancel preview</button></div></div>
+        <div class="preview-inputs"><label id="sequence-label">Item sizes<input id="preview-items" spellcheck="false" value="0.35, 0.75, 0.40, 0.65, 0.20, 0.30"></label><label id="count-label" hidden>Items to generate<input id="preview-count" type="number" min="0" max="1000" value="6"></label><label id="component-preview-inputs" hidden>Component input values (JSON)<input id="preview-component-values" spellcheck="false" value="{}"></label><label>Seed<input id="preview-seed" type="number" min="0" value="42"></label></div>
+        <div id="component-fixture" hidden><label>Component fixture (JSON)<input id="preview-component-context" spellcheck="false" value="{}"></label><p class="field-help">Fixtures explicitly place the listed input indices into test bins before your component runs. They use the same measured ledger. Pure value components need no fixture.</p><div class="builder-actions"><button id="fixture-bin" type="button" class="button button-ghost">Use covered-bin fixture</button><button id="fixture-generator" type="button" class="button button-ghost">Use generator context</button><button id="fixture-none" type="button" class="button button-ghost">Clear fixture</button></div></div>
+        <p id="preview-status" class="feedback" role="status" aria-live="polite">Run a small preview to inspect actual execution.</p>
+        <div id="preview-trace" class="trace-workspace"></div>
+      </section>
+    <footer class="page-footer"><span>BinCovering · Research workspace</span><span>Drafts are private. Available revisions preserve their evidence.</span></footer>
+  </main>
+  <dialog id="library-dialog" class="builder-dialog" aria-labelledby="library-title"><div class="dialog-heading"><div><p class="eyebrow">Your workspace</p><h2 id="library-title">Saved library</h2></div><button type="button" class="button button-secondary" data-close-dialog>Close</button></div><label>Show<select id="library-filter"><option value="active">Active and shared</option><option value="archived">Archived</option></select></label><p id="library-feedback" class="feedback" role="status" aria-live="polite"></p><div id="library-items"></div></dialog>
+  <dialog id="component-dialog" class="builder-dialog" aria-labelledby="component-title"><div class="dialog-heading"><h2 id="component-title">Reusable component</h2><button type="button" class="button button-secondary" data-close-dialog>Close</button></div><form id="component-form"><label>Name<input id="component-name" required maxlength="120"></label><label>Inputs (JSON)<textarea id="component-inputs" rows="3" spellcheck="false">{}</textarea></label><label>Outputs (JSON)<textarea id="component-outputs" rows="3" spellcheck="false">{}</textarea></label><label>Parameters (JSON)<textarea id="component-params" rows="3" spellcheck="false">{}</textarea></label><p class="field-help">Types: number, integer, boolean, list, bin, text, any. The selected group must have one execution entry. Components retain an editable inner graph and explicit access mode.</p><button type="submit" class="button button-secondary">Save component</button><p id="component-feedback" class="feedback" role="status"></p></form></dialog>
+  <script src="{{ url_for('static', filename='trace-view.js') }}"></script>
+  <script src="{{ url_for('static', filename='builder.js') }}"></script>
+</body>
+</html>

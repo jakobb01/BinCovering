@@ -13,6 +13,7 @@ from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from pathlib import Path
 
 from bincovering.algorithms.registry import solve
+from bincovering.builders.frozen import group_identity, is_custom
 from bincovering.experiments.config import validate
 from bincovering.experiments.lifecycle import RunLease
 from bincovering.experiments.storage import new_run, now, provenance, write_json
@@ -37,9 +38,16 @@ def trial_job(cfg, trial, out):
         cfg["seed"], trial if cfg["dataset_mode"] == "fresh" else 0, "data"
     )
     order_seed = seed_for(cfg["seed"], trial, "order")
+    trace_enabled = bool(cfg["trace_limit"]) and (cfg["trace_trials"] is None or trial in cfg["trace_trials"])
+
+    def capture_generator_trace(trace, execution):
+        (out / "traces").mkdir(exist_ok=True)
+        write_json(out / "traces" / f"generator-{trial}.json", {**trace, "execution": execution})
+
     input_error = None
     try:
-        items, info = generate(cfg, data_seed, order_seed, cancelled)
+        items, info = generate(cfg, data_seed, order_seed, cancelled,
+                               capture_generator_trace if trace_enabled else None)
     except InterruptedError:
         raise
     except Exception as exc:
@@ -80,7 +88,10 @@ def trial_job(cfg, trial, out):
         )
         row = {
             "trial": trial,
-            "algorithm": spec["id"],
+            "algorithm": group_identity(spec),
+            "algorithm_revision": spec.get("revision", ""),
+            "algorithm_name": spec.get("frozen", {}).get("name", ""),
+            "input_access": spec.get("frozen", {}).get("graph", {}).get("access", ""),
             "backend": spec["backend"],
             "parameters": json.dumps(spec["params"], sort_keys=True),
             "data_seed": data_seed,
@@ -101,16 +112,42 @@ def trial_job(cfg, trial, out):
             else info["upper_bound"],
         }
         trace = []
+        trace_payload = None
+        trace_size = 0
 
         def capture(index, item, covered, trace=trace):
-            if len(trace) < cfg["trace_limit"]:
-                trace.append({"index": index, "item": item, "covered_bins": covered})
+            nonlocal trace_size
+            event = {"index": index, "item": item, "covered_bins": covered}
+            size = len(json.dumps(event))
+            if len(trace) < cfg["trace_limit"] and trace_size + size <= cfg["trace_bytes"]:
+                trace.append(event)
+                trace_size += size
 
         start = time.perf_counter()
         try:
             if input_error:
                 raise ValueError(input_error)
-            if spec["backend"] == "cpp":
+            if is_custom(spec["id"]):
+                from bincovering.algorithms.registry import Result
+                from bincovering.builders.execution import execute_isolated
+
+                response = execute_isolated(
+                    spec["frozen"]["graph"], items=items, seed=algorithm_seed,
+                    params=spec["params"], domain=cfg["domain"], threshold=cfg["threshold"],
+                    n=len(items), root=cfg["output_root"],
+                    runtime_image=spec["frozen"]["runtime_image"], cancelled=cancelled,
+                    trace_limit=cfg["trace_limit"] if trace_enabled else 0,
+                    trace_bytes=cfg["trace_bytes"],
+                )
+                if trace_enabled:
+                    trace_payload = {**response.get("trace", {}), "execution": response["execution"],
+                                     "graph_hash": response.get("graph_hash"), "error": response.get("error")}
+                if not response["ok"]:
+                    error = response.get("error", {})
+                    location = f" (node {error['node_id']}, line {error.get('line')})" if error.get("node_id") else ""
+                    raise ValueError(error.get("message", "Custom algorithm failed") + location)
+                result = Result(**{key: response["result"][key] for key in ("covered_bins", "discarded_items", "bin_statistics")})
+            elif spec["backend"] == "cpp":
                 from bincovering.backends.native import solve_native
 
                 result = solve_native(
@@ -127,7 +164,7 @@ def trial_job(cfg, trial, out):
                     spec,
                     cfg["threshold"],
                     algorithm_seed,
-                    capture if cfg["trace_limit"] else None,
+                    capture if trace_enabled else None,
                     cancelled,
                 )
             row["covered_bins"] = result.covered_bins
@@ -155,14 +192,14 @@ def trial_job(cfg, trial, out):
                     **result.bin_statistics,
                     "trial": trial,
                     "input_hash": info["input_hash"],
-                    "algorithm": spec["id"],
+                    "algorithm": group_identity(spec),
                     "backend": spec["backend"],
                     "parameters": row["parameters"],
                 },
             )
-        if trace:
+        if trace or trace_payload is not None:
             (out / "traces").mkdir(exist_ok=True)
-            write_json(out / "traces" / f"{trial}-{i}.json", trace)
+            write_json(out / "traces" / f"{trial}-{i}.json", trace_payload if trace_payload is not None else trace)
         rows.append(row)
     return rows
 
@@ -178,6 +215,9 @@ def summarize(rows):
         result.append(
             {
                 "algorithm": name,
+                "algorithm_name": group[0].get("algorithm_name", ""),
+                "revision": group[0].get("algorithm_revision", ""),
+                "input_access": group[0].get("input_access", ""),
                 "backend": backend,
                 "parameters": json.loads(params),
                 "successful_trials": len(scores),
@@ -223,10 +263,28 @@ def _run_owned(cfg, out):
         "config": cfg,
         "timing_scope": "algorithm adapter including compact load measurements; native includes subprocess and serialization; excludes generation, artifact writes and plots",
         "trace_enabled": bool(cfg["trace_limit"]),
+        "trace_capture": {"events_per_trial": cfg["trace_limit"], "bytes_per_trial": cfg["trace_bytes"],
+                          "trials": cfg["trace_trials"], "timing_includes_collection": bool(cfg["trace_limit"])},
         "bin_statistics_schema": 1,
     }
     rows = []
     try:
+        custom = [("generator", 0, cfg["generator"])] if is_custom(cfg["generator"]["id"]) else []
+        custom += [("algorithm", index, spec) for index, spec in enumerate(cfg["algorithms"]) if is_custom(spec["id"])]
+        if custom:
+            programs = out / "builder-programs"
+            programs.mkdir(exist_ok=True)
+            manifest["custom_programs"] = []
+            for kind, index, spec in custom:
+                frozen = spec["frozen"]
+                stem = f"{kind}-{index}"
+                write_json(programs / f"{stem}.json", frozen)
+                (programs / f"{stem}.py").write_text(frozen.get("generated_source", ""))
+                manifest["custom_programs"].append({"id": spec["id"], "revision": spec["revision"],
+                    "content_hash": frozen["content_hash"], "runtime_image": frozen["runtime_image"],
+                    "runtime_version": frozen["runtime_version"], "access": frozen["graph"].get("access"),
+                    "kind": kind, "path": f"builder-programs/{stem}.json"})
+            manifest["timing_scope"] += "; builder algorithms include isolated container startup and serialization; builder trace collection is included when enabled"
         write_json(out / "manifest.json", manifest)
         if cfg["generator"]["id"] == "file":
             source = Path(cfg["generator"]["path"])

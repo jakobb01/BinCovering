@@ -47,7 +47,7 @@ def test_web_invalid_settings_return_400(tmp_path, cfg):
     # output root is intentionally server-controlled, so a caller's null is ignored.
     if "output_root" in cfg:
         cfg = {"workers": False}
-    response = create_app(tmp_path).test_client().post("/api/runs", json=cfg)
+    response = create_app(tmp_path, auth_required=False).test_client().post("/api/runs", json=cfg)
     assert response.status_code == 400
 
 

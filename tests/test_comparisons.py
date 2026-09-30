@@ -49,7 +49,7 @@ def test_pair_difference_is_percentage_points(tmp_path):
 
 def test_removal_restore_and_protection(tmp_path):
     path = run_experiment({"output_root": str(tmp_path), "n": 10, "trials": 1})
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     evidence = (path / "trials.csv").read_bytes()
     (path / "PINNED").touch()
     assert client.post("/api/remove/" + path.name).status_code == 400
@@ -74,7 +74,7 @@ def test_removal_restore_and_protection(tmp_path):
 
 def test_comparison_plot_api(tmp_path):
     path = run_experiment({"output_root": str(tmp_path), "n": 10, "trials": 1})
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert client.post("/api/comparison-plot", json={"ids": []}).status_code == 400
     response = client.post("/api/comparison-plot", json={"ids": [path.name]})
     assert response.status_code == 200

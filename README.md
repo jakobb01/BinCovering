@@ -122,11 +122,19 @@ records a numerical warning and omits the ratio. See the migration guide for det
 ## Web interface
 
 ```bash
+bincovering setup-admin --username yourname
 bincovering web
 # Open http://127.0.0.1:5000
 ```
 
 Home contains the experiment form, workspace counts, and recent/active runs.
+After the first administrator is set up, **Create account** on the sign-in page
+lets visitors register as researchers. Administrators manage all users on
+**Accounts**, including disabled users. **Builder** (`/builder`) provides
+visual algorithm/generator graphs, reusable components, small Python/pseudocode
+blocks, and integrated execution traces. Tested immutable revisions become choices
+on Home. See [Builder setup and workflows](docs/BUILDER.md), including its required
+isolated runtime image, account sharing, and frozen experiment provenance.
 **Saved experiments** opens `/experiments`, a full-width page with normal page
 scrolling, name groups, search, selection, and aligned row actions. Search covers
 names, algorithms, input ordering, and saved settings; see [search examples](docs/SEARCH.md).
@@ -144,7 +152,7 @@ directories as the CLI. Background workers continue if a browser tab closes or t
 server restarts. Run locks distinguish live workers from abandoned runs; listing
 reconciles abandoned records without discarding evidence. Cancellation is cooperative.
 
-The old web entry point and script editor are retired; use `bincovering web`. Build and run the container from the repository root:
+The old web entry point and script editor are retired; use `bincovering web`. Build and run the application container from the repository root:
 
 ```bash
 podman build -f tools/Containerfile -t bincovering:dev .

@@ -13,7 +13,7 @@ def digest(items):
     ).hexdigest()
 
 
-def generate(cfg, data_seed, order_seed, cancelled=lambda: False):
+def generate(cfg, data_seed, order_seed, cancelled=lambda: False, builder_trace=None):
     rng = random.Random(data_seed)
     n, domain, threshold = cfg["n"], cfg["domain"], cfg["threshold"]
     generator = cfg["generator"]
@@ -26,7 +26,27 @@ def generate(cfg, data_seed, order_seed, cancelled=lambda: False):
         if index % 1024 == 0 and cancelled():
             raise InterruptedError("Cancelled")
 
-    if name == "file":
+    if name.startswith("custom:"):
+        from bincovering.builders.execution import execute_isolated
+
+        frozen = generator["frozen"]
+        response = execute_isolated(
+            frozen["graph"], seed=data_seed, params=generator["params"],
+            domain=domain, threshold=threshold, n=n, root=cfg["output_root"],
+            runtime_image=frozen["runtime_image"], cancelled=cancelled,
+            trace_limit=cfg["trace_limit"] if builder_trace else 0,
+            trace_bytes=cfg["trace_bytes"],
+        )
+        if builder_trace:
+            builder_trace(response.get("trace", {}), response["execution"])
+        if not response["ok"]:
+            raise ValueError(response.get("error", {}).get("message", "Custom generation failed"))
+        items = response["result"].get("items")
+        if not isinstance(items, list) or any(type(value) not in (int, float) for value in items):
+            raise ValueError("Custom generator returned invalid item sizes")
+        if domain == "integer" and any(type(value) is not int for value in items):
+            raise ValueError("Integer custom generators must emit integer item sizes")
+    elif name == "file":
         from pathlib import Path
 
         parse = int if domain == "integer" else float

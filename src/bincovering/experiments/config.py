@@ -19,6 +19,10 @@ DEFAULT = {
         "path": None,
         "bins": 100,
         "completion_fraction": 0.15,
+        "params": {},
+        "revision": None,
+        "frozen": None,
+        "backend": "python",
     },
     "ordering": "shuffle",
     "swaps": 0,
@@ -30,6 +34,8 @@ DEFAULT = {
     ],
     "save_inputs": False,
     "trace_limit": 0,
+    "trace_bytes": 2 * 1024 * 1024,
+    "trace_trials": None,
     "plot": False,
     "output_root": "outputs",
     "native_executable": "build/bincovering-native",
@@ -51,13 +57,21 @@ def validate(raw):
     ):
         raise ValueError("Invalid generator settings")
     cfg["generator"] = DEFAULT["generator"] | cfg["generator"]
-    for key in ("seed", "trials", "workers", "n", "swaps", "trace_limit"):
+    for key in ("seed", "trials", "workers", "n", "swaps", "trace_limit", "trace_bytes"):
         if type(cfg[key]) is not int or cfg[key] < (
             1 if key in ("trials", "workers") else 0
         ):
             raise ValueError(
                 f"{key} must be an integer >= {1 if key in ('trials', 'workers') else 0}"
             )
+    if cfg["trace_limit"] > 10000 or cfg["trace_bytes"] > 4 * 1024 * 1024:
+        raise ValueError("Trace limits may not exceed 10000 events or 4194304 bytes per trial")
+    if cfg["trace_trials"] is not None and (
+        not isinstance(cfg["trace_trials"], list)
+        or any(type(i) is not int or not 0 <= i < cfg["trials"] for i in cfg["trace_trials"])
+        or len(cfg["trace_trials"]) != len(set(cfg["trace_trials"]))
+    ):
+        raise ValueError("trace_trials must be unique trial indices, or null for all trials")
     for key in ("save_inputs", "plot"):
         if type(cfg[key]) is not bool:
             raise ValueError(f"{key} must be boolean")
@@ -83,7 +97,13 @@ def validate(raw):
     if cfg["domain"] == "float64" and t != 1:
         raise ValueError("float64 experiments currently use threshold 1.0")
     g = cfg["generator"]
-    if g["id"] not in (
+    from bincovering.builders.frozen import is_custom, normalize_custom
+
+    if is_custom(g["id"]):
+        g.update(normalize_custom(g, "generator"))
+        if g["frozen"]["graph"]["domain"] != cfg["domain"]:
+            raise ValueError("Custom generator numerical domain does not match the experiment")
+    elif g["id"] not in (
         "uniform",
         "big_items",
         "complementary_pairs",
@@ -129,10 +149,12 @@ def validate(raw):
     if not isinstance(cfg["algorithms"], list) or not cfg["algorithms"]:
         raise ValueError("Specify at least one algorithm")
     cfg["algorithms"] = [normalize(s) for s in cfg["algorithms"]]
+    if any(is_custom(s["id"]) and s["frozen"]["graph"]["domain"] != cfg["domain"] for s in cfg["algorithms"]):
+        raise ValueError("Custom algorithm numerical domain does not match the experiment")
     if cfg["trace_limit"] and any(s["backend"] == "cpp" for s in cfg["algorithms"]):
         raise ValueError("Native traces are not supported; use Python or trace_limit=0")
     if cfg["domain"] == "integer" and any(
-        s["id"] not in ("dual_next_fit", "dual_harmonic") for s in cfg["algorithms"]
+        not is_custom(s["id"]) and s["id"] not in ("dual_next_fit", "dual_harmonic") for s in cfg["algorithms"]
     ):
         raise ValueError("Server strategies require float64 inputs")
     for key in ("output_root", "native_executable"):

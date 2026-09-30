@@ -2,6 +2,8 @@
 
 import json
 import os
+import sqlite3
+from contextlib import closing
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -45,6 +47,24 @@ def reconcile_runs(root, startup_grace=30):
         if entry.get("status") not in ("queued", "running"):
             continue
         path = Path(entry["path"])
+        queue_database = Path(root).resolve() / ".dashboard" / "jobs.sqlite3"
+        if queue_database.is_file():
+            try:
+                with closing(sqlite3.connect(queue_database)) as database:
+                    queued = database.execute(
+                        "SELECT status,pid,pid_start FROM jobs WHERE id=? AND kind='experiment'",
+                        (str(path.relative_to(Path(root).resolve())),),
+                    ).fetchone()
+                if queued and queued[0] == "queued":
+                    # A durable queued job has not acquired a run lease yet.
+                    continue
+                if queued and queued[0] == "running" and queued[1]:
+                    from bincovering.builders.jobs import _process_identity
+
+                    if _process_identity(queued[1]) == queued[2]:
+                        continue
+            except (sqlite3.Error, ValueError):
+                pass
         try:
             with RunLease(path):
                 current = json.loads((path / "manifest.json").read_text())

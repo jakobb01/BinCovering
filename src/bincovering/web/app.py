@@ -1,11 +1,9 @@
 import hashlib
 import json
-import subprocess
-import sys
 import uuid
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request, send_file
+from flask import Flask, g, jsonify, render_template, request, send_file
 
 from bincovering.algorithms.registry import PARAMETERS
 from bincovering.experiments.config import validate
@@ -14,9 +12,20 @@ from bincovering.experiments.storage import list_runs, new_run, now, write_json
 from bincovering.reporting.reports import compare
 
 
-def create_app(output_root="outputs"):
+def create_app(output_root="outputs", *, auth_required=True, execution_queue=None):
+    from bincovering.builders.jobs import Supervisor
+    from bincovering.builders.storage import BuilderStore
+    from bincovering.web.auth import install_auth
+    from bincovering.web.builder import install_builder
+
     app = Flask(__name__)
     root = Path(output_root).resolve()
+    store = BuilderStore(root)
+    queue = execution_queue if execution_queue is not None else Supervisor(root)
+    app.extensions["bincovering_store"] = store
+    app.extensions["bincovering_queue"] = queue
+    install_auth(app, store, required=auth_required)
+    install_builder(app, store, queue)
     jobs = {}
     app.extensions["bincovering_jobs"] = jobs
 
@@ -29,11 +38,23 @@ def create_app(output_root="outputs"):
             or not (path / "manifest.json").is_file()
         ):
             raise ValueError("Unknown run")
+        if not store.can_access_run(g.user, run_id):
+            raise ValueError("Unknown run")
         return path
 
     @app.errorhandler(ValueError)
     def bad_request(exc):
         return jsonify(error=str(exc)), 400
+
+    from bincovering.builders.language import BuilderError
+
+    @app.errorhandler(BuilderError)
+    def builder_error(exc):
+        return jsonify(error=str(exc), detail=exc.as_dict()), 400
+
+    @app.errorhandler(403)
+    def forbidden(exc):
+        return jsonify(error=exc.description), 403
 
     @app.get("/")
     def index():
@@ -77,7 +98,10 @@ def create_app(output_root="outputs"):
     def runs():
         for key, process in list(jobs.items()):
             if process.poll() is not None:
-                path = locate(key)
+                path = (root / key).resolve()
+                if not (path / "manifest.json").is_file():
+                    del jobs[key]
+                    continue
                 record = json.loads((path / "manifest.json").read_text())
                 if record["status"] in ("queued", "running"):
                     record.update(
@@ -96,6 +120,7 @@ def create_app(output_root="outputs"):
                     "pinned": (Path(r["path"]) / "PINNED").exists(),
                 }
                 for r in list_runs(root)
+                if store.can_access_run(g.user, str(Path(r["path"]).relative_to(root)))
             ]
         )
 
@@ -110,10 +135,12 @@ def create_app(output_root="outputs"):
         ):
             raise ValueError("Use the CLI to import a file")
         # Browser jobs use fixed server-owned output and executable paths.
+        raw = store.authorize_specs(g.user["id"], raw)
         raw["output_root"] = str(root)
         raw["native_executable"] = str(Path("build/bincovering-native").resolve())
         cfg = validate(raw)
         path = new_run(root)
+        store.assign_run(path.name, g.user["id"])
         write_json(path / "request.json", cfg)
         write_json(
             path / "manifest.json",
@@ -127,17 +154,12 @@ def create_app(output_root="outputs"):
             },
         )
         try:
-            with (path / "worker.log").open("w") as log:
-                process = subprocess.Popen(
-                    [sys.executable, "-m", "bincovering.web.worker", str(path)],
-                    stdout=log,
-                    stderr=log,
-                )
-        except OSError as exc:
+            process = queue.submit_experiment(g.user["id"], cfg, path)
+        except (OSError, ValueError) as exc:
             manifest = json.loads((path / "manifest.json").read_text())
             manifest.update(status="failed", error=str(exc), finished_at=now())
             write_json(path / "manifest.json", manifest)
-            raise ValueError("Could not launch experiment worker") from exc
+            raise ValueError(str(exc) or "Could not launch experiment worker") from exc
         jobs[path.name] = process
         return jsonify(id=path.name), 202
 
@@ -154,7 +176,10 @@ def create_app(output_root="outputs"):
             trash = root / ".trash"
             trash.mkdir(exist_ok=True)
             write_json(
-                trash / (token + ".json"), {"original_id": str(path.relative_to(root))}
+                trash / (token + ".json"), {
+                    "original_id": str(path.relative_to(root)),
+                    "owner_id": store.run_owner(run_id),
+                }
             )
             path.rename(trash / token)
         jobs.pop(run_id, None)
@@ -170,6 +195,8 @@ def create_app(output_root="outputs"):
         if not metadata.is_file() or not source.is_dir():
             raise ValueError("Unknown removed experiment")
         original = json.loads(metadata.read_text())["original_id"]
+        if not store.can_access_run(g.user, original):
+            raise ValueError("Unknown removed experiment")
         destination = (root / original).resolve()
         if (
             destination == root
@@ -194,16 +221,19 @@ def create_app(output_root="outputs"):
             or not all(isinstance(i, str) for i in ids)
         ):
             raise ValueError("Select experiments to plot")
-        token = hashlib.sha256(json.dumps(sorted(set(ids))).encode()).hexdigest()[:32]
+        token = hashlib.sha256(json.dumps([g.user["id"], sorted(set(ids))]).encode()).hexdigest()[:32]
         plot_comparison(
             [locate(i) for i in ids], root / ".comparisons" / (token + ".png")
         )
+        store.comparison(token, g.user["id"], sorted(set(ids)))
         return jsonify(url="/api/comparison-figure/" + token)
 
     @app.get("/api/comparison-figure/<token>")
     def comparison_figure(token):
         if len(token) != 32 or any(c not in "0123456789abcdef" for c in token):
             raise ValueError("Unknown comparison")
+        for run_id in store.comparison(token, g.user["id"]):
+            locate(run_id)
         extension = request.args.get("format", "png")
         if extension not in {"png", "svg"}:
             raise ValueError("Unknown figure format")
@@ -221,6 +251,16 @@ def create_app(output_root="outputs"):
         ):
             raise ValueError("Run is already finished")
         (path / "CANCEL").touch()
+        try:
+            queue.get_job(g.user["id"], run_id, administrator=True)
+        except ValueError:
+            # CLI studies have a run lease and cancellation marker, but no queue row.
+            pass
+        else:
+            # locate() already authorized the current experiment owner. The queue
+            # keeps its submitting account for fair resource accounting even if an
+            # administrator has since reassigned experiment access.
+            queue.cancel_job(g.user["id"], run_id, administrator=True)
         return jsonify(message="Cancellation requested")
 
     @app.get("/api/inspect/<path:run_id>")
@@ -335,7 +375,7 @@ def create_app(output_root="outputs"):
             raise ValueError("Wait for selected experiments to finish")
         minimum = coverage_target(body) if kind == "reliability" else 70
         token = hashlib.sha256(
-            json.dumps([kind, sorted(set(ids)), minimum]).encode()
+            json.dumps([g.user["id"], kind, sorted(set(ids)), minimum]).encode()
         ).hexdigest()[:32]
         render_plot(
             paths,
@@ -343,6 +383,7 @@ def create_app(output_root="outputs"):
             root / ".comparisons" / f"{token}.png",
             minimum_coverage=minimum,
         )
+        store.comparison(token, g.user["id"], sorted(set(ids)))
         payload = dict(
             url="/api/comparison-figure/" + token,
             svg_url="/api/comparison-figure/" + token + "?format=svg",
@@ -352,4 +393,7 @@ def create_app(output_root="outputs"):
             payload["target_data"] = target_results(paths, minimum)
         return jsonify(payload)
 
+    from bincovering.builders.traces import register_trace_routes
+
+    register_trace_routes(app, locate)
     return app

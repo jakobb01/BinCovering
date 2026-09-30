@@ -1,4 +1,5 @@
 import argparse
+import getpass
 import json
 import shutil
 import sys
@@ -46,6 +47,14 @@ def _main():
     p = sub.add_parser("web")
     p.add_argument("--root", default="outputs")
     p.add_argument("--port", type=int, default=5000)
+    p = sub.add_parser("setup-admin", help="Create the initial dashboard administrator locally")
+    p.add_argument("--root", default="outputs")
+    p.add_argument("--username", required=True)
+    p.add_argument("--password-stdin", action="store_true", help="Read the password from standard input instead of an interactive prompt")
+    p = sub.add_parser("account-password", help="Reset a dashboard account password locally")
+    p.add_argument("--root", default="outputs")
+    p.add_argument("--username", required=True)
+    p.add_argument("--password-stdin", action="store_true")
     # Preserve Hydra overrides and --help handling after the run subcommand.
     if len(sys.argv) > 1 and sys.argv[1] == "run":
         sys.argv = [sys.argv[0]] + sys.argv[2:]
@@ -54,7 +63,29 @@ def _main():
         run()
         return
     args = parser.parse_args()
-    if args.command == "algorithms":
+    if args.command in {"setup-admin", "account-password"}:
+        from bincovering.builders.storage import BuilderStore
+
+        store = BuilderStore(args.root)
+        if args.command == "setup-admin" and any(u["role"] == "admin" for u in store.users()):
+            raise ValueError("An administrator already exists; manage accounts in the dashboard")
+        if args.password_stdin:
+            password = sys.stdin.readline().rstrip("\r\n")
+        else:
+            password = getpass.getpass("Password (at least 12 characters): ")
+            confirmation = getpass.getpass("Repeat password: ")
+            if password != confirmation:
+                raise ValueError("Passwords do not match")
+        if args.command == "setup-admin":
+            store.create_user(args.username, password, "admin")
+            print(f"Administrator {args.username.lower()} created for {store.root}")
+        else:
+            account = next((u for u in store.users() if u["username"] == args.username.lower()), None)
+            if account is None:
+                raise ValueError("Unknown account")
+            store.change_user(account["id"], password=password)
+            print(f"Password changed for {account['username']}")
+    elif args.command == "algorithms":
         from bincovering.algorithms.registry import ALIASES, PARAMETERS
 
         print(json.dumps({"algorithms": PARAMETERS, "aliases": ALIASES}, indent=2))

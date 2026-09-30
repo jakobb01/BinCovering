@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account · BinCovering</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+  <script src="{{ url_for('static', filename='auth.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#register-main">Skip to create account</a>
+  {% include '_site_header.html' %}
+  <main id="register-main" class="account-shell">
+    <section class="panel" aria-labelledby="register-heading">
+      <p class="eyebrow">Research workspace</p><h1 id="register-heading">Create account<span class="accent-mark">.</span></h1>
+      {% if setup_needed %}
+      <p class="section-description">Registration opens after the workspace administrator completes setup.</p>
+      {% else %}
+      <p class="section-description">Join as a researcher to run experiments and build your own algorithms. Your saved work is private until you share it.</p>
+      <form method="post" class="account-form" data-account-entry aria-describedby="register-error">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Account name<input name="username" value="{{ username or '' }}" autocomplete="username" required autofocus minlength="3" maxlength="64" pattern="[A-Za-z0-9_.\-]{3,64}" aria-describedby="username-help"></label>
+        <p id="username-help" class="field-help">Use 3–64 letters, numbers, dots, underscores or hyphens.</p>
+        <label>Password<input name="password" type="password" autocomplete="new-password" required minlength="12" maxlength="1024" aria-describedby="password-help"></label>
+        <p id="password-help" class="field-help">Use at least 12 characters.</p>
+        <label>Confirm password<input name="password_confirm" type="password" autocomplete="new-password" required minlength="12" maxlength="1024"></label>
+        <p id="register-error" class="account-error" role="alert">{{ error or '' }}</p>
+        <button type="submit" class="button button-accent">Create account</button>
+      </form>
+      {% endif %}
+      <div class="account-alternative"><p>Already have an account?</p><a class="button button-accent-outline" href="{{ url_for('login', next=request.args.get('next', '/')) }}">Sign in</a></div>
+    </section>
+  </main>
+</body>
+</html>

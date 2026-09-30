@@ -6,6 +6,15 @@ const historyMessage = document.querySelector('#history-message');
 let refreshing = false;
 let cachedRuns = [];
 let lastRecords = '';
+let dashboardSession;
+let availableBuilders = {algorithms: [], generators: []};
+const dashboardSessionReady = fetch('/api/session').then(async response => {
+  const value = await response.json();
+  if (!response.ok || !value.user) { location.href = '/login?next=' + encodeURIComponent(location.pathname); throw Error('Please sign in.'); }
+  dashboardSession = value;
+  document.querySelector('#account-name').textContent = value.user.username;
+  return value;
+});
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -21,7 +30,11 @@ function feedback(target, text, error = false) {
 }
 
 async function api(url, options) {
-  const response = await fetch(url, options);
+  const session = await dashboardSessionReady;
+  const headers = {...(options?.headers || {})};
+  if (options?.method && options.method !== 'GET') headers['X-CSRF-Token'] = session.csrf_token;
+  const response = await fetch(url, {...options, headers});
+  if (response.status === 401) { location.href = '/login?next=' + encodeURIComponent(location.pathname); throw Error('Please sign in again.'); }
   const data = await response.json();
   if (!response.ok) throw Error(data.error || response.statusText);
   return data;
@@ -70,6 +83,9 @@ let returnAction = null;
 let pagePosition = 0;
 let historyPosition = 0;
 let previousBodyOverflow = '';
+let savedTraceController = null;
+let savedTraceRows = [];
+let savedTraceRequest = 0;
 
 function switchTab(name, focus = false) {
   for (const tab of viewer.querySelectorAll('[role=tab]')) {
@@ -80,6 +96,7 @@ function switchTab(name, focus = false) {
     if (active && focus) tab.focus();
   }
   if (name === 'plot' && view.data && !document.querySelector('#figure').getAttribute('src')) requestPlot();
+  if (name === 'trace') void loadSavedTraces();
 }
 for (const tab of viewer.querySelectorAll('[role=tab]')) {
   tab.onclick = () => switchTab(tab.id.slice(4));
@@ -109,6 +126,8 @@ document.querySelector('#plot-zoom').onclick = () => { zoomFigure(true); documen
 document.querySelector('#viewer-close').onclick = () => viewer.close();
 viewer.addEventListener('close', () => {
   ++viewRequest;
+  ++savedTraceRequest;
+  savedTraceController?.destroy();
   document.body.style.overflow = previousBodyOverflow;
   const replacement = [...document.querySelectorAll('#runs [data-run]')]
     .find(row => row.dataset.run === returnRun);
@@ -155,6 +174,15 @@ function setFigure(data, request) {
   image.src = data.url + (data.url.includes('?') ? '&' : '?') + 't=' + Date.now();
 }
 
+function algorithmLabel(algorithm, configured = []) {
+  const id = algorithm.algorithm || algorithm.id || String(algorithm);
+  if (!id.startsWith('custom:')) return id.replaceAll('_', ' ');
+  const match = configured.find(spec => spec.id === id || spec.id + '@' + spec.revision === id);
+  const name = algorithm.algorithm_name || algorithm.frozen?.name || match?.frozen?.name || 'Custom algorithm';
+  const revision = algorithm.revision || algorithm.algorithm_revision || match?.revision || id.split('@')[1];
+  const access = algorithm.input_access || algorithm.access || algorithm.frozen?.graph?.access || match?.frozen?.graph?.access;
+  return name + (revision ? ' · revision ' + revision : '') + (access ? ' · ' + access : '');
+}
 function show(data) {
   view.data = data;
   document.querySelector('#result-context').textContent = data.manifest?.name || (data.runs ? `${data.runs.length} selected runs` : `${view.ids.length} selected runs`);
@@ -166,7 +194,7 @@ function show(data) {
     if (group.path) area.append(element('p', 'result-run-title', group.path));
     for (const row of group.summary) {
       const card = element('article', 'result-card');
-      card.append(element('h3', '', `${row.algorithm.replaceAll('_', ' ')} · ${row.backend}`));
+      card.append(element('h3', '', `${algorithmLabel(row, data.manifest?.config?.algorithms || [])} · ${row.backend}`));
       const value = row.mean_covered == null ? '—' : new Intl.NumberFormat(undefined, {maximumFractionDigits: 2}).format(row.mean_covered);
       card.append(element('strong', 'result-value', value));
       card.append(element('p', '', 'Mean covered bins'));
@@ -183,7 +211,7 @@ function show(data) {
     const seen = new Set();
     const algorithms = data.summary?.length ? data.summary : configured.filter(algorithm => {
       const params = algorithm.params || {};
-      const key = JSON.stringify([algorithm.id, algorithm.backend || 'python', Object.keys(params).sort().map(key => [key, params[key]])]);
+      const key = JSON.stringify([algorithm.id, algorithm.revision, algorithm.backend || 'python', Object.keys(params).sort().map(key => [key, params[key]])]);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -193,7 +221,7 @@ function show(data) {
     algorithms.forEach((algorithm, index) => {
       const params = algorithm.parameters || algorithm.params || {};
       const settings = Object.entries(params).map(([key, value]) => `${key}=${value}`).join(', ');
-      const label = (algorithm.algorithm || algorithm.id || algorithm).replaceAll('_', ' ') + ` · ${algorithm.backend || 'python'}` + (settings ? ` · ${settings}` : '');
+      const label = algorithmLabel(algorithm, configured) + ` · ${algorithm.backend || 'python'}` + (settings ? ` · ${settings}` : '');
       const option = element('option', '', label);
       option.value = index;
       select.append(option);
@@ -264,6 +292,12 @@ for (const id of ['#plot-kind', '#plot-algorithm', '#plot-panel', '#coverage-tar
 async function openViewer(ids, mode = 'single', tab = 'plot') {
   const request = ++viewRequest;
   view = {ids: [...ids], mode, data: null};
+  ++savedTraceRequest;
+  savedTraceController?.destroy();
+  document.querySelector('#saved-trace-view').replaceChildren();
+  document.querySelector('#trace-run').replaceChildren(...ids.map(id => { const option = element('option', '', id); option.value = id; return option; }));
+  document.querySelector('#trace-run').closest('label').hidden = ids.length < 2;
+  savedTraceRows = [];
   returnFocus = document.activeElement;
   returnRun = returnFocus?.closest('[data-run]')?.dataset.run;
   returnAction = returnFocus?.dataset.action;
@@ -515,6 +549,66 @@ if (studyPlots) studyPlots.onclick = async () => {
 };
 
 const experimentForm = document.querySelector('#experiment');
+function customChoice(key, kind) {
+  return availableBuilders[kind].find(choice => choice.id + '@' + choice.revision === key);
+}
+function customParameterValues(choice, kind) {
+  const parameters = {};
+  const root = document.querySelector('#custom-' + (kind === 'algorithms' ? 'algorithm' : 'generator') + '-parameters');
+  for (const input of root?.querySelectorAll('[data-custom-id]') || []) {
+    if (input.dataset.customId !== choice.id + '@' + choice.revision) continue;
+    const definition = choice.parameters[input.dataset.parameter];
+    parameters[input.dataset.parameter] = definition.type === 'boolean' ? input.value === 'true'
+      : ['number', 'integer'].includes(definition.type || 'number') ? Number(input.value)
+      : definition.type === 'list' ? JSON.parse(input.value) : input.value;
+  }
+  return parameters;
+}
+function renderCustomParameters(kind) {
+  const root = document.querySelector('#custom-' + (kind === 'algorithms' ? 'algorithm' : 'generator') + '-parameters');
+  if (!root) return;
+  const chosen = kind === 'algorithms' ? [...experimentForm.querySelectorAll('input[name=algorithm]:checked')].map(input => customChoice(input.value, kind)).filter(Boolean)
+    : [customChoice(experimentForm.elements.generator.value, kind)].filter(Boolean);
+  const previous = new Map([...root.querySelectorAll('input,select')].map(input => [input.dataset.customId + ':' + input.dataset.parameter, input.value]));
+  root.replaceChildren();
+  for (const choice of chosen) {
+    const group = element('fieldset', 'builder-selection-params');
+    group.append(element('legend', '', choice.name + ' · revision ' + choice.revision));
+    const link = element('a', 'field-help', 'Open in Builder →');
+    link.href = '/builder?id=' + encodeURIComponent(choice.id) + '&revision=' + encodeURIComponent(choice.revision);
+    group.append(link);
+    const fields = element('div', 'grid');
+    for (const [name, definition] of Object.entries(choice.parameters || {})) {
+      const label = element('label', '', name);
+      const control = element(definition.type === 'boolean' ? 'select' : 'input');
+      control.dataset.customId = choice.id + '@' + choice.revision; control.dataset.parameter = name;
+      if (definition.type === 'boolean') control.append(new Option('No', 'false'), new Option('Yes', 'true'));
+      else if (['number', 'integer'].includes(definition.type || 'number')) {
+        control.type = 'number'; control.step = definition.type === 'integer' ? '1' : 'any';
+        if (definition.min != null) control.min = definition.min;
+        if (definition.max != null) control.max = definition.max;
+      }
+      control.value = previous.get(control.dataset.customId + ':' + name) ?? (definition.type === 'list' ? JSON.stringify(definition.default ?? []) : definition.default ?? '');
+      label.append(control); fields.append(label);
+    }
+    group.append(fields); root.append(group);
+  }
+}
+async function loadAvailableBuilders() {
+  if (!experimentForm) return;
+  availableBuilders = await api('/api/builder/available');
+  const algorithms = document.querySelector('.algorithm-options');
+  for (const choice of availableBuilders.algorithms || []) {
+    const label = element('label', 'check'), input = element('input'), description = element('span', '', choice.name);
+    input.type = 'checkbox'; input.name = 'algorithm'; input.value = choice.id + '@' + choice.revision;
+    description.append(element('small', 'custom-option-meta', `revision ${choice.revision} · ${choice.access} · ${choice.domain}`));
+    input.onchange = () => renderCustomParameters('algorithms'); label.append(input, description); algorithms.append(label);
+  }
+  const select = experimentForm.elements.generator;
+  for (const choice of availableBuilders.generators || []) select.append(new Option(`${choice.name} · revision ${choice.revision} · ${choice.domain}`, choice.id + '@' + choice.revision));
+  select.addEventListener('change', () => renderCustomParameters('generators'));
+  renderCustomParameters('algorithms'); renderCustomParameters('generators');
+}
 if (experimentForm) experimentForm.onsubmit = async event => {
   event.preventDefault();
   const submit = event.target.querySelector('[type=submit]');
@@ -525,10 +619,18 @@ if (experimentForm) experimentForm.onsubmit = async event => {
     const cfg = {name: data.get('name'), ordering: data.get('ordering'),
       dataset_mode: data.get('dataset_mode'), swap_mode: data.get('swap_mode')};
     for (const key of ['n', 'trials', 'seed', 'workers', 'swaps']) cfg[key] = Number(data.get(key));
+    cfg.domain = data.get('domain');
+    cfg.threshold = Number(data.get('threshold'));
+    cfg.trace_limit = data.get('capture_trace') ? Number(data.get('trace_limit')) : 0;
+    cfg.trace_bytes = Number(data.get('trace_bytes'));
+    cfg.trace_trials = data.get('capture_trace') && data.get('trace_trials').trim() ? data.get('trace_trials').split(/[\s,]+/).filter(Boolean).map(Number) : null;
     const generator = data.get('generator');
-    cfg.generator = {id: generator, bins: Number(data.get('bins')),
-      ...(generator === 'big_items' ? {min: 0.51, max: 0.99} : {})};
+    const customGenerator = customChoice(generator, 'generators');
+    cfg.generator = customGenerator ? {id: customGenerator.id, revision: customGenerator.revision, params: customParameterValues(customGenerator, 'generators'), backend: 'python'}
+      : {id: generator, bins: Number(data.get('bins')), ...(generator === 'big_items' ? {min: cfg.threshold * 0.51, max: cfg.threshold * 0.99} : cfg.domain === 'integer' ? {min: 1, max: cfg.threshold} : {})};
     cfg.algorithms = data.getAll('algorithm').map(id => {
+      const custom = customChoice(id, 'algorithms');
+      if (custom) return {id: custom.id, revision: custom.revision, params: customParameterValues(custom, 'algorithms'), backend: 'python'};
       let params = {};
       if (id === 'dual_harmonic') params = {k: Number(data.get('k'))};
       else if (['throwbin_retire', 'throwbin_replace'].includes(id)) params = {bin_ratio: Number(data.get('bin_ratio'))};
@@ -555,5 +657,59 @@ if (compare) compare.onclick = async event => {
   } catch (error) { feedback(historyMessage, error.message, true); }
   finally { busy(control, false); }
 };
+async function loadSavedTraces() {
+  if (!viewer.open || !view.ids.length) return;
+  const request = ++savedTraceRequest;
+  const run = document.querySelector('#trace-run').value || view.ids[0];
+  const target = document.querySelector('#saved-trace-view');
+  savedTraceController?.destroy(); target.replaceChildren();
+  feedback(document.querySelector('#saved-trace-status'), 'Loading recorded traces…');
+  try {
+    const data = await api(endpoint('traces', run));
+    if (request !== savedTraceRequest || !viewer.open) return;
+    savedTraceRows = data.traces || [];
+    const algorithms = document.querySelector('#trace-algorithm'); algorithms.replaceChildren();
+    const groups = new Map(savedTraceRows.map(row => [String(row.algorithm), row]));
+    for (const [index, row] of groups) algorithms.append(new Option(`${row.label}${row.revision ? ' · revision ' + row.revision : ''}`, index));
+    document.querySelector('#trace-trial').replaceChildren();
+    if (!savedTraceRows.length) { feedback(document.querySelector('#saved-trace-status'), data.message || 'No trace was captured. Historical execution paths and bin state cannot be reconstructed.'); return; }
+    updateTraceTrials(); await loadSavedTraceDetail();
+  } catch (error) { if (request === savedTraceRequest) feedback(document.querySelector('#saved-trace-status'), error.message, true); }
+}
+function updateTraceTrials() {
+  const algorithm = document.querySelector('#trace-algorithm').value;
+  const trials = document.querySelector('#trace-trial'); trials.replaceChildren();
+  for (const row of savedTraceRows.filter(row => String(row.algorithm) === algorithm)) trials.append(new Option(`Trial ${row.trial}${row.truncated ? ' · truncated' : ''}`, row.trial));
+}
+async function loadSavedTraceDetail() {
+  const request = ++savedTraceRequest, run = document.querySelector('#trace-run').value;
+  const algorithm = document.querySelector('#trace-algorithm').value, trial = document.querySelector('#trace-trial').value;
+  savedTraceController?.destroy(); document.querySelector('#saved-trace-view').replaceChildren();
+  if (algorithm === '' || trial === '') return;
+  feedback(document.querySelector('#saved-trace-status'), 'Loading frozen execution evidence…');
+  try {
+    const data = await api(endpoint('trace', run) + '?algorithm=' + encodeURIComponent(algorithm) + '&trial=' + encodeURIComponent(trial));
+    if (request !== savedTraceRequest || !viewer.open) return;
+    savedTraceController = window.BinCoveringTrace.mount(document.querySelector('#saved-trace-view'), data, {threshold: data.metadata?.threshold});
+    feedback(document.querySelector('#saved-trace-status'), data.metadata?.legacy ? 'Historical item/count trace. Node paths and bin snapshots were not recorded.' : 'Recorded trace against the exact frozen graph and revision.' + (data.metadata?.kind === 'generator' ? ' Generation events precede input ordering.' : ''));
+  } catch (error) { if (request === savedTraceRequest) feedback(document.querySelector('#saved-trace-status'), error.message, true); }
+}
+document.querySelector('#trace-run').onchange = () => void loadSavedTraces();
+document.querySelector('#trace-algorithm').onchange = () => { updateTraceTrials(); void loadSavedTraceDetail(); };
+document.querySelector('#trace-trial').onchange = () => void loadSavedTraceDetail();
+document.querySelector('#logout').onclick = async event => {
+  event.preventDefault();
+  try {
+    await post('/api/logout');
+    for (let i = localStorage.length - 1; i >= 0; i--) { const key = localStorage.key(i); if (key?.startsWith(`bincovering:builder:${dashboardSession.user.id}:`)) localStorage.removeItem(key); }
+    location.href = '/login';
+  } catch (error) { feedback(historyMessage, error.message, true); }
+};
+if (experimentForm) experimentForm.elements.domain.onchange = () => {
+  const integer = experimentForm.elements.domain.value === 'integer';
+  experimentForm.elements.threshold.value = integer ? '100' : '1';
+  experimentForm.elements.threshold.step = integer ? '1' : 'any';
+};
+loadAvailableBuilders().catch(error => feedback(message, error.message, true));
 refresh().catch(error => feedback(historyMessage, error.message, true));
 setInterval(() => refresh().catch(error => feedback(historyMessage, error.message, true)), 2500);

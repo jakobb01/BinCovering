@@ -44,10 +44,13 @@ def plot_data(path):
     omitted = 0
     for row in rows:
         key = (row["algorithm"], row["backend"], row["parameters"])
+        display = row.get("algorithm_name") or key[0]
+        if row.get("algorithm_revision"):
+            display += f" · revision {row['algorithm_revision']} · {row.get('input_access', '')}"
         group = groups.setdefault(
             key,
             {
-                "label": f"{key[0]} ({key[1]})\n{key[2]}",
+                "label": f"{display} ({key[1]})\n{key[2]}",
                 "trials": [],
                 "percentages": [],
                 "counts": [],

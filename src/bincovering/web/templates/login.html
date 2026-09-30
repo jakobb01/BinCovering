@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · BinCovering</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+  <script src="{{ url_for('static', filename='auth.js') }}" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#login-main">Skip to sign in</a>
+  {% include '_site_header.html' %}
+  <main id="login-main" class="account-shell">
+    <section class="panel" aria-labelledby="login-heading">
+      <p class="eyebrow">Research workspace</p><h1 id="login-heading">Sign in<span class="accent-mark">.</span></h1>
+      {% if setup_needed %}
+      <p class="section-description">This workspace needs its first administrator account.</p>
+      <p class="field-help">On the server, run <code>bincovering setup-admin --root outputs --username your-name</code> using this dashboard's output root. The command asks for a password privately.</p>
+      {% else %}
+      <p class="section-description">Continue to your experiments and saved algorithms.</p>
+      <form method="post" class="account-form" data-account-entry aria-describedby="login-error">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Account name<input name="username" autocomplete="username" required autofocus maxlength="64"></label>
+        <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label>
+        <p id="login-error" class="account-error" role="alert">{{ error or '' }}</p>
+        <button type="submit" class="button button-accent">Sign in</button>
+      </form>
+      <div class="account-alternative"><p>New to this workspace?</p><a class="button button-accent-outline" href="{{ url_for('register', next=request.args.get('next', '/')) }}">Create account</a></div>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

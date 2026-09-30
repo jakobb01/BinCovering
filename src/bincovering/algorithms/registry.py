@@ -38,6 +38,10 @@ PARAMETERS = {
 def normalize(spec):
     if not isinstance(spec, dict) or not isinstance(spec.get("id"), str):
         raise ValueError("Each algorithm must have a string id")
+    if spec["id"].startswith("custom:"):
+        from bincovering.builders.frozen import normalize_custom
+
+        return normalize_custom(spec, "algorithm")
     if spec.keys() - {"id", "params", "backend"}:
         raise ValueError("Unknown algorithm setting")
     spec = dict(spec)
@@ -104,6 +108,21 @@ def solve(items, spec, threshold, seed, trace=None, cancelled=lambda: False):
 
     accounting = MassAccounting(threshold)
     name, params = spec["id"], spec["params"]
+    if name.startswith("custom:"):
+        from bincovering.builders.execution import execute_isolated
+
+        response = execute_isolated(
+            spec["frozen"]["graph"], items=items, seed=seed, params=params,
+            threshold=threshold, runtime_image=spec["frozen"]["runtime_image"],
+            cancelled=cancelled, trace_limit=1000 if trace else 0,
+        )
+        if not response["ok"]:
+            raise ValueError(response.get("error", {}).get("message", "Custom algorithm failed"))
+        if trace:
+            for event in response.get("trace", {}).get("events", []):
+                if event.get("item_index") is not None:
+                    trace(event["item_index"], event.get("item"), event.get("covered_bins", 0))
+        return Result(**{key: response["result"][key] for key in ("covered_bins", "discarded_items", "bin_statistics")})
     if name.startswith("advice_reserved"):
         from .advice import reserved_advice
 

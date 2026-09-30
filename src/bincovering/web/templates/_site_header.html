@@ -1,0 +1,18 @@
+<header class="site-bar">
+  <a class="brand" href="/">BinCovering</a>
+  {% if current_user and current_page|default('') in ['home', 'experiments', 'builder', 'admin'] %}
+  <nav aria-label="Main navigation">
+    <a href="/" {% if current_page == 'home' %}aria-current="page"{% endif %}>Dashboard</a>
+    <a href="/experiments" {% if current_page == 'experiments' %}aria-current="page"{% endif %}>Saved experiments</a>
+    <a href="/builder" {% if current_page == 'builder' %}aria-current="page"{% endif %}>Builder</a>
+    {% if current_user.role == 'admin' %}<a href="/admin" {% if current_page == 'admin' %}aria-current="page"{% endif %}>Accounts</a>{% endif %}
+  </nav>
+  <div class="workspace-label">
+    <span id="account-name" title="{{ current_user.username }}">{{ current_user.username }}</span>
+    <form id="account-logout" data-user-id="{{ current_user.id }}" method="post" action="/logout">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button id="logout" type="submit" class="button button-ghost">Log out</button>
+    </form>
+  </div>
+  {% endif %}
+</header>

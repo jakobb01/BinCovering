@@ -27,10 +27,22 @@ These project-specific rules are informed by the following component guides:
 
 ## Layout
 
-The navigation has two real pages. **Dashboard** (`/`) owns experiment configuration,
+The workspace navigation is rendered by the shared `_site_header.html` template,
+used on every dashboard page. Keep Builder's plain **BinCovering** text wordmark
+on the left, the menu centered, and the account name / Log out on the right. The
+menu shows **Accounts** (`/admin`) only to administrators, beside the other tabs;
+never inject it next to the account name from page scripts. The active page has
+`aria-current="page"`, dark text and an orange underline with stable label widths.
+On smaller screens the centered menu occupies its own row. Long account names
+truncate visually with the full name available in a title. Sign-in and registration
+reuse the wordmark portion of the same template.
+
+The navigation has three research pages. **Dashboard** (`/`) owns experiment configuration,
 workspace counts, all active jobs, and six recent completed/failed results. **Saved
 experiments** (`/experiments`) owns the full history, search, grouping, selection,
-comparison, and study plots. Keep its heading compact and use the toolbar counts;
+comparison, and study plots. **Builder** (`/builder`) owns the C visual graph workspace,
+saved component library, compact Custom logic, previews, and integrated traces.
+Keep the history heading compact and use the toolbar counts;
 do not repeat the home hero, workspace metrics, or a second large panel heading.
 The first saved row should start within 500px of the page top on desktop. Both pages
 use the same result viewer. Do not duplicate
@@ -81,6 +93,10 @@ Typography uses `--font-sans` (Segoe UI / Helvetica Neue / Arial / sans-serif) a
 stack for metadata and execution IDs. The title is 34–58px, section headings 24px,
 body text 15px, controls 12–13px, and supporting metadata 10–12px. Headings have
 moderate weight and slightly tight tracking. Numbers use tabular figures where useful.
+Saved experiments, Builder and Accounts use the shared `.page-header-compact`
+rules: 36px titles on desktop and 30px on phones, 14px / 13px introductions, and
+the same compact eyebrow and spacing. Every page title keeps its orange full stop;
+Builder mode switching changes only the title text, preserving the accent span.
 
 ## Component rules
 
@@ -95,6 +111,12 @@ moderate weight and slightly tight tracking. Numbers use tabular figures where u
   More opens a small anchored menu; it must not expand the table row or wrap the
   primary actions. Escape and clicking outside dismiss it.
 - `.button-ghost` is for quiet toolbar actions. Give it an explicit hover/focus state.
+- The shared `.button-accent`, `.button-accent-soft`, and `.button-accent-outline`
+  variants provide filled, soft, and outlined orange actions. Use them with the
+  `.button` base class, which supplies spacing, rounding, focus and request states.
+  Sign in, Create account and Save password use the filled variant; account password
+  reset uses the outline, Enable and Reassign use the soft variant, and Disable
+  retains a restrained red outline. Account actions have 44px minimum targets.
 - `.button-danger` is for **Remove**, with a visible verb and restrained red text.
 - Use `<button type="button">` for actions and real links for navigation/downloads.
   Form submission alone uses `type="submit"`.
@@ -149,8 +171,8 @@ own labelled state. Failure feedback uses both explanatory text and color.
 ### Results
 
 Use compact cards for algorithm summaries, with explicit units and trial counts.
-Keep configuration/source details in **Settings and provenance**. Use the native result dialog for Plot, Inspect, and Compare. Its Plot, Summary, and
-Settings and provenance tabs must support arrows/Home/End, visible focus, Escape,
+Keep configuration/source details in **Settings and provenance**. Use the native result dialog for Plot, Inspect, and Compare. Its Plot, Summary,
+Settings and provenance, and Trace tabs must support arrows/Home/End, visible focus, Escape,
 and a labelled Close action. Preserve the opener and scroll position on close.
 
 Open immediately with a loading state; do not wait for figure generation before
@@ -177,6 +199,68 @@ calling observed frequencies future guarantees. Paired charts explain the sign o
 differences and compare identical ordered inputs. Keep the scientific meaning
 of percentages, OPT/upper bounds, paired comparisons, and uncertainty labels intact;
 see `RESEARCH_PLOTS.md`. Do not change interpretation for visual simplicity.
+
+### Builder and accounts
+
+Reuse the same page shell, tokens, navigation, and labelled actions on Builder,
+login, and account administration. The graph is the primary workspace: palette,
+canvas, inspector, and a visible test/trace panel. Custom logic is a small field
+with Simple Python/defined pseudocode, contextual help, and insertable examples.
+Keep parameter/state/typed-port declarations in the advanced disclosure.
+Use separate **Algorithms** and **Item generators** tabs with independent drafts
+and palettes. Keep the name/starter/save toolbar compact; domain and coverage
+threshold are graph metadata, with no toolbar fields. Match proposal C's simple
+symbol/name cards and circular execution handles. Value connections are an explicit
+advanced toggle; already wired values remain visible.
+Give **Run preview** a filled accessible orange button, **Save draft** a soft orange
+button, and **Make available** an orange outline. Use `--accent-ink` for readable
+action text/fill and `--accent-soft` for the supporting action surface.
+
+Every editable graph card exposes **Remove** visibly; keep it labelled on Custom
+and reusable-component instances. Removal and affected wiring are reversible with
+Undo/Redo. Fixed lifecycle entry points explain which connected operations can be
+changed. Library archival is a separate reversible action and does not change
+frozen experiment revisions.
+
+Control connections use directional arrows and labelled condition branches. Typed
+data connections are visually distinct and attach to their declared ports. Provide
+keyboard addition, socket connection, inspection, movement, and removal alongside
+drag/drop. Preserve title/socket/edge focus when graph rendering refreshes.
+The dotted canvas fills its column with no unused bottom region or native scrollbars.
+Drag its background to pan; wheel pans and Control/Command-wheel zooms. Fit and
+zoom controls stay inside the canvas. Circular handles support live drag wiring and
+click/keyboard wiring, with lines anchored at the circle centres. On phones the palette,
+graph, and inspector stack without page-level horizontal overflow; graph controls
+use the same touch-target rules as the rest of the dashboard.
+
+Traces show actual recorded execution and link events to graph nodes, branch edges,
+current items, state, and bin loads. Playback navigates that evidence by operation
+or item. Label stale previews, fixture setup, errors, missing capture, and truncated
+streams/snapshots. Saved results reopen the frozen graph; old item/count traces
+retain their original meaning. Never add graph/bin details absent from the record.
+**Verify on a small sequence** is its own panel alongside the editing workspace.
+Verification captures its trace automatically with server-owned resource budgets;
+there is no user trace-limit/disable control. Full experiment traces retain their
+optional settings; run logs and provenance remain mandatory. Keep the read-only
+verification graph spacious (600px desktop, 520px phone), with Fit/zoom/pan controls
+and a labelled lifecycle/component context. Cache its graph and timeline while
+stepping in the same context; update highlights without rebuilding, centring or
+scrolling the graph or editing canvas on every event. Preserve the verification
+view when returning from a nested component. Timeline/state panes have stable
+heights, and event scrolling stays inside the timeline.
+
+Available algorithm/generator choices show revision, input access, and numerical
+domain, with typed parameter controls and an **Open in Builder** link. Use the
+existing main form for experiment launch. Account labels and logout belong in the
+site bar; administration is a separate administrator page. Draft recovery is scoped
+to the signed-in account, and logout clears cached private drafts.
+Login links to **Create account**, a separate form with account name, password and
+confirmation. Registration grants researcher access without a role selector. Keep
+errors inline and preserve the account name after an error; never refill passwords.
+The administrator's **All workspace accounts** panel lists every database account,
+including self-registered and disabled accounts, with a real count, role, status,
+join date, and labelled Enable/Disable and Reset password actions. Reset opens an
+inline form with Save password and Cancel, restoring focus when closed or saved.
 
 ## Accessibility and motion
 

@@ -26,6 +26,8 @@ algorithms:
       k: 5
 save_inputs: false
 trace_limit: 0
+trace_bytes: 2097152
+trace_trials: null
 plot: false
 output_root: outputs
 native_executable: build/bincovering-native

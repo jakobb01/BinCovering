@@ -18,7 +18,7 @@ def test_browser_experiment_compare_export_and_mobile(tmp_path):
 
     from bincovering.web.app import create_app
 
-    app = create_app(tmp_path / "outputs")
+    app = create_app(tmp_path / "outputs", auth_required=False)
     server = make_server("127.0.0.1", 0, app, threaded=True)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()

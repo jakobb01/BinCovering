@@ -1,0 +1,39 @@
+{% set current_page = 'admin' %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>Accounts · BinCovering</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+  <script src="{{ url_for('static', filename='auth.js') }}" defer></script>
+</head>
+<body data-page="admin">
+  <a class="skip-link" href="#account-main">Skip to accounts</a>
+  {% include '_site_header.html' %}
+  <main id="account-main" class="workspace-main">
+    <header class="page-header page-header-compact"><p class="eyebrow">Administrator</p><h1>Accounts<span class="accent-mark">.</span></h1><p class="page-intro">Manage everyone in your workspace. Researchers can create their own accounts; only administrators can manage access and assign saved experiments.</p></header>
+    <p id="account-feedback" class="feedback" role="status" aria-live="polite"></p>
+    <div class="dashboard-grid accounts-grid">
+      <section class="panel"><h2>Create an account</h2>
+        <form id="create-account" class="account-form">
+          <label>Account name<input name="username" required minlength="3" maxlength="64" autocomplete="off"></label>
+          <label>Initial password<input name="password" type="password" required minlength="12" maxlength="1024" autocomplete="new-password"></label>
+          <p class="field-help">Use at least 12 characters. Share credentials with the researcher separately.</p>
+          <label>Role<select name="role"><option value="user">Researcher</option><option value="admin">Administrator</option></select></label>
+          <button class="button button-accent" type="submit">Create account</button>
+        </form>
+      </section>
+      <section class="panel"><div class="account-list-heading"><h2>All workspace accounts</h2><span id="account-count" class="account-count" aria-live="polite">Loading…</span></div><p class="section-description">Includes self-registered, administrator-created and disabled accounts.</p><div id="account-list" class="account-list" aria-live="polite">Loading accounts…</div></section>
+      <section class="panel full-width"><h2>Reassign an experiment</h2>
+        <form id="reassign-experiment" class="account-form">
+          <label>Saved experiment<select name="run_id" id="reassign-run" required></select></label>
+          <label>New owner<select name="owner_id" id="reassign-owner" required></select></label>
+          <button class="button button-accent-soft" type="submit">Reassign experiment</button>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

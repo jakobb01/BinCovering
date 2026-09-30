@@ -20,7 +20,7 @@ def assert_downloads(client, response):
 
 def test_overview_panel_and_mass_downloads_from_same_saved_run(tmp_path):
     run = make_run(tmp_path)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert_downloads(
         client,
         client.post(
@@ -52,7 +52,7 @@ def test_overview_panel_and_mass_downloads_from_same_saved_run(tmp_path):
 )
 def test_plot_api_rejects_invalid_selections(tmp_path, body):
     run = make_run(tmp_path)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert client.post(f"/api/plot/{run.name}", json=body).status_code == 400
     assert (
         client.get(
@@ -66,7 +66,7 @@ def test_controlled_study_downloads_and_confounded_inputs_rejected(tmp_path):
     original = make_run(tmp_path, ordering="original")
     shuffled = make_run(tmp_path, ordering="shuffle")
     unmatched = make_run(tmp_path, ordering="shuffle", seed=43)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert_downloads(
         client,
         client.post(
@@ -97,7 +97,7 @@ def test_controlled_study_downloads_and_confounded_inputs_rejected(tmp_path):
 
 def test_reliability_target_updates_table_and_preserves_downloads(tmp_path):
     run = make_run(tmp_path, trials=3)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     urls = []
     for target in (0, 100):
         response = client.post(
@@ -124,7 +124,7 @@ def test_reliability_target_updates_table_and_preserves_downloads(tmp_path):
 @pytest.mark.parametrize("target", [-1, 101, True, "70", None, [], 10**100])
 def test_reliability_rejects_invalid_numeric_target(tmp_path, target):
     run = make_run(tmp_path)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     for route, settings in (
         (f"/api/plot/{run.name}", {}),
         ("/api/study-plot", {"ids": [run.name]}),
@@ -138,7 +138,7 @@ def test_reliability_rejects_invalid_numeric_target(tmp_path, target):
 
 def test_paired_dnf_available_for_single_and_selected_experiments(tmp_path):
     run = make_run(tmp_path)
-    client = create_app(tmp_path).test_client()
+    client = create_app(tmp_path, auth_required=False).test_client()
     assert_downloads(
         client, client.post(f"/api/plot/{run.name}", json={"kind": "paired"})
     )

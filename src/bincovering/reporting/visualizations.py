@@ -28,7 +28,10 @@ def pyplot():
 
 def label(row):
     params = row.get("parameters", row.get("params", {}))
-    return f"{row['algorithm'].replace('_', ' ')} · {row['backend']}\n{params}"
+    name = row.get("algorithm_name") or row["algorithm"].replace("_", " ")
+    if row.get("algorithm_revision"):
+        name += f" · revision {row['algorithm_revision']} · {row.get('input_access', '')}"
+    return f"{name} · {row['backend']}\n{params}"
 
 
 def save(fig, target, data):
