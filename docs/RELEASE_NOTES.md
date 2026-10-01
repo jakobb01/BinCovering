@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Prepared on 2026-10-01. Final release verification and tagging are pending.
+Prepared and verified on 2026-10-01. Release tagging and publishing are pending.
 
 Version 1.0.0 brings the migrated research tools into one Python package, shared
 experiment runner, and dashboard. These notes describe the current workflow and
@@ -122,7 +122,8 @@ The dashboard command runs locally. Shared hosting requires operator-managed HTT
 a production WSGI server and a working isolated execution supervisor, as described
 in [shared hosting](BUILDER.md#execution-limits-and-shared-hosting).
 
-The pre-versioning default suite passed 306 tests with 12 opt-in checks skipped.
-The final release gate still includes core/native regression, real browser flows,
-kernel/container isolation and installed-package validation. Completion of that
-gate will be recorded before a release tag is created.
+The final default suite passed 306 tests with 12 opt-in checks skipped. All twelve
+opt-in checks were subsequently exercised in separate isolation and browser passes.
+Fresh native builds and installed-wheel workflows also passed. See the
+[release verification record](RELEASE_VERIFICATION.md) for results, scope and
+reproduction commands. Release tagging and publishing await the user's instruction.
