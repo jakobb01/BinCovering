@@ -3,6 +3,9 @@
 Names in the registry are stable IDs. Parameters and backends are stored separately
 in every trial; filenames and timestamps never identify an algorithm variant.
 
+See [GUARANTEES.md](GUARANTEES.md) for the guarantee matrix, arithmetic and
+input-access assumptions, citations, finite bounds, and implementation proofs.
+
 | ID | Historical alias | Behavior / parameters |
 | --- | --- | --- |
 | `dual_next_fit` | `dnf`, `DNF_1` | One active bin; discard overshoot after covering. Python and C++ baselines. |
@@ -22,8 +25,11 @@ this differs from adaptive-items. Ordering is always explicit in configuration.
 Descending-order experiments have access to the input for sorting, which must be
 accounted for when interpreting online-algorithm claims.
 
-Randomized server variants remain experimental research strategies, not newly
-proven approximation guarantees. All use float64 inputs with threshold 1.0. DNF
+Randomized server variants remain research strategies. Conservative lower bounds
+for fixed-ten ThrowBin and AdaptiveBinCovered, and restricted-input optimality for
+AdaptiveBin, are documented in [GUARANTEES.md](GUARANTEES.md); they do not establish
+tight expected ratios or broader distribution-specific claims. All migrated
+randomized strategies use float64 inputs with threshold 1.0. DNF
 and harmonic also support integer inputs; harmonic boundaries use non-truncated
 division. Exactly threshold-sized items are allowed; larger and nonpositive items
 are rejected by the shared input layer. The native integer threshold is bounded
@@ -31,8 +37,9 @@ by 10^9 to keep its sums well inside signed 64-bit arithmetic.
 
 The advice variants correct the historical accounting errors described in
 [MIGRATION.md](../MIGRATION.md). Their supplied advice values are not inferred from
-an oracle; neither their theoretical guarantees nor advice-bit complexity are
-claimed. Historical advice results are not correctness references.
+an oracle. The conservative fixed-parameter fallback bound in GUARANTEES.md does
+not establish the paper's improved-advice guarantee or advice-bit complexity.
+Historical advice results are not correctness references.
 The archived source revision and each run's source snapshot distinguish old
 behavior from corrected implementations. Do not compare historical outputs by
 algorithm label alone.

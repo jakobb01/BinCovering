@@ -211,10 +211,14 @@ podman run --rm -v "$PWD/.tools/browsers:/browsers:ro" -v "$PWD/outputs/browser-
 
 Browser validation covers actual jobs, comparison, plots, pinning, export, and mobile layout.
 
-See [algorithm identities](docs/algorithms/REGISTRY.md) and the historical
-[artifact inventory](docs/ARTIFACT_INVENTORY.json).
+See [algorithm identities](docs/algorithms/REGISTRY.md),
+[algorithm guarantees](docs/algorithms/GUARANTEES.md), and the historical
+[artifact inventory](docs/ARTIFACT_INVENTORY.json). The guarantees document separates
+published baseline results, conservative implementation-derived bounds, and
+experimental strategies, with explicit arithmetic and input-access assumptions.
 See the [study migration guide](docs/MIGRATION.md) for replacement commands and
 changes in result interpretation. Old directory trees and compatibility drivers have been removed from the active
 layout; original implementations remain in Git history. Advice variants are experimental
-implementations with explicit supplied parameters, not validated theoretical guarantees.
-The historical research reference is https://arxiv.org/pdf/2309.13647.
+implementations with explicit supplied parameters. Their conservative fallback
+bound does not establish the published improved-advice theorem or a bit budget;
+see the [guarantees and references](docs/algorithms/GUARANTEES.md#the-advice-paper-and-the-implemented-variants).
