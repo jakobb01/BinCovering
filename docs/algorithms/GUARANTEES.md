@@ -229,6 +229,29 @@ provenance when comparing these results with historical outputs. A finite test
 suite can catch a disagreement with a proof's implementation assumptions, but it
 does not replace a proof over all valid inputs.
 
+## Regression verification
+
+[test_guarantees.py](../../tests/test_guarantees.py) checks all nine built-ins
+against an independent exact integer subset oracle on all 3,906 ordered inputs
+of length zero through five over `{1/8, 1/4, 1/2, 7/8, 1}` and three fixed seeds.
+The single-item length-scaled ThrowBin cases use `bin_ratio=1` to ensure a valid
+initial slot; other cases use defaults. These dyadic sizes and bounded sums are
+exactly representable, avoiding load-rounding ambiguity in the float64 adapters.
+
+The finite-bound checks cover harmonic k=2/5, adaptive multipliers below/equal/
+above one and different initial counts, and both advice identities with zero/
+positive reservations and reservation fractions including 1/2 and 1. Larger
+independently certified instances keep every bound's right-hand side positive.
+The suite also checks AdaptiveBinCovered's DNF special case at every item,
+AdaptiveBin's strict-big-item optimality over all ordered inputs of length zero
+through six from three dyadic sizes, and the concrete counterexamples above.
+[test_native.py](../../tests/test_native.py) compares native integer DNF/harmonic
+scores with the same exact oracle, in addition to backend parity checks.
+
+Run these checks with `pytest tests/test_guarantees.py tests/test_native.py -q`.
+They detect regressions on bounded inputs; they do not prove competitive ratios,
+certify arbitrary float64 execution, or supply the advice paper's missing oracle.
+
 ## References
 
 1. Marie G. Christ, Lene M. Favrholdt and Kim S. Larsen,

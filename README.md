@@ -193,10 +193,14 @@ ruff check src tests
 ruff format --check src tests
 ```
 
-The tests cover algorithm boundaries, a tiny exhaustive optimum oracle, private
-random streams, serial/parallel repeatability, Python/C++ agreement, failure and
-cancellation handling, restart recovery, advice accounting, historical generator
-semantics, and web/CLI interoperability. Native checks skip if `g++` is unavailable.
+The tests cover algorithm boundaries, exact tiny-instance optima for all nine
+built-ins, the documented finite bounds and counterexamples, restricted big-item
+optimality, private random streams, serial/parallel repeatability, Python/C++
+agreement, failure and cancellation handling, restart recovery, advice accounting,
+historical generator semantics, and web/CLI interoperability. Native checks skip
+if `g++` is unavailable. See the
+[guarantee regression scope](docs/algorithms/GUARANTEES.md#regression-verification)
+for the arithmetic model and limits of these checks.
 
 For the opt-in browser test, install `.[browser]` and Chromium with its system
 dependencies, then run `BINCOVERING_BROWSER=1 pytest tests/test_browser.py -q`.

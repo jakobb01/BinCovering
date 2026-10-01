@@ -55,29 +55,15 @@ def test_native_matches_python(executable, domain, threshold, name):
         )
 
 
-def oracle(items, threshold):
-    """Independent exhaustive set-partition search for very small instances."""
-
-    def visit(index, loads):
-        if index == len(items):
-            return sum(x >= threshold for x in loads)
-        best = visit(index + 1, loads + [items[index]])
-        for slot in range(len(loads)):
-            if loads[slot] >= threshold:
-                continue
-            next_loads = loads.copy()
-            next_loads[slot] += items[index]
-            best = max(best, visit(index + 1, next_loads))
-        return best
-
-    return visit(0, [])
-
-
-def test_scores_do_not_exceed_small_exact_optimum():
+def test_scores_do_not_exceed_small_exact_optimum(executable, exact_optimum):
     for items in itertools.product([1, 2, 3], repeat=4):
-        optimum = oracle(items, 4)
+        optimum = exact_optimum(items, 4)
         for name in ("dnf", "harmonic"):
-            assert solve(items, normalize({"id": name}), 4, 1).covered_bins <= optimum
+            spec = normalize({"id": name})
+            python = solve(items, spec, 4, 1)
+            native = solve_native(items, spec, "integer", 4, executable)
+            assert 0 <= python.covered_bins <= optimum, (items, name)
+            assert 0 <= native.covered_bins <= optimum, (items, name)
 
 
 def test_native_rejects_bad_input(executable):
