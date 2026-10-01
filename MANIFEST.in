@@ -1,0 +1,8 @@
+include CMakeLists.txt requirements.lock .python-version
+recursive-include configs *.yaml
+recursive-include cpp *.cpp *.hpp
+recursive-include docs *.md *.json
+recursive-include tools Containerfile*
+include tests/conftest.py
+recursive-include tests/reference *.py
+exclude docs/REORGANIZATION.md

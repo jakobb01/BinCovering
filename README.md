@@ -4,6 +4,9 @@ Academic research tools for **bin covering**: maximize the number of bins whose
 item load reaches the covering threshold. The project has a shared Python
 experiment runner, Hydra configuration, a local web interface, and C++ baselines.
 
+See the [1.0.0 release notes](docs/RELEASE_NOTES.md) for changes, upgrade guidance,
+and release verification status.
+
 ## Repository layout
 
 ```text
