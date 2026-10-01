@@ -182,7 +182,6 @@
 .import-button { cursor:pointer; }
 .builder-selection-params { border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px; }
 .builder-selection-params legend { font-size:11px; }
-.custom-option-meta { display:block;font-size:10px;color:var(--ink-muted);margin-top:3px; }
 
 @media(max-width:1150px) {
   .builder-layout { grid-template-columns:180px minmax(0,1fr) 250px; }

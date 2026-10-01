@@ -1,8 +1,9 @@
 """
 AdaptiveBinCovered Strategy for Bin Covering Problem.
 
-This strategy opens bins based on the number of CORED bins, rather than items received.
-This helps react to sequences with very large items (which cover bins quickly).
+Experimental stream strategy. It opens bins based on the number of covered bins,
+without knowing the future input length or reading future item sizes.
+Conservative parameter-dependent bounds are in docs/algorithms/GUARANTEES.md.
 
 Algorithm:
 1. Start with 'initial_bins' active bins.

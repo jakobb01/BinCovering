@@ -1,15 +1,19 @@
 """
 ThrowBin Strategy for Bin Covering Problem.
 
-This strategy opens N/2 bins at the start and randomly selects one to place each item.
-When a bin reaches the max_cover threshold (1.0), it is counted as covered.
+Experimental length-aware strategy. It knows N before processing and opens
+floor(N * bin_ratio) bins, with bin_ratio=0.5 by default. A randomly selected
+active bin receives each item and retires once its load reaches 1.0. Later items
+are discarded if all bins have retired.
 
-The items are expected to be sorted in descending order (largest first).
+It processes the supplied order; sorting is an explicit upstream setting, not a
+requirement or an operation of this strategy. No general competitive ratio is
+claimed. See docs/algorithms/GUARANTEES.md.
 """
 
 from bincovering.algorithms.base import Strategy
 
-BIN_COVER_LOAD = 1.0  # max bin capacity (threshold for "covered")
+BIN_COVER_LOAD = 1.0  # Covering threshold; overshoot is allowed.
 
 
 class ThrowBinStrategy(Strategy):

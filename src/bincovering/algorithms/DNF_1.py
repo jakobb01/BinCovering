@@ -1,6 +1,6 @@
 from bincovering.algorithms.base import Strategy
 
-BIN_COVER_LOAD = 1.0  # max bin capacity
+BIN_COVER_LOAD = 1.0  # Covering threshold; overshoot is allowed.
 
 
 class DNFStrategy(Strategy):

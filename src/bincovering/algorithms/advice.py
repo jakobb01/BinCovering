@@ -1,7 +1,10 @@
 """Experimental reservation-advice variants, with physical bin accounting.
 
-The parameters are supplied advice, not an inferred oracle. This is a corrected
-interpretation of the historical code, not a claim of matching a published theorem.
+The strategy processes items in stream order with supplied m/x_m parameters. Their
+origin and suitability are not certified by an oracle here. This is a corrected
+interpretation of the historical code, not a claim of matching the published
+improved-advice theorem or bit budget. See docs/algorithms/GUARANTEES.md for the
+conservative fixed-parameter fallback bound.
 """
 
 

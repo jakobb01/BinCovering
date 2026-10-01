@@ -1,8 +1,8 @@
 """
 AdaptiveBin Strategy for Bin Covering Problem.
 
-This strategy does NOT use any advice from the driver/generator about the sequence.
-It adaptively opens bins based on the number of items received so far.
+Experimental stream strategy. It opens bins based on the number of items received
+so far, without knowing the future input length or reading future item sizes.
 
 Algorithm:
 1. For each item received, increment the item counter
@@ -10,10 +10,10 @@ Algorithm:
 3. Randomly select an active bin to place the item
 4. When a bin reaches the coverage threshold (>=1.0), it's "covered"
 
-Performance:
-- OneOverN distribution: 100% of OPT
-- BigItems (0.51): 100% of OPT
-- Uniform distribution: ~76-93% of OPT depending on exact distribution
+The opening rule is a heuristic, not an estimate or certificate of OPT. Under
+exact arithmetic it is optimal when every item is strictly between 1/2 and 1.
+No general competitive ratio or uniform/complementary-input percentage is claimed.
+See docs/algorithms/GUARANTEES.md for the restricted result and counterexamples.
 """
 
 import math
@@ -27,9 +27,9 @@ E = math.e  # Euler's number ≈ 2.71828
 class AdaptiveBinStrategy(Strategy):
     """
     AdaptiveBin Strategy:
-    - Opens bins dynamically based on formula: ceil(num_items_received/2) = ceil(N/2)
+    - Grows total bins to ceil(num_items_received/2), including covered bins
     - Randomly selects among open (active) bins when multiple are available
-    - Uses DNF logic to place items
+    - Places the current item in a randomly selected active bin
     - Counts bins that reach or exceed BIN_COVER_LOAD as "covered"
     """
 
@@ -50,12 +50,8 @@ class AdaptiveBinStrategy(Strategy):
         """
         Calculate how many bins should be open based on items received.
 
-        Key insight: For most distributions, OPT ≈ N/2 bins.
-        - OneOverN: items sum to N, so OPT = floor(N) = N, covered by N/2 pairs
-        - Uniform [0,1]: average item = 0.5, need 2 items per bin, so N/2 bins
-        - BigItems (0.51): two items cover, so N/2 bins
-
-        Formula: ceil(items_received / 2) = open at rate matching expected OPT
+        The target ceil(items_received / 2) includes already covered bins. It does
+        not assume two arbitrary items cover a bin or certify an input optimum.
 
         Returns:
             int: target number of bins

@@ -52,10 +52,11 @@
             </div>
           </fieldset>
           <fieldset class="form-block algorithm-block"><legend>Algorithms</legend>
-            <p class="field-help">Each algorithm receives the same ordered trial input.</p>
+            <p class="field-help">Each algorithm receives the same ordered trial input. Baseline and experimental identify research status, not predicted coverage.</p>
             <div class="algorithm-options">{% for id in algorithms %}
-              <label class="check"><input type="checkbox" name="algorithm" value="{{ id }}" {% if id in ['dual_next_fit','dual_harmonic'] %}checked{% endif %}><span>{{ id.replace('_', ' ') }}</span></label>
+              <label class="check"><input type="checkbox" name="algorithm" value="{{ id }}" aria-labelledby="algorithm-name-{{ id }}" aria-describedby="algorithm-meta-{{ id }}" {% if id in ['dual_next_fit','dual_harmonic'] %}checked{% endif %}><span><span id="algorithm-name-{{ id }}">{{ id.replace('_', ' ') }}</span><small id="algorithm-meta-{{ id }}" class="algorithm-option-meta">{{ algorithm_metadata[id].status|capitalize }} · {{ algorithm_metadata[id].access_label }}</small></span></label>
             {% endfor %}</div>
+            <p class="field-help">Stream uses current and past items. Length-aware also knows N; supplied advice uses your m and x_m. Sorting uses the full sequence.</p>
             <div id="custom-algorithm-parameters"></div>
             <p class="field-help"><a href="/builder">Build your own algorithm or item generator →</a> Available revisions appear here with their access mode.</p>
           </fieldset>

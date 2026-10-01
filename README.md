@@ -75,6 +75,7 @@ native execution silently convert items to another numeric domain.
 Replace `outputs/<run>` with the directory printed by a completed experiment.
 
 ```bash
+bincovering algorithms          # defaults, aliases, research status and input access
 bincovering list
 bincovering inspect outputs/<run>
 bincovering plot outputs/<run>

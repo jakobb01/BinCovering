@@ -7,12 +7,15 @@ This strategy maintains exactly 10 active bins at all times:
 - When a bin is covered (≥1.0), it's replaced with a new empty bin
 - Counts total bins covered throughout the process
 
-The items are expected to be sorted in descending order (largest first).
+Experimental stream strategy: it processes the supplied order without knowing
+the future input length or reading future item sizes. Sorting is an explicit
+upstream setting. A conservative lower bound is in docs/algorithms/GUARANTEES.md;
+no tight expected competitive ratio or distribution-specific percentage is claimed.
 """
 
 from bincovering.algorithms.base import Strategy
 
-BIN_COVER_LOAD = 1.0  # max bin capacity (threshold for "covered")
+BIN_COVER_LOAD = 1.0  # Covering threshold; overshoot is allowed.
 NUM_ACTIVE_BINS = 10  # constant number of active bins
 
 

@@ -20,7 +20,9 @@ def _main():
     parser = argparse.ArgumentParser(description="Bin covering research tools")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("run", help="Hydra run: bincovering run seed=42 n=1000")
-    sub.add_parser("algorithms")
+    sub.add_parser(
+        "algorithms", help="List algorithm parameters, research status and input access"
+    )
     p = sub.add_parser("rerun")
     p.add_argument("run")
     p.add_argument("--root")
@@ -86,9 +88,22 @@ def _main():
             store.change_user(account["id"], password=password)
             print(f"Password changed for {account['username']}")
     elif args.command == "algorithms":
-        from bincovering.algorithms.registry import ALIASES, PARAMETERS
+        from bincovering.algorithms.registry import (
+            ALGORITHM_METADATA,
+            ALIASES,
+            PARAMETERS,
+        )
 
-        print(json.dumps({"algorithms": PARAMETERS, "aliases": ALIASES}, indent=2))
+        print(
+            json.dumps(
+                {
+                    "algorithms": PARAMETERS,
+                    "aliases": ALIASES,
+                    "metadata": ALGORITHM_METADATA,
+                },
+                indent=2,
+            )
+        )
     elif args.command == "list":
         from bincovering.experiments.lifecycle import reconcile_runs
 

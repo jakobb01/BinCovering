@@ -25,6 +25,25 @@ this differs from adaptive-items. Ordering is always explicit in configuration.
 Descending-order experiments have access to the input for sorting, which must be
 accounted for when interpreting online-algorithm claims.
 
+`bincovering algorithms` reports catalog metadata alongside the existing parameter
+defaults and aliases. The dashboard displays the same research status and input
+access for each built-in choice:
+
+- **Baseline** identifies DNF and harmonic. Other built-ins are **Experimental**,
+  including those with conservative or restricted-input bounds in GUARANTEES.md.
+- **Stream** uses current and past items, without future sizes or advance N.
+- **Length-aware** processes a stream with N supplied before processing.
+- **Supplied advice** processes a stream with configured m/x_m. Their origin and
+  suitability are not certified by the program.
+- **Custom** identifies a Builder revision; its online/offline access declaration
+  is shown separately and does not establish a competitiveness guarantee.
+
+The catalog's machine-readable `input_access` values are `stream`,
+`stream_with_length`, and `stream_with_supplied_advice`. These labels describe the
+placement rule. Ascending/descending sorting still uses the full sequence, and
+research status does not forecast performance. Metadata is descriptive and does
+not alter normalized configurations, identities, or historical trial records.
+
 Randomized server variants remain research strategies. Conservative lower bounds
 for fixed-ten ThrowBin and AdaptiveBinCovered, and restricted-input optimality for
 AdaptiveBin, are documented in [GUARANTEES.md](GUARANTEES.md); they do not establish

@@ -33,6 +33,54 @@ PARAMETERS = {
     "advice_reserved": {"m": 103, "x_m": 0.8},
     "advice_reserved_k4": {"m": 103, "x_m": 0.8},
 }
+# Descriptive catalog data; never merge these labels into normalized run specs.
+ALGORITHM_METADATA = {
+    "dual_next_fit": {
+        "status": "baseline",
+        "input_access": "stream",
+        "access_label": "Stream",
+    },
+    "dual_harmonic": {
+        "status": "baseline",
+        "input_access": "stream",
+        "access_label": "Stream",
+    },
+    "throwbin_retire": {
+        "status": "experimental",
+        "input_access": "stream_with_length",
+        "access_label": "Length-aware",
+    },
+    "throwbin_replace": {
+        "status": "experimental",
+        "input_access": "stream_with_length",
+        "access_label": "Length-aware",
+    },
+    "throwbin_fixed_active": {
+        "status": "experimental",
+        "input_access": "stream",
+        "access_label": "Stream",
+    },
+    "adaptive_items": {
+        "status": "experimental",
+        "input_access": "stream",
+        "access_label": "Stream",
+    },
+    "adaptive_covered": {
+        "status": "experimental",
+        "input_access": "stream",
+        "access_label": "Stream",
+    },
+    "advice_reserved": {
+        "status": "experimental",
+        "input_access": "stream_with_supplied_advice",
+        "access_label": "Supplied advice",
+    },
+    "advice_reserved_k4": {
+        "status": "experimental",
+        "input_access": "stream_with_supplied_advice",
+        "access_label": "Supplied advice",
+    },
+}
 
 
 def normalize(spec):

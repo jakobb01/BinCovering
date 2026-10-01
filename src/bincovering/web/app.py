@@ -5,7 +5,7 @@ from pathlib import Path
 
 from flask import Flask, g, jsonify, render_template, request, send_file
 
-from bincovering.algorithms.registry import PARAMETERS
+from bincovering.algorithms.registry import ALGORITHM_METADATA, PARAMETERS
 from bincovering.experiments.config import validate
 from bincovering.experiments.lifecycle import reconcile_runs
 from bincovering.experiments.storage import list_runs, new_run, now, write_json
@@ -58,7 +58,12 @@ def create_app(output_root="outputs", *, auth_required=True, execution_queue=Non
 
     @app.get("/")
     def index():
-        return render_template("index.html", algorithms=PARAMETERS, page="home")
+        return render_template(
+            "index.html",
+            algorithms=PARAMETERS,
+            algorithm_metadata=ALGORITHM_METADATA,
+            page="home",
+        )
 
     @app.get("/experiments")
     def experiments():

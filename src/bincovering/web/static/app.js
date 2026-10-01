@@ -601,7 +601,7 @@ async function loadAvailableBuilders() {
   for (const choice of availableBuilders.algorithms || []) {
     const label = element('label', 'check'), input = element('input'), description = element('span', '', choice.name);
     input.type = 'checkbox'; input.name = 'algorithm'; input.value = choice.id + '@' + choice.revision;
-    description.append(element('small', 'custom-option-meta', `revision ${choice.revision} · ${choice.access} · ${choice.domain}`));
+    description.append(element('small', 'custom-option-meta', `Custom · revision ${choice.revision} · ${choice.access} · ${choice.domain}`));
     input.onchange = () => renderCustomParameters('algorithms'); label.append(input, description); algorithms.append(label);
   }
   const select = experimentForm.elements.generator;

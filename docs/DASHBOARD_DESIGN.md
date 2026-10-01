@@ -140,6 +140,15 @@ belong in **Algorithm settings**. Preserve the actual defaults and numeric const
 The orange checked-card treatment highlights selected algorithms without replacing
 native checkbox state. Controls have 40px height, with larger touch targets on phones.
 
+Built-in algorithm cards show quiet `.algorithm-option-meta` text beneath the name:
+research status (**Baseline** or **Experimental**) and input access (**Stream**,
+**Length-aware**, or **Supplied advice**). Keep the checkbox's accessible name tied
+to its algorithm name and its description tied to the metadata. A short shared
+hint explains the access labels and that sorting reads the full sequence. Custom
+choices use the same supporting typography with **Custom**, revision, access and
+domain. These labels explain research comparisons without changing selection or
+promising a performance percentage.
+
 ### History and tables
 
 Keep fuzzy search, matched/total counts, selected count, and **Clear selection** together.

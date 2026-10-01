@@ -101,6 +101,7 @@ input::placeholder { color: var(--ink-muted); }
 .check { display: flex; align-items: center; gap: 8px; padding: 10px 9px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); cursor: pointer; font-size: 12px; font-weight: 400; }
 .check:hover { border-color: var(--border-strong); background: var(--surface-soft); }
 .check:has(input:checked) { background: var(--accent-soft); border-color: #dc9e7c; }
+.algorithm-option-meta, .custom-option-meta { display: block; font-size: 10px; line-height: 1.45; color: var(--ink-muted); margin-top: 3px; }
 input[type=checkbox] { margin: 0; width: 15px; height: 15px; flex-shrink: 0; accent-color: var(--accent-ink); cursor: pointer; }
 .settings-disclosure { border-top: 1px solid var(--border); margin: 4px 0 0; }
 summary { cursor: pointer; list-style: none; }
